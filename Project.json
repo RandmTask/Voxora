@@ -3,7 +3,7 @@
     "Debug": "debug",
     "Release": "release"
   },
-  "name": "Project",
+  "name": "VoiceSynapse",
   "options": {
     "groupSortPosition": "bottom",
     "transitivelyLinkDependencies": false
@@ -12,21 +12,18 @@
     "CODE_SIGN_IDENTITY": "-"
   },
   "targets": {
-    "New Project": {
+    "VoiceSynapse": {
       "dependencies": [
         {
-          "target": "New ProjectWidget"
-        },
-        {
           "embed": true,
-          "target": "New Project Watch"
+          "target": "VoiceSynapse Watch"
         }
       ],
       "deploymentTarget": "26.0",
       "info": {
         "path": "App\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "New Project",
+          "CFBundleDisplayName": "VoiceSynapse",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
@@ -57,12 +54,18 @@
       ],
       "type": "application"
     },
-    "New Project Watch": {
+    "VoiceSynapse Watch": {
+      "dependencies": [
+        {
+          "embed": true,
+          "target": "VoiceSynapse Widget Extension"
+        }
+      ],
       "deploymentTarget": "26.0",
       "info": {
         "path": "Watch\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "New Project",
+          "CFBundleDisplayName": "VoiceSynapse",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
@@ -90,12 +93,12 @@
       ],
       "type": "application"
     },
-    "New ProjectWidget": {
+    "VoiceSynapse Widget Extension": {
       "deploymentTarget": "26.0",
       "info": {
-        "path": "Widget\/Info.plist",
+        "path": "Widget Extension\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "New ProjectWidget",
+          "CFBundleDisplayName": "VoiceSynapse Widget Extension",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
@@ -104,19 +107,19 @@
           }
         }
       },
-      "platform": "iOS",
+      "platform": "watchOS",
       "settings": {
         "APPLICATION_EXTENSION_API_ONLY": "YES",
         "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0",
-        "PRODUCT_BUNDLE_IDENTIFIER": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e.widget",
+        "PRODUCT_BUNDLE_IDENTIFIER": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e.watchkitapp.widget-extension",
         "PRODUCT_NAME": "$(TARGET_NAME)",
         "SKIP_INSTALL": "YES",
         "SWIFT_VERSION": "5.0"
       },
       "sources": [
         {
-          "path": "Widget"
+          "path": "Widget Extension"
         }
       ],
       "type": "app-extension"
