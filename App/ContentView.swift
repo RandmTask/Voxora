@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct ContentView: View {
+  @Bindable var store: VoiceSynapseStore
+
   var body: some View {
-    EmptyView()
+    VoiceSynapseHomeView(store: store)
   }
 }

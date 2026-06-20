@@ -5,6 +5,10 @@
   },
   "name": "VoiceSynapse",
   "options": {
+    "deploymentTarget": {
+      "iOS": "26.0",
+      "watchOS": "26.0"
+    },
     "groupSortPosition": "bottom",
     "transitivelyLinkDependencies": false
   },
@@ -19,7 +23,6 @@
           "target": "VoiceSynapse Watch"
         }
       ],
-      "deploymentTarget": "26.0",
       "info": {
         "path": "App\/Info.plist",
         "properties": {
@@ -27,12 +30,46 @@
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
+          "LSApplicationQueriesSchemes": [
+            "mailto"
+          ],
+          "NSSupportsLiveActivities": false,
+          "NSSpeechRecognitionUsageDescription": "VoiceSynapse transcribes transferred recordings on iPhone so you can turn them into summaries, checklists, and follow-up outputs.",
           "UILaunchScreen": {},
+          "UIBackgroundModes": [
+            "remote-notification"
+          ],
           "UISupportedInterfaceOrientations": [
             "UIInterfaceOrientationPortrait",
             "UIInterfaceOrientationPortraitUpsideDown",
             "UIInterfaceOrientationLandscapeLeft",
             "UIInterfaceOrientationLandscapeRight"
+          ],
+          "NSMicrophoneUsageDescription": "VoiceSynapse records your voice notes on Apple Watch and iPhone so they can be transcribed and transformed into structured text.",
+          "CFBundleURLTypes": [
+            {
+              "CFBundleURLName": "VoiceSynapse",
+              "CFBundleURLSchemes": [
+                "voicesynapse"
+              ]
+            }
+          ]
+        }
+      },
+      "entitlements": {
+        "path": "App/App.entitlements",
+        "properties": {
+          "com.apple.developer.icloud-container-identifiers": [
+            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ],
+          "com.apple.developer.icloud-services": [
+            "CloudKit"
+          ],
+          "com.apple.developer.ubiquity-container-identifiers": [
+            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ],
+          "com.apple.security.application-groups": [
+            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
           ]
         }
       },
@@ -50,6 +87,9 @@
       "sources": [
         {
           "path": "App"
+        },
+        {
+          "path": "Shared"
         }
       ],
       "type": "application"
@@ -61,7 +101,6 @@
           "target": "VoiceSynapse Widget Extension"
         }
       ],
-      "deploymentTarget": "26.0",
       "info": {
         "path": "Watch\/Info.plist",
         "properties": {
@@ -69,8 +108,34 @@
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
+          "NSMicrophoneUsageDescription": "VoiceSynapse records chunked audio on Apple Watch so you can pause, resume, and finish a note before it syncs to iPhone.",
           "WKApplication": true,
-          "WKCompanionAppBundleIdentifier": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          "WKCompanionAppBundleIdentifier": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e",
+          "CFBundleURLTypes": [
+            {
+              "CFBundleURLName": "VoiceSynapse",
+              "CFBundleURLSchemes": [
+                "voicesynapse"
+              ]
+            }
+          ]
+        }
+      },
+      "entitlements": {
+        "path": "Watch/Watch.entitlements",
+        "properties": {
+          "com.apple.developer.icloud-container-identifiers": [
+            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ],
+          "com.apple.developer.icloud-services": [
+            "CloudKit"
+          ],
+          "com.apple.developer.ubiquity-container-identifiers": [
+            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ],
+          "com.apple.security.application-groups": [
+            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ]
         }
       },
       "platform": "watchOS",
@@ -89,12 +154,14 @@
         },
         {
           "path": "App\/Assets.xcassets"
+        },
+        {
+          "path": "Shared"
         }
       ],
       "type": "application"
     },
     "VoiceSynapse Widget Extension": {
-      "deploymentTarget": "26.0",
       "info": {
         "path": "Widget Extension\/Info.plist",
         "properties": {
@@ -105,6 +172,14 @@
           "NSExtension": {
             "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
           }
+        }
+      },
+      "entitlements": {
+        "path": "Widget Extension/Widget Extension.entitlements",
+        "properties": {
+          "com.apple.security.application-groups": [
+            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+          ]
         }
       },
       "platform": "watchOS",
@@ -120,6 +195,9 @@
       "sources": [
         {
           "path": "Widget Extension"
+        },
+        {
+          "path": "Shared"
         }
       ],
       "type": "app-extension"

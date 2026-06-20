@@ -30,17 +30,20 @@ struct VoiceSynapseComplicationWidget: Widget {
 
 struct VoiceSynapseTimelineProvider: TimelineProvider {
   func placeholder(in context: Context) -> VoiceSynapseEntry {
-    VoiceSynapseEntry(date: .now)
+    VoiceSynapseEntry(date: .now, snapshot: .current())
   }
 
   func getSnapshot(in context: Context, completion: @escaping (VoiceSynapseEntry) -> Void) {
-    completion(VoiceSynapseEntry(date: .now))
+    completion(VoiceSynapseEntry(date: .now, snapshot: .current()))
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<VoiceSynapseEntry>) -> Void) {
     let currentDate = Date()
     let entries = stride(from: 0, to: 5, by: 1).map { offset in
-      VoiceSynapseEntry(date: Calendar.current.date(byAdding: .minute, value: offset * 15, to: currentDate) ?? currentDate)
+      VoiceSynapseEntry(
+        date: Calendar.current.date(byAdding: .minute, value: offset * 15, to: currentDate) ?? currentDate,
+        snapshot: .current()
+      )
     }
     completion(Timeline(entries: entries, policy: .after(currentDate.addingTimeInterval(15 * 60))))
   }
@@ -48,6 +51,7 @@ struct VoiceSynapseTimelineProvider: TimelineProvider {
 
 struct VoiceSynapseEntry: TimelineEntry {
   var date: Date
+  var snapshot: WatchRecordingSnapshot
 }
 
 struct VoiceSynapseComplicationEntryView: View {
@@ -57,29 +61,55 @@ struct VoiceSynapseComplicationEntryView: View {
   var body: some View {
     switch family {
     case .accessoryCorner:
-      Text("REC")
+      Text(entry.snapshot.state == .recording ? "REC" : "GO")
         .font(.system(.headline, design: .rounded, weight: .bold))
-        .foregroundStyle(.red)
+        .foregroundStyle(entry.snapshot.state == .recording ? .red : .blue)
     case .accessoryCircular:
       ZStack {
         Circle()
           .fill(.black.opacity(0.15))
-        Image(systemName: "waveform.circle.fill")
+        Image(systemName: entry.snapshot.state == .recording ? "waveform.circle.fill" : "record.circle")
           .font(.title3)
-          .foregroundStyle(.red)
+          .foregroundStyle(entry.snapshot.state == .recording ? .red : .blue)
       }
     case .accessoryInline:
-      Text("VoiceSynapse REC")
+      Text(inlineTitle)
     case .accessoryRectangular:
       VStack(alignment: .leading, spacing: 2) {
         Text("VoiceSynapse")
           .font(.caption2)
           .foregroundStyle(.secondary)
-        Text("Tap to record")
+        Text(rectangularTitle)
           .font(.headline)
       }
     default:
       Text(entry.date, style: .time)
+    }
+  }
+
+  private var inlineTitle: String {
+    switch entry.snapshot.state {
+    case .recording:
+      "VoiceSynapse Recording"
+    case .paused:
+      "VoiceSynapse Paused"
+    case .finalizing:
+      "VoiceSynapse Stitching"
+    case .idle:
+      "VoiceSynapse Ready"
+    }
+  }
+
+  private var rectangularTitle: String {
+    switch entry.snapshot.state {
+    case .recording:
+      "Recording · \(entry.snapshot.chunkCount) chunks"
+    case .paused:
+      "Paused · resume session"
+    case .finalizing:
+      "Finalizing audio"
+    case .idle:
+      "Tap to record"
     }
   }
 }
