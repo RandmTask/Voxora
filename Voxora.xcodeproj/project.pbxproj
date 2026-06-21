@@ -10,6 +10,7 @@
 		0014B5D20039D176CA259812 /* WatchConnectivityCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195611CD97E3B94E0E6F088F /* WatchConnectivityCoordinator.swift */; };
 		00A8342861C223C488757C65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF37C0A7B1BFED2E391DF7A4 /* Assets.xcassets */; };
 		00B0B7883BCBB17E2A72D20E /* WatchAudioEngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AE2B818040FBD82D58DF85 /* WatchAudioEngineManager.swift */; };
+		0377AAF184998E4A9E18350F /* Voxora iPhone Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11E313A7F322142C86854373 /* Voxora iPhone Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		046DC5A17739AAB2D0A06D39 /* VoxoraHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0105F6701A707FBCF9DE01 /* VoxoraHomeView.swift */; };
 		051849C1C0BE6DAEF304687D /* DeepSeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B99DF9969D64D595861096E /* DeepSeekClient.swift */; };
 		058FB747CC928B3356F5FF77 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A098A5A5741D821D9817842 /* AppPreferences.swift */; };
@@ -102,6 +103,7 @@
 		D7B484F83C4894A45E413F23 /* WatchRecordingSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A55BCCD6B7333891895F19 /* WatchRecordingSnapshot.swift */; };
 		D9B6853ADB1CAD9CBA50B86B /* AutomationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7FC1D7875E71A37012F92C /* AutomationProfile.swift */; };
 		DA08AB3913FF53626077BF5B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4EE900E174436617E13519B9 /* AppIcon.icon */; };
+		DB02F5EBD46B8CB7F818801D /* VoxoraPhoneWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7893F84AF512E84403886A54 /* VoxoraPhoneWidgetBundle.swift */; };
 		DFE8F741DEADB2E075328AC9 /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E577CC1E54E4C8269FABF /* AIProvider.swift */; };
 		E3F37EA9D4E4A523A3018121 /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26821F56E9B1AACFE0BDAF /* PromptTemplate.swift */; };
 		E4590B36E0538201952B6336 /* DeletedAudioNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE99BC64BA6A66303C23DCA8 /* DeletedAudioNote.swift */; };
@@ -115,6 +117,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		60C2A11B987BD33BE83A758F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F2859CCF54604C4B36E8C32F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B50FB7D5D9C056EA1ECC7B3;
+			remoteInfo = "Voxora iPhone Widgets";
+		};
 		ABA28996820005C8FB7FC128 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F2859CCF54604C4B36E8C32F /* Project object */;
@@ -143,6 +152,17 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA6B2604E71B39E99CDD548D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0377AAF184998E4A9E18350F /* Voxora iPhone Widgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F299C3AD4BFEBA0828E96615 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -160,6 +180,7 @@
 		046F32C63E22CB3B088BE746 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		0B995BC6DBC6B649B19D16C9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0D8CAD5B2D0F9E643793E88F /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
+		11E313A7F322142C86854373 /* Voxora iPhone Widgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Voxora iPhone Widgets.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		195611CD97E3B94E0E6F088F /* WatchConnectivityCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityCoordinator.swift; sourceTree = "<group>"; };
 		1A098A5A5741D821D9817842 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		1BF9E041035544330D3A2F96 /* NoteEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorSheet.swift; sourceTree = "<group>"; };
@@ -185,12 +206,14 @@
 		681A231EE5D8C0E43AC2F72D /* AnthropicClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicClient.swift; sourceTree = "<group>"; };
 		682780558BC7806DAD57B71B /* MailComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposerView.swift; sourceTree = "<group>"; };
 		6962B4CCD3A2537B88F9435D /* VoxoraStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraStore.swift; sourceTree = "<group>"; };
+		6A197261DA0F05DC42A023E3 /* iPhone Widget Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iPhone Widget Extension.entitlements"; sourceTree = "<group>"; };
 		6EA67C0CEF02D7BFC94472A5 /* AudioPlaybackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackController.swift; sourceTree = "<group>"; };
 		6EE7D63648E25E562C3BDB61 /* RecordingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingState.swift; sourceTree = "<group>"; };
 		718E577CC1E54E4C8269FABF /* AIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProvider.swift; sourceTree = "<group>"; };
 		755E71E902F23094714F6ECB /* RecordingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSource.swift; sourceTree = "<group>"; };
 		75BF9F30F8597B60CEEF88A4 /* AutomationProfileEditorCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationProfileEditorCard.swift; sourceTree = "<group>"; };
 		76075E09948353F36F6690A1 /* TranscriptDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptDetailView.swift; sourceTree = "<group>"; };
+		7893F84AF512E84403886A54 /* VoxoraPhoneWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraPhoneWidgetBundle.swift; sourceTree = "<group>"; };
 		796A98302B4D03C218AB7E3A /* AudioNoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioNoteCard.swift; sourceTree = "<group>"; };
 		7B0105F6701A707FBCF9DE01 /* VoxoraHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraHomeView.swift; sourceTree = "<group>"; };
 		7B0B2897F4720B0BBCD61929 /* PhoneAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneAudioRecorder.swift; sourceTree = "<group>"; };
@@ -201,10 +224,11 @@
 		88D836A19D780BD49BE6E5EC /* Voxora Widget Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Voxora Widget Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		917185081FE83956168B839E /* AudioFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileStore.swift; sourceTree = "<group>"; };
 		9BB7EA57E04B829AF93717FE /* FinalizedRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizedRecording.swift; sourceTree = "<group>"; };
-		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A316DB39AB52C4B7344B20D2 /* CloudAudioTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudAudioTranscriber.swift; sourceTree = "<group>"; };
 		A7640A3618B168281EDE9396 /* EmailWorkflowSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailWorkflowSheet.swift; sourceTree = "<group>"; };
 		A8F1DAE292B8F8CF7D4FE473 /* VoxoraAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraAPIError.swift; sourceTree = "<group>"; };
+		ACDFF7659B951173000191AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AFAFA03DD65BC6C33A41EAAE /* VoxoraPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraPersistence.swift; sourceTree = "<group>"; };
 		B3D106E54452EACA97203473 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
 		B9A55BCCD6B7333891895F19 /* WatchRecordingSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRecordingSnapshot.swift; sourceTree = "<group>"; };
@@ -310,6 +334,7 @@
 		397D8F7EE362FA90024B70A9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				11E313A7F322142C86854373 /* Voxora iPhone Widgets.appex */,
 				6200EA570E85BFCD04EAE70C /* Voxora Watch.app */,
 				88D836A19D780BD49BE6E5EC /* Voxora Widget Extension.appex */,
 				A24F78BF1D132DD8EE44CDD0 /* Voxora.app */,
@@ -340,6 +365,16 @@
 			path = Watch;
 			sourceTree = "<group>";
 		};
+		9ECD26CEA155674B588FABA1 /* iPhone Widget Extension */ = {
+			isa = PBXGroup;
+			children = (
+				ACDFF7659B951173000191AA /* Info.plist */,
+				6A197261DA0F05DC42A023E3 /* iPhone Widget Extension.entitlements */,
+				7893F84AF512E84403886A54 /* VoxoraPhoneWidgetBundle.swift */,
+			);
+			path = "iPhone Widget Extension";
+			sourceTree = "<group>";
+		};
 		A3A921C717A931ED32387E72 /* Widget Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -364,6 +399,7 @@
 			children = (
 				295787313E53F35FE0C5E9A8 /* App */,
 				C62DF2FB30AC423D65010231 /* IconComposer */,
+				9ECD26CEA155674B588FABA1 /* iPhone Widget Extension */,
 				067420ECFF0FAF31D6848A01 /* Shared */,
 				8B53D8FC4F8B8334C1EBCBF0 /* Watch */,
 				A3A921C717A931ED32387E72 /* Widget Extension */,
@@ -395,6 +431,23 @@
 			productReference = 6200EA570E85BFCD04EAE70C /* Voxora Watch.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7B50FB7D5D9C056EA1ECC7B3 /* Voxora iPhone Widgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2F19CAE5D23CF954EC2A516 /* Build configuration list for PBXNativeTarget "Voxora iPhone Widgets" */;
+			buildPhases = (
+				F40B3A5EBF03EEABDB7BF6DC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Voxora iPhone Widgets";
+			packageProductDependencies = (
+			);
+			productName = "Voxora iPhone Widgets";
+			productReference = 11E313A7F322142C86854373 /* Voxora iPhone Widgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		91B026524AA5C6FE0C67C7F1 /* Voxora Widget Extension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EABB5EF8B9A63421AB228D41 /* Build configuration list for PBXNativeTarget "Voxora Widget Extension" */;
@@ -420,12 +473,14 @@
 				8F0F728D573779545DBD5A9C /* Sources */,
 				5D9860BC386AE0C2CD59F3A8 /* Resources */,
 				7985030AC334D0A339B766D5 /* Frameworks */,
+				BA6B2604E71B39E99CDD548D /* Embed Foundation Extensions */,
 				36370046C1C093CF098ECEAA /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				D18DA39B09716FE65BDA53AD /* PBXTargetDependency */,
+				58FA7955CF4B138403A8C881 /* PBXTargetDependency */,
 			);
 			name = Voxora;
 			packageProductDependencies = (
@@ -441,9 +496,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					78A526605DBB669A6650720B = {
+						DevelopmentTeam = NWB3XNKTN6;
+						ProvisioningStyle = Automatic;
+					};
+					7B50FB7D5D9C056EA1ECC7B3 = {
 						DevelopmentTeam = NWB3XNKTN6;
 						ProvisioningStyle = Automatic;
 					};
@@ -474,6 +533,7 @@
 				92579869CEBF873C26DB7D1B /* Voxora */,
 				78A526605DBB669A6650720B /* Voxora Watch */,
 				91B026524AA5C6FE0C67C7F1 /* Voxora Widget Extension */,
+				7B50FB7D5D9C056EA1ECC7B3 /* Voxora iPhone Widgets */,
 			);
 		};
 /* End PBXProject section */
@@ -626,6 +686,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F40B3A5EBF03EEABDB7BF6DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB02F5EBD46B8CB7F818801D /* VoxoraPhoneWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -633,6 +701,11 @@
 			isa = PBXTargetDependency;
 			target = 91B026524AA5C6FE0C67C7F1 /* Voxora Widget Extension */;
 			targetProxy = ABA28996820005C8FB7FC128 /* PBXContainerItemProxy */;
+		};
+		58FA7955CF4B138403A8C881 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B50FB7D5D9C056EA1ECC7B3 /* Voxora iPhone Widgets */;
+			targetProxy = 60C2A11B987BD33BE83A758F /* PBXContainerItemProxy */;
 		};
 		D18DA39B09716FE65BDA53AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -677,10 +750,12 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NWB3XNKTN6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -700,6 +775,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -728,6 +804,50 @@
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
+		};
+		0CA3F42BAEC90742FBE9DBCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "iPhone Widget Extension/iPhone Widget Extension.entitlements";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = "iPhone Widget Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.swiftstudio.Voxora.widget-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		0E46024A828E80228F0407F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "iPhone Widget Extension/iPhone Widget Extension.entitlements";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = "iPhone Widget Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.swiftstudio.Voxora.widget-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
 		};
 		572AEA0FD4E5C8E422559106 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -786,10 +906,12 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NWB3XNKTN6;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -802,6 +924,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -906,6 +1029,15 @@
 			buildConfigurations = (
 				BBE964CF23223D2DC388EFC3 /* Debug */,
 				0AE36F610F954E4DE31B0160 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B2F19CAE5D23CF954EC2A516 /* Build configuration list for PBXNativeTarget "Voxora iPhone Widgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E46024A828E80228F0407F7 /* Debug */,
+				0CA3F42BAEC90742FBE9DBCE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

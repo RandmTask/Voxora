@@ -1,5 +1,39 @@
 # Voxora Implementation Log
 
+## 2026-06-21 — Note status alignment, duration labels, and deferred Watch transcription
+
+- Moved each note status into the title row with first-baseline alignment so Ready,
+  Failed, Too short, and in-progress indicators stay on the same plane as the title.
+- Removed the `Long-press for actions` footer and moved compact durations beside
+  the date using forms such as `32s` and `1m42s`.
+- Centralized the too-short rule as three seconds or less.
+  - Too short takes display and filtering priority over Failed.
+  - Existing short notes are normalized on startup.
+  - Retranscription is unavailable for recordings at or below the threshold.
+- Added a segmented Transcript/Summary control at the top of Voice Memo detail.
+  Transcript contains the raw transcript; Summary contains AI actions and output
+  history.
+- Hardened Watch imports received while the iPhone app is not active:
+  - The transferred file remains in Uploading instead of starting Apple Speech in
+    the background.
+  - Pending imports resume automatically when the iPhone app becomes active.
+  - Empty/missing staged files are detected before recognition.
+  - Apple Speech gets one short retry for transient startup failures.
+  - A background interruption returns the note to Uploading instead of Failed.
+- Verified a successful full build for the iPhone 17 Pro iOS 26.5 simulator and its
+  dependent watchOS targets.
+
+### Schema changes
+
+None.
+
+### Next validation
+
+On physical devices, finish a Watch recording while Voxora is closed on iPhone,
+then open Voxora and confirm the note moves from Uploading to Ready without briefly
+showing Failed. Also verify title/status alignment with long titles and both detail
+segments.
+
 ## 2026-06-21 — Note-list gestures, search focus, and Voice Memo polish
 
 - Moved Copy Transcript out of swipe actions and added both Copy Transcript and

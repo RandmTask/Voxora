@@ -141,6 +141,12 @@ struct VoxoraHomeView: View {
       }
     }
     .preferredColorScheme(.dark)
+    .onAppear {
+      handlePendingRoute()
+    }
+    .onChange(of: store.selectedRoute) { _, _ in
+      handlePendingRoute()
+    }
   }
 
   private var filteredNotes: [AudioNote] {
@@ -160,9 +166,9 @@ struct VoxoraHomeView: View {
   }
 
   private func includes(_ note: AudioNote) -> Bool {
-    if hideTooShort && note.processingStatus == .tooShort { return false }
-    if hideEmpty && note.processingStatus == .empty { return false }
-    if hideFailed && note.processingStatus == .failed { return false }
+    if hideTooShort && note.displayedProcessingStatus == .tooShort { return false }
+    if hideEmpty && note.displayedProcessingStatus == .empty { return false }
+    if hideFailed && note.displayedProcessingStatus == .failed { return false }
     if !showArchived && note.archivedAt != nil { return false }
     return true
   }
@@ -344,6 +350,25 @@ struct VoxoraHomeView: View {
       recorder.resume()
     case .finalizing:
       break
+    }
+  }
+
+  private func handlePendingRoute() {
+    guard store.selectedRoute == .record else {
+      return
+    }
+
+    store.selectedRoute = nil
+    guard recorder.state == .idle else {
+      return
+    }
+
+    Task {
+      do {
+        try await recorder.start()
+      } catch {
+        recorder.errorMessage = error.localizedDescription
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import WidgetKit
 struct VoxoraWidgetBundle: WidgetBundle {
   var body: some Widget {
     VoxoraComplicationWidget()
+    VoxoraOpenComplicationWidget()
   }
 }
 
@@ -19,6 +20,26 @@ struct VoxoraComplicationWidget: Widget {
     }
     .configurationDisplayName("Quick Record")
     .description("Jump straight into a recording session.")
+    .supportedFamilies([
+      .accessoryCircular,
+      .accessoryCorner,
+      .accessoryInline,
+      .accessoryRectangular
+    ])
+  }
+}
+
+struct VoxoraOpenComplicationWidget: Widget {
+  private let kind = "com.swiftstudio.Voxora.watchkitapp.widget-extension.open"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: VoxoraTimelineProvider()) { entry in
+      VoxoraOpenComplicationEntryView(entry: entry)
+        .widgetURL(URL(string: "voxora://open"))
+        .containerBackground(.clear, for: .widget)
+    }
+    .configurationDisplayName("Open Voxora")
+    .description("Open Voxora without starting a recording.")
     .supportedFamilies([
       .accessoryCircular,
       .accessoryCorner,
@@ -121,6 +142,41 @@ struct VoxoraComplicationEntryView: View {
       "Finalizing audio"
     case .idle:
       "Tap to record"
+    }
+  }
+}
+
+struct VoxoraOpenComplicationEntryView: View {
+  var entry: VoxoraEntry
+  @Environment(\.widgetFamily) private var family
+
+  var body: some View {
+    switch family {
+    case .accessoryCorner, .accessoryCircular:
+      Image("VoxoraComplication")
+        .resizable()
+        .scaledToFit()
+        .padding(family == .accessoryCorner ? 3 : 7)
+        .foregroundStyle(.blue)
+    case .accessoryInline:
+      Text("Open Voxora")
+    case .accessoryRectangular:
+      HStack(spacing: 6) {
+        Image("VoxoraComplication")
+          .resizable()
+          .scaledToFit()
+          .frame(width: 24, height: 24)
+          .foregroundStyle(.blue)
+        VStack(alignment: .leading, spacing: 2) {
+          Text("Voxora")
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+          Text("Open app")
+            .font(.headline)
+        }
+      }
+    default:
+      Text(entry.date, style: .time)
     }
   }
 }

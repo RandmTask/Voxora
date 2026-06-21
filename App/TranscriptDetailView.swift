@@ -2,20 +2,32 @@ import SwiftUI
 import UIKit
 
 struct TranscriptDetailView: View {
+  private enum DetailSection: String, CaseIterable, Identifiable {
+    case transcript = "Transcript"
+    case summary = "Summary"
+
+    var id: String { rawValue }
+  }
+
   @Bindable var store: VoxoraStore
   @Bindable var note: AudioNote
   @State private var isEditing = false
   @State private var isEmailing = false
   @State private var titleDraft = ""
+  @State private var selectedSection: DetailSection = .transcript
   @FocusState private var isEditingTitle: Bool
 
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 18) {
         titleBlock
-        transcriptBlock
-        actionBlock
-        outputBlock
+        sectionPicker
+        if selectedSection == .transcript {
+          transcriptBlock
+        } else {
+          actionBlock
+          outputBlock
+        }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(20)
@@ -85,16 +97,26 @@ struct TranscriptDetailView: View {
             isEditingTitle = false
           }
 
-        Label(
-          note.timestamp.formatted(date: .abbreviated, time: .shortened),
-          systemImage: "calendar"
-        )
+        Label {
+          Text("\(note.timestamp.formatted(date: .abbreviated, time: .shortened)) (\(formattedDuration))")
+        } icon: {
+          Image(systemName: "calendar")
+        }
         .font(.caption)
         .foregroundStyle(.secondary)
       }
       .padding(20)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
     }
+  }
+
+  private var sectionPicker: some View {
+    Picker("Voice memo section", selection: $selectedSection) {
+      ForEach(DetailSection.allCases) { section in
+        Text(section.rawValue).tag(section)
+      }
+    }
+    .pickerStyle(.segmented)
   }
 
   private var transcriptBlock: some View {
@@ -215,5 +237,12 @@ struct TranscriptDetailView: View {
     note.title = cleaned
     note.updatedAt = .now
     store.persistChanges()
+  }
+
+  private var formattedDuration: String {
+    let seconds = max(0, Int(note.duration.rounded()))
+    let minutes = seconds / 60
+    let remainder = seconds % 60
+    return minutes == 0 ? "\(remainder)s" : "\(minutes)m\(remainder)s"
   }
 }

@@ -86,9 +86,9 @@ struct TranscriptSearchView: View {
   }
 
   private func includes(_ note: AudioNote) -> Bool {
-    if hideTooShort && note.processingStatus == .tooShort { return false }
-    if hideEmpty && note.processingStatus == .empty { return false }
-    if hideFailed && note.processingStatus == .failed { return false }
+    if hideTooShort && note.displayedProcessingStatus == .tooShort { return false }
+    if hideEmpty && note.displayedProcessingStatus == .empty { return false }
+    if hideFailed && note.displayedProcessingStatus == .failed { return false }
     return true
   }
 }

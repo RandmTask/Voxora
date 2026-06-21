@@ -34,12 +34,12 @@ struct NoteActionsSheet: View {
           } label: {
             Label("Retranscribe with \(transcriptionEngine.title)", systemImage: "waveform.badge.mic")
           }
-          .disabled(note.duration < 1)
+          .disabled(note.isTooShort)
         } header: {
           Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
         } footer: {
-          if note.duration < 1 {
-            Text("Recordings shorter than one second cannot be reliably transcribed.")
+          if note.isTooShort {
+            Text("Recordings three seconds or shorter cannot be reliably transcribed.")
           }
         }
 

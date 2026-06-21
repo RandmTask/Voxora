@@ -19,5 +19,17 @@ struct ContentView: View {
         TranscriptSearchView(store: store)
       }
     }
+    .onChange(of: store.selectedRoute) { _, route in
+      guard let route else { return }
+      switch route {
+      case .open:
+        selection = .record
+        store.selectedRoute = nil
+      case .record:
+        selection = .record
+      case .note:
+        break
+      }
+    }
   }
 }

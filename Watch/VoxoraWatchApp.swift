@@ -20,7 +20,8 @@ struct VoxoraWatchApp: App {
           return
         }
 
-        if route == .record {
+        switch route {
+        case .record:
           switch audioEngineManager.recordingState {
           case .idle, .paused:
             Task {
@@ -29,6 +30,8 @@ struct VoxoraWatchApp: App {
           case .recording, .finalizing:
             break
           }
+        case .open, .note:
+          break
         }
       }
     }

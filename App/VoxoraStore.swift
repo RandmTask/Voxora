@@ -1,6 +1,7 @@
 import Observation
 import SwiftData
 import SwiftUI
+import UIKit
 
 @MainActor
 @Observable
@@ -72,6 +73,7 @@ final class VoxoraStore {
   private let transcriber = SpeechTranscriber()
   private let cloudTranscriber = CloudAudioTranscriber()
   private let processor: AIProcessingCoordinator
+  private var processingNoteIDs = Set<UUID>()
 
   init(container: ModelContainer) {
     self.container = container
@@ -108,7 +110,9 @@ final class VoxoraStore {
     migrateLegacyRecords()
     removeDuplicateRecords()
     seedPromptsIfNeeded()
+    normalizeTooShortStatuses()
     reload()
+    await resumePendingImports()
   }
 
   func handle(route: DeepLinkRoute) {
@@ -185,7 +189,14 @@ final class VoxoraStore {
     let tag = metadata[TransferMetadata.tag] as? String
     let source: RecordingSource = tag == "Watch Capture" ? .watch : .iPhone
     let duration = metadata[TransferMetadata.duration] as? Double ?? 0
-    let note = notes.first(where: { $0.id == noteID }) ?? AudioNote(id: noteID)
+    let existingNote = notes.first(where: { $0.id == noteID })
+    if let existingNote,
+       existingNote.processingStatus == .ready,
+       !existingNote.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+      return
+    }
+
+    let note = existingNote ?? AudioNote(id: noteID)
     note.timestamp = createdAt
     note.transcriptText = ""
     note.transformedOutputText = ""
@@ -202,8 +213,10 @@ final class VoxoraStore {
     saveContext()
     reload()
 
-    Task {
-      await processImportedAudio(noteID: noteID)
+    if UIApplication.shared.applicationState == .active {
+      Task {
+        await processImportedAudio(noteID: noteID)
+      }
     }
   }
 
@@ -232,12 +245,26 @@ final class VoxoraStore {
     await process(note: note)
   }
 
+  func resumePendingImports() async {
+    guard UIApplication.shared.applicationState == .active else {
+      return
+    }
+
+    reload()
+    let pendingNoteIDs = notes
+      .filter { $0.processingStatus == .uploading }
+      .map(\.id)
+    for noteID in pendingNoteIDs {
+      await processImportedAudio(noteID: noteID)
+    }
+  }
+
   func retry(_ note: AudioNote) async {
     await process(note: note)
   }
 
   func retranscribe(_ note: AudioNote, using engine: TranscriptionEngine) async {
-    guard note.duration >= 1 else {
+    guard !note.isTooShort else {
       note.processingStatus = .tooShort
       saveContext()
       reload()
@@ -492,12 +519,26 @@ final class VoxoraStore {
   }
 
   private func process(note: AudioNote) async {
-    guard note.duration >= 1 else {
-      note.transcriptText = ""
+    guard !note.isTooShort else {
       note.processingStatus = .tooShort
       saveContext()
       reload()
       return
+    }
+
+    guard UIApplication.shared.applicationState == .active else {
+      note.processingStatus = .uploading
+      saveContext()
+      reload()
+      return
+    }
+
+    guard processingNoteIDs.insert(note.id).inserted else {
+      return
+    }
+    defer {
+      processingNoteIDs.remove(note.id)
+      isProcessing = !processingNoteIDs.isEmpty
     }
 
     isProcessing = true
@@ -506,7 +547,8 @@ final class VoxoraStore {
 
     do {
       let audioURL = try AudioFileStore.directoryURL().appending(path: note.audioFileName)
-      let transcript = try await transcriber.transcribeAudio(at: audioURL)
+      try validateAudioFile(at: audioURL)
+      let transcript = try await transcribeAppleAudio(at: audioURL)
       let cleanedTranscript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
       note.transcriptText = cleanedTranscript
       note.processingStatus = cleanedTranscript.isEmpty ? .empty : .ready
@@ -517,12 +559,62 @@ final class VoxoraStore {
         await runPostTranscriptionAutomation(for: note)
       }
     } catch {
-      note.processingStatus = .failed
+      note.processingStatus = UIApplication.shared.applicationState == .active
+        ? .failed
+        : .uploading
       saveContext()
-      errorMessage = error.localizedDescription
+      reload()
+      if UIApplication.shared.applicationState == .active {
+        errorMessage = error.localizedDescription
+      }
+    }
+  }
+
+  private func validateAudioFile(at url: URL) throws {
+    guard FileManager.default.fileExists(atPath: url.path()) else {
+      throw NSError(
+        domain: "VoxoraAudio",
+        code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "The transferred recording file is missing."]
+      )
     }
 
-    isProcessing = false
+    let attributes = try FileManager.default.attributesOfItem(atPath: url.path())
+    let fileSize = attributes[.size] as? NSNumber
+    guard fileSize?.intValue ?? 0 > 0 else {
+      throw NSError(
+        domain: "VoxoraAudio",
+        code: 2,
+        userInfo: [NSLocalizedDescriptionKey: "The transferred recording file is empty."]
+      )
+    }
+  }
+
+  private func transcribeAppleAudio(at url: URL) async throws -> String {
+    var lastError: Error?
+    for attempt in 0..<2 {
+      guard UIApplication.shared.applicationState == .active else {
+        throw NSError(
+          domain: "VoxoraSpeech",
+          code: 3,
+          userInfo: [NSLocalizedDescriptionKey: "Transcription will resume when Voxora is active."]
+        )
+      }
+
+      do {
+        return try await transcriber.transcribeAudio(at: url)
+      } catch {
+        lastError = error
+        if attempt == 0 {
+          try await Task.sleep(for: .milliseconds(750))
+        }
+      }
+    }
+    throw lastError ?? NSError(
+      domain: "VoxoraSpeech",
+      code: 4,
+      userInfo: [NSLocalizedDescriptionKey: "Speech recognition could not process this recording."]
+    )
   }
 
   private func saveContext() {
@@ -530,6 +622,18 @@ final class VoxoraStore {
       try context.save()
     } catch {
       errorMessage = error.localizedDescription
+    }
+  }
+
+  private func normalizeTooShortStatuses() {
+    var changed = false
+    for note in notes where note.isTooShort && note.processingStatus != .tooShort {
+      note.processingStatus = .tooShort
+      note.updatedAt = Date()
+      changed = true
+    }
+    if changed {
+      saveContext()
     }
   }
 

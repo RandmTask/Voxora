@@ -3,6 +3,8 @@ import SwiftUI
 
 @main
 struct VoxoraApp: App {
+  @Environment(\.scenePhase) private var scenePhase
+
   private let container: ModelContainer
   private let store: VoxoraStore
   private let watchConnectivityCoordinator: PhoneWatchConnectivityCoordinator
@@ -26,6 +28,12 @@ struct VoxoraApp: App {
         .task {
           watchConnectivityCoordinator.activate()
           await store.prepare()
+        }
+        .onChange(of: scenePhase) { _, phase in
+          guard phase == .active else { return }
+          Task {
+            await store.resumePendingImports()
+          }
         }
         .onOpenURL { url in
           guard let route = DeepLinkRoute(url: url) else {

@@ -3,6 +3,8 @@ import SwiftData
 
 @Model
 final class AudioNote {
+  static let maximumTooShortDuration: TimeInterval = 3
+
   var id: UUID = UUID()
   var timestamp: Date = Date()
   var title: String = ""
@@ -64,5 +66,13 @@ final class AudioNote {
     set {
       processingStatusRawValue = newValue.rawValue
     }
+  }
+
+  var isTooShort: Bool {
+    duration <= Self.maximumTooShortDuration
+  }
+
+  var displayedProcessingStatus: AudioNoteProcessingStatus {
+    isTooShort ? .tooShort : processingStatus
   }
 }
