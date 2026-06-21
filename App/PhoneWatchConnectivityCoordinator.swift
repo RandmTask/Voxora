@@ -26,8 +26,11 @@ extension PhoneWatchConnectivityCoordinator: WCSessionDelegate {
     _ session: WCSession,
     didReceive file: WCSessionFile
   ) {
-    Task { @MainActor [weak store] in
-      store?.ingestTransferredAudio(fileURL: file.fileURL, metadata: file.metadata ?? [:])
+    let fileURL = file.fileURL
+    let metadata = file.metadata ?? [:]
+
+    Task { @MainActor [weak self] in
+      self?.store?.ingestTransferredAudio(fileURL: fileURL, metadata: metadata)
     }
   }
 
