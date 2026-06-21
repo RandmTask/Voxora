@@ -61,6 +61,7 @@
 		984513B533428170D7AF6241 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B995BC6DBC6B649B19D16C9 /* ContentView.swift */; };
 		99DC1C3E7D09075997A609ED /* TransferMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA0F5B313EB17F81D204D1 /* TransferMetadata.swift */; };
 		9CF2332861A8D6EB5B471C28 /* Voxora Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 6200EA570E85BFCD04EAE70C /* Voxora Watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9EDCFF9A64A2598132720C18 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4EE900E174436617E13519B9 /* AppIcon.icon */; };
 		9F2CBFDA42548C1FD2ED5B7A /* VoxoraPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAFA03DD65BC6C33A41EAAE /* VoxoraPersistence.swift */; };
 		A11F8B19638CDA9351F9A5A5 /* AnthropicClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681A231EE5D8C0E43AC2F72D /* AnthropicClient.swift */; };
 		A656D11889598D62FACB5134 /* AIProcessingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1771B8D61D6DF56D89C461 /* AIProcessingCoordinator.swift */; };
@@ -78,6 +79,7 @@
 		D294744CC4F97632F321A8F3 /* VoxoraAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F1DAE292B8F8CF7D4FE473 /* VoxoraAPIError.swift */; };
 		D56FF42815CCC80D583BAD77 /* VoxoraWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BEFF74E537184D2F6D9249 /* VoxoraWatchApp.swift */; };
 		D7B484F83C4894A45E413F23 /* WatchRecordingSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A55BCCD6B7333891895F19 /* WatchRecordingSnapshot.swift */; };
+		DA08AB3913FF53626077BF5B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4EE900E174436617E13519B9 /* AppIcon.icon */; };
 		DFE8F741DEADB2E075328AC9 /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E577CC1E54E4C8269FABF /* AIProvider.swift */; };
 		E3F37EA9D4E4A523A3018121 /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26821F56E9B1AACFE0BDAF /* PromptTemplate.swift */; };
 		E92A6E14193DFDD55FF26434 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE7D63648E25E562C3BDB61 /* RecordingState.swift */; };
@@ -144,6 +146,7 @@
 		343CDF48C789F6B48C535561 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		37AE2B818040FBD82D58DF85 /* WatchAudioEngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAudioEngineManager.swift; sourceTree = "<group>"; };
 		3E1771B8D61D6DF56D89C461 /* AIProcessingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProcessingCoordinator.swift; sourceTree = "<group>"; };
+		4EE900E174436617E13519B9 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		5189D2EC48A6FA450CE2F8AA /* VoxoraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraApp.swift; sourceTree = "<group>"; };
 		51B75C7E5AC2FB9327773C25 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		55D850D26BB5928F6162003A /* EmailDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailDraft.swift; sourceTree = "<group>"; };
@@ -283,10 +286,20 @@
 			path = "Widget Extension";
 			sourceTree = "<group>";
 		};
+		C62DF2FB30AC423D65010231 /* IconComposer */ = {
+			isa = PBXGroup;
+			children = (
+				4EE900E174436617E13519B9 /* AppIcon.icon */,
+			);
+			name = IconComposer;
+			path = Design/IconComposer;
+			sourceTree = "<group>";
+		};
 		F6EA8FFEA719223181410E65 = {
 			isa = PBXGroup;
 			children = (
 				295787313E53F35FE0C5E9A8 /* App */,
+				C62DF2FB30AC423D65010231 /* IconComposer */,
 				067420ECFF0FAF31D6848A01 /* Shared */,
 				8B53D8FC4F8B8334C1EBCBF0 /* Watch */,
 				A3A921C717A931ED32387E72 /* Widget Extension */,
@@ -391,6 +404,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EDCFF9A64A2598132720C18 /* AppIcon.icon in Resources */,
 				00A8342861C223C488757C65 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -399,6 +413,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA08AB3913FF53626077BF5B /* AppIcon.icon in Resources */,
 				8E48A88BBA7F39F13DEA470A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

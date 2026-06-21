@@ -157,6 +157,10 @@
           "path": "App"
         },
         {
+          "path": "Design/IconComposer/AppIcon.icon",
+          "buildPhase": "resources"
+        },
+        {
           "path": "Shared"
         }
       ],
@@ -219,6 +223,10 @@
       "sources": [
         {
           "path": "Watch"
+        },
+        {
+          "path": "Design/IconComposer/AppIcon.icon",
+          "buildPhase": "resources"
         },
         {
           "path": "App\/Assets.xcassets"
