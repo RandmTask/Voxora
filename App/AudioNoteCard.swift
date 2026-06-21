@@ -3,6 +3,7 @@ import SwiftUI
 struct AudioNoteCard: View {
   var note: AudioNote
   var isPlaying = false
+  @AppStorage(AppPreferences.showSourceIconKey) private var showSourceIcon = true
 
   var body: some View {
     GlassEffectContainer(spacing: 14) {
@@ -23,9 +24,14 @@ struct AudioNoteCard: View {
               .fixedSize()
           }
 
-          Text("\(note.timestamp.formatted(date: .abbreviated, time: .shortened)) (\(formattedDuration))")
-            .font(.caption)
-            .foregroundStyle(.secondary)
+          HStack(spacing: 5) {
+            if showSourceIcon && note.source != .either {
+              Image(systemName: note.source.systemImage)
+            }
+            Text("\(note.timestamp.formatted(date: .abbreviated, time: .shortened)) (\(formattedDuration))")
+          }
+          .font(.caption)
+          .foregroundStyle(.secondary)
         }
 
         Text(previewText)

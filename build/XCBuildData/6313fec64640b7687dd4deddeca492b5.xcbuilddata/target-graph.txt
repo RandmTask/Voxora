@@ -1,0 +1,8 @@
+Target dependency graph (4 targets)
+Target 'Voxora' in project 'Voxora'
+➜ Explicit dependency on target 'Voxora Watch' in project 'Voxora'
+➜ Explicit dependency on target 'Voxora iPhone Widgets' in project 'Voxora'
+Target 'Voxora iPhone Widgets' in project 'Voxora' (no dependencies)
+Target 'Voxora Watch' in project 'Voxora'
+➜ Explicit dependency on target 'Voxora Widget Extension' in project 'Voxora'
+Target 'Voxora Widget Extension' in project 'Voxora' (no dependencies)

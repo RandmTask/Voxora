@@ -13,6 +13,7 @@ struct TranscriptDetailView: View {
   @Bindable var note: AudioNote
   @State private var isEditing = false
   @State private var isEmailing = false
+  @State private var editingAction: PromptTemplate?
   @State private var titleDraft = ""
   @State private var selectedSection: DetailSection = .transcript
   @FocusState private var isEditingTitle: Bool
@@ -74,6 +75,31 @@ struct TranscriptDetailView: View {
     }
     .sheet(isPresented: $isEmailing) {
       EmailWorkflowSheet(store: store, note: note)
+    }
+    .sheet(item: $editingAction) { action in
+      NavigationStack {
+        ScrollView {
+          PromptTemplateEditorCard(
+            prompt: action,
+            defaultProvider: store.defaultAIProvider,
+            onDelete: {
+              editingAction = nil
+              store.deleteAction(action)
+            }
+          )
+          .padding(20)
+        }
+        .navigationTitle("New AI Action")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .topBarTrailing) {
+            Button("Done") {
+              store.persistChanges()
+              editingAction = nil
+            }
+          }
+        }
+      }
     }
     .onAppear {
       titleDraft = note.title
@@ -148,7 +174,7 @@ struct TranscriptDetailView: View {
 
       ScrollView(.horizontal) {
         HStack(spacing: 12) {
-          ForEach(store.prompts.filter(\.isEnabled)) { action in
+          ForEach(orderedActions) { action in
             Button {
               Task {
                 await store.runAction(action, on: note)
@@ -162,18 +188,32 @@ struct TranscriptDetailView: View {
             }
             .buttonStyle(.glassProminent)
           }
+
+          Button {
+            editingAction = store.addAction()
+          } label: {
+            Label("Create Action", systemImage: "plus")
+              .font(.subheadline.weight(.semibold))
+              .padding(.horizontal, 14)
+              .padding(.vertical, 11)
+              .fixedSize()
+          }
+          .buttonStyle(.glass)
         }
-        .padding(.horizontal, 6)
+        .padding(.horizontal, 30)
         .padding(.vertical, 4)
       }
       .scrollIndicators(.hidden)
-      .contentMargins(.horizontal, 4, for: .scrollContent)
       .mask {
         LinearGradient(
           stops: [
             .init(color: .clear, location: 0),
-            .init(color: .black, location: 0.025),
-            .init(color: .black, location: 0.975),
+            .init(color: .black.opacity(0.18), location: 0.018),
+            .init(color: .black.opacity(0.5), location: 0.04),
+            .init(color: .black, location: 0.075),
+            .init(color: .black, location: 0.925),
+            .init(color: .black.opacity(0.5), location: 0.96),
+            .init(color: .black.opacity(0.18), location: 0.982),
             .init(color: .clear, location: 1)
           ],
           startPoint: .leading,
@@ -201,8 +241,20 @@ struct TranscriptDetailView: View {
                 Text(output.createdAt.formatted(date: .abbreviated, time: .shortened))
                   .font(.caption2)
                   .foregroundStyle(.secondary)
+                Button(role: .destructive) {
+                  store.deleteOutput(output)
+                } label: {
+                  Image(systemName: "trash")
+                    .font(.caption)
+                    .foregroundStyle(.red.opacity(0.7))
+                    .padding(.leading, 6)
+                }
+                .buttonStyle(.plain)
               }
-              Text(renderedMarkdown(output.content))
+              StructuredOutputView(
+                content: output.content,
+                kind: outputKind(for: output)
+              )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .textSelection(.enabled)
                 .contextMenu {
@@ -229,6 +281,32 @@ struct TranscriptDetailView: View {
       .joined(separator: "\n\n")
   }
 
+  private var orderedActions: [PromptTemplate] {
+    let starterOrder: [UUID: Int] = [
+      PromptKind.custom.starterID: 0,
+      PromptKind.todo.starterID: 1,
+      PromptKind.bullets.starterID: 2,
+      PromptKind.numbered.starterID: 3
+    ]
+    return store.prompts
+      .filter(\.isEnabled)
+      .sorted {
+        let left = starterOrder[$0.id] ?? 4 + $0.sortOrder
+        let right = starterOrder[$1.id] ?? 4 + $1.sortOrder
+        if left == right {
+          return $0.createdAt < $1.createdAt
+        }
+        return left < right
+      }
+  }
+
+  private func outputKind(for output: GeneratedOutput) -> PromptKind? {
+    if output.actionID == PromptKind.todo.starterID { return .todo }
+    if output.actionID == PromptKind.bullets.starterID { return .bullets }
+    if output.actionID == PromptKind.numbered.starterID { return .numbered }
+    return store.prompts.first(where: { $0.id == output.actionID })?.kind
+  }
+
   private func saveTitle() {
     let cleaned = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
     guard cleaned != note.title else { return }
@@ -244,10 +322,120 @@ struct TranscriptDetailView: View {
     return minutes == 0 ? "\(remainder)s" : "\(minutes)m\(remainder)s"
   }
 
-  private func renderedMarkdown(_ source: String) -> AttributedString {
+}
+
+private struct StructuredOutputView: View {
+  let content: String
+  let kind: PromptKind?
+
+  var body: some View {
+    switch kind {
+    case .todo:
+      list(items: parsedItems, style: .checklist)
+    case .bullets:
+      list(items: parsedItems, style: .bullets)
+    case .numbered:
+      list(items: parsedItems, style: .numbered)
+    default:
+      Text(renderedMarkdown)
+    }
+  }
+
+  private enum ListStyle {
+    case checklist
+    case bullets
+    case numbered
+  }
+
+  private func list(items: [String], style: ListStyle) -> some View {
+    VStack(alignment: .leading, spacing: 10) {
+      ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+          marker(for: style, index: index)
+            .frame(width: style == .numbered ? 24 : 18, alignment: .trailing)
+          Text(item)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func marker(for style: ListStyle, index: Int) -> some View {
+    switch style {
+    case .checklist:
+      Image(systemName: "square")
+        .foregroundStyle(.secondary)
+    case .bullets:
+      Text("•")
+        .font(.body.weight(.bold))
+        .foregroundStyle(.secondary)
+    case .numbered:
+      Text("\(index + 1).")
+        .font(.subheadline.monospacedDigit().weight(.semibold))
+        .foregroundStyle(.secondary)
+    }
+  }
+
+  private var parsedItems: [String] {
+    let headings = [
+      "Actionable Checklist",
+      "To Do",
+      "To-Do",
+      "Bulleted List",
+      "Bullet List",
+      "Numbered List"
+    ]
+    var source = content.trimmingCharacters(in: .whitespacesAndNewlines)
+    if let heading = headings.first(where: {
+      source.lowercased().hasPrefix($0.lowercased())
+    }) {
+      source.removeFirst(heading.count)
+      source = source.trimmingCharacters(in: .whitespacesAndNewlines.union(.punctuationCharacters))
+    }
+
+    let lines = source
+      .components(separatedBy: .newlines)
+      .map(cleanedListItem)
+      .filter { !$0.isEmpty }
+    if lines.count > 1 {
+      return lines
+    }
+
+    let sentencePattern = #"(?<=[.!?])\s*(?=[A-Z0-9])"#
+    let range = NSRange(source.startIndex..<source.endIndex, in: source)
+    let separated = (try? NSRegularExpression(pattern: sentencePattern))?
+      .stringByReplacingMatches(in: source, range: range, withTemplate: "\n") ?? source
+    let sentences = separated
+      .components(separatedBy: .newlines)
+      .map(cleanedListItem)
+      .filter { !$0.isEmpty }
+    return sentences.isEmpty ? [source] : sentences
+  }
+
+  private func cleanedListItem(_ source: String) -> String {
+    var item = source.trimmingCharacters(in: .whitespacesAndNewlines)
+    let patterns = [
+      #"^[-*•]\s*\[[ xX]\]\s*"#,
+      #"^[-*•]\s+"#,
+      #"^\d+[\.)]\s+"#
+    ]
+    for pattern in patterns {
+      guard let expression = try? NSRegularExpression(pattern: pattern) else { continue }
+      let range = NSRange(item.startIndex..<item.endIndex, in: item)
+      item = expression.stringByReplacingMatches(
+        in: item,
+        range: range,
+        withTemplate: ""
+      )
+    }
+    return item.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private var renderedMarkdown: AttributedString {
     (try? AttributedString(
-      markdown: source,
+      markdown: content,
       options: .init(interpretedSyntax: .full)
-    )) ?? AttributedString(source)
+    )) ?? AttributedString(content)
   }
 }

@@ -15,6 +15,7 @@ enum AppPreferences {
   static let hideUnusableNotesKey = "hideUnusableNotes"
   static let hideFailedNotesKey = "hideFailedNotes"
   static let showArchivedNotesKey = "showArchivedNotes"
+  static let showSourceIconKey = "showSourceIcon"
 }
 
 enum PrimaryButtonBehavior: String, CaseIterable, Identifiable {

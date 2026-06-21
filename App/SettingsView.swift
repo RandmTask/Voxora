@@ -1,15 +1,34 @@
 import SwiftUI
 
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
+
 struct SettingsView: View {
   @Bindable var store: VoxoraStore
   @Environment(\.dismiss) private var dismiss
   @AppStorage(AppPreferences.appearanceKey) private var appearanceRawValue = AppTheme.dark.rawValue
+  @AppStorage(AppPreferences.showSourceIconKey) private var showSourceIcon = true
   @State private var providerDrafts: [AIProvider: String] = [:]
   @State private var editingAction: PromptTemplate?
   @State private var editingAutomation: AutomationProfile?
   @State private var pendingActionDelete: PromptTemplate?
   @State private var pendingAutomationDelete: AutomationProfile?
   @State private var pendingTagDelete: NoteTag?
+  @State private var isAddingTag = false
+  @State private var newTagDraft = ""
+
+  private var availableProviders: [AIProvider] {
+    #if canImport(FoundationModels)
+    if #available(iOS 26, *) {
+      guard case .available = SystemLanguageModel.default.availability else {
+        return AIProvider.allCases.filter { $0 != .appleIntelligence }
+      }
+      return AIProvider.allCases
+    }
+    #endif
+    return AIProvider.allCases.filter { $0 != .appleIntelligence }
+  }
 
   var body: some View {
     NavigationStack {
@@ -49,7 +68,7 @@ struct SettingsView: View {
           NavigationLink {
             emailSettings
           } label: {
-            settingsRow("Email", systemImage: "envelope", detail: emailSettingsDetail)
+            settingsRow("Email", systemImage: "envelope")
           }
 
           NavigationLink {
@@ -85,6 +104,14 @@ struct SettingsView: View {
             tagsSettings
           } label: {
             settingsRow("Tags", systemImage: "tag", detail: "\(store.tags.count)")
+          }
+        }
+
+        Section("Advanced") {
+          NavigationLink {
+            advancedSettings
+          } label: {
+            settingsRow("Advanced", systemImage: "gearshape.2")
           }
         }
       }
@@ -205,35 +232,39 @@ struct SettingsView: View {
     }
   }
 
+  // MARK: - Sub-pages
+
   private var emailSettings: some View {
     Form {
-      Section("Email settings") {
-        TextField("Default recipient", text: Binding(
+      Section("Default Recipient") {
+        TextField("e.g. you@example.com", text: Binding(
           get: { store.defaultEmailRecipient },
           set: { store.defaultEmailRecipient = $0 }
         ))
         .textContentType(.emailAddress)
         .textInputAutocapitalization(.never)
         .keyboardType(.emailAddress)
+      }
 
-        TextField("Subject prefix", text: Binding(
+      Section("Subject Prefix") {
+        TextField("e.g. Memo", text: Binding(
           get: { store.emailSubjectPrefix },
           set: { store.emailSubjectPrefix = $0 }
         ))
       }
     }
-    .navigationTitle("Email")
+    .navigationTitle("Email Settings")
     .navigationBarTitleDisplayMode(.inline)
   }
 
   private var aiModelSettings: some View {
     Form {
-      Section("Provider") {
-        Picker("Provider", selection: Binding(
+      Section {
+        Picker("AI Provider", selection: Binding(
           get: { store.defaultAIProvider },
           set: { store.defaultAIProvider = $0 }
         )) {
-          ForEach(AIProvider.allCases) { provider in
+          ForEach(availableProviders) { provider in
             Text(provider.title).tag(provider)
           }
         }
@@ -259,7 +290,7 @@ struct SettingsView: View {
           }
         } else {
           Label(
-            "Runs privately on-device—no API key required.",
+            "Runs privately on-device — no API key required.",
             systemImage: "apple.intelligence"
           )
           .foregroundStyle(.blue)
@@ -296,11 +327,9 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 3) {
               Text(prompt.title)
                 .foregroundStyle(.primary)
-              Text("Provider: \((prompt.providerOverride ?? store.defaultAIProvider).title)")
+              Text((prompt.providerOverride ?? store.defaultAIProvider).title)
                 .font(.caption)
-                .foregroundStyle(
-                  (prompt.providerOverride ?? store.defaultAIProvider).tint
-                )
+                .foregroundStyle((prompt.providerOverride ?? store.defaultAIProvider).tint)
             }
 
             Spacer()
@@ -317,11 +346,15 @@ struct SettingsView: View {
           }
         }
       }
+      .onMove { from, to in
+        store.reorderActions(from: from, to: to)
+      }
     }
     .navigationTitle("AI Actions")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
-      ToolbarItem(placement: .topBarTrailing) {
+      ToolbarItemGroup(placement: .topBarTrailing) {
+        EditButton()
         Button("Add Action", systemImage: "plus") {
           editingAction = store.addAction()
         }
@@ -342,9 +375,12 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 3) {
               Text(profile.title)
                 .foregroundStyle(.primary)
-              Text(profile.isEnabled ? "Enabled" : "Disabled")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+              Text(
+                "\(profile.isEnabled ? "On" : "Off") · " +
+                (store.prompts.first(where: { $0.id == profile.actionID })?.title ?? "Unknown action")
+              )
+              .font(.caption)
+              .foregroundStyle(.secondary)
             }
             Spacer()
             Image(systemName: "chevron.right")
@@ -352,6 +388,15 @@ struct SettingsView: View {
               .foregroundStyle(.tertiary)
           }
         }
+      }
+    }
+    .overlay {
+      if store.automationProfiles.isEmpty {
+        ContentUnavailableView(
+          "No Automations Yet",
+          systemImage: "bolt.badge.clock",
+          description: Text("Set one up and let Voxora do the grunt work while you stare out the window.")
+        )
       }
     }
     .navigationTitle("Automations")
@@ -381,19 +426,64 @@ struct SettingsView: View {
         }
       }
     }
+    .overlay {
+      if store.tags.isEmpty {
+        ContentUnavailableView(
+          "No Tags Yet",
+          systemImage: "tag",
+          description: Text("Tags are like folders, but without the guilt of never organising them. Add your first one.")
+        )
+      }
+    }
     .navigationTitle("Tags")
+    .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button("Add Tag", systemImage: "plus") {
+          newTagDraft = ""
+          isAddingTag = true
+        }
+      }
+    }
+    .alert("New Tag", isPresented: $isAddingTag) {
+      TextField("Tag name", text: $newTagDraft)
+      Button("Add") {
+        store.addTag(named: newTagDraft)
+        newTagDraft = ""
+      }
+      Button("Cancel", role: .cancel) {
+        newTagDraft = ""
+      }
+    }
+  }
+
+  private var advancedSettings: some View {
+    Form {
+      Section {
+        Toggle("Show recording source", isOn: $showSourceIcon)
+      } footer: {
+        Text("Displays an iPhone or Apple Watch icon on each note card.")
+      }
+
+      Section {
+        Toggle("Include timestamp in exports", isOn: Binding(
+          get: { store.includeTimestampInExports },
+          set: { store.includeTimestampInExports = $0 }
+        ))
+      } footer: {
+        Text("Adds the recording date to exported text and email content.")
+      }
+    }
+    .navigationTitle("Advanced")
     .navigationBarTitleDisplayMode(.inline)
   }
 
-  private var emailSettingsDetail: String {
-    let recipient = store.defaultEmailRecipient.trimmingCharacters(in: .whitespacesAndNewlines)
-    return recipient.isEmpty ? "Not configured" : recipient
-  }
+  // MARK: - Helpers
 
   private func settingsRow(
     _ title: String,
     systemImage: String,
-    detail: String,
+    detail: String? = nil,
     tint: Color = .blue
   ) -> some View {
     HStack(spacing: 12) {
@@ -402,10 +492,12 @@ struct SettingsView: View {
         .frame(width: 24)
       Text(title)
       Spacer()
-      Text(detail)
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-        .lineLimit(1)
+      if let detail {
+        Text(detail)
+          .font(.subheadline)
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+      }
     }
   }
 

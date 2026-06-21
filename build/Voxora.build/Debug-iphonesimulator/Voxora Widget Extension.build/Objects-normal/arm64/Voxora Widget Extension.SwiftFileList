@@ -1,0 +1,22 @@
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AIProvider.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AppGroup.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AppPreferences.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AudioFileStore.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AudioNote.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AudioNoteProcessingStatus.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/AutomationProfile.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/DeepLinkRoute.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/DeletedAudioNote.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/GeneratedOutput.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/NoteTag.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/NoteTagAssignment.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/PromptKind.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/PromptTemplate.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/RecordingSource.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/RecordingState.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/TranscriptionEngine.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/TransferMetadata.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/VoxoraSchema.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Widget\ Extension/VoxoraWidgetBundle.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/Shared/WatchRecordingSnapshot.swift
+/Users/deonobrien/Documents/My\ Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora\ Widget\ Extension.build/DerivedSources/GeneratedAssetSymbols.swift

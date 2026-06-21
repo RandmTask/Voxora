@@ -1,0 +1,23 @@
+{
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AIProvider.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AIProvider.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AIProvider.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AIProvider.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AIProvider.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AIProvider.swiftdeps"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AppGroup.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppGroup.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppGroup.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppGroup.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppGroup.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppGroup.swiftdeps"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AppPreferences.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppPreferences.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppPreferences.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppPreferences.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppPreferences.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AppPreferences.swiftdeps"
+  }
+}

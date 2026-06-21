@@ -20,7 +20,7 @@ struct PromptTemplateEditorCard: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      TextField("Title", text: $prompt.title)
+      TextField("Action name", text: $prompt.title)
         .font(.headline)
 
       LabeledContent("Symbol") {
@@ -57,17 +57,32 @@ struct PromptTemplateEditorCard: View {
 
       Toggle("Enabled", isOn: $prompt.isEnabled)
 
-      TextEditor(text: $prompt.promptBody)
-        .frame(minHeight: 120)
-        .scrollContentBackground(.hidden)
-        .padding(10)
-        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+      ZStack(alignment: .topLeading) {
+        TextEditor(text: $prompt.promptBody)
+          .frame(minHeight: 120)
+          .scrollContentBackground(.hidden)
+          .padding(10)
 
-      Button("Delete Action", systemImage: "trash", role: .destructive) {
-        onDelete()
+        if prompt.promptBody.isEmpty {
+          Text("Describe what this action should do with the transcript…")
+            .font(.body)
+            .foregroundStyle(.tertiary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 18)
+            .allowsHitTesting(false)
+        }
       }
-      .foregroundStyle(.red)
+      .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+      Button(role: .destructive) {
+        onDelete()
+      } label: {
+        Label("Delete Action", systemImage: "trash")
+          .frame(maxWidth: .infinity)
+      }
+      .buttonStyle(.borderedProminent)
       .tint(.red)
+      .padding(.top, 4)
     }
     .padding(18)
     .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 24))

@@ -18,4 +18,12 @@ enum RecordingSource: String, CaseIterable, Identifiable {
   func matches(_ source: RecordingSource) -> Bool {
     self == .either || self == source
   }
+
+  var systemImage: String {
+    switch self {
+    case .iPhone: "iphone"
+    case .watch: "applewatch"
+    case .either: "iphone"
+    }
+  }
 }

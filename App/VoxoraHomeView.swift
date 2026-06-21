@@ -6,6 +6,7 @@ struct VoxoraHomeView: View {
   @State private var recorder = PhoneAudioRecorder()
   @State private var playback = AudioPlaybackController()
   @State private var isShowingSettings = false
+  @Environment(\.colorScheme) private var systemColorScheme
   @State private var actionNote: AudioNote?
   @State private var emailNote: AudioNote?
   @State private var pendingDeleteNote: AudioNote?
@@ -13,6 +14,11 @@ struct VoxoraHomeView: View {
   @AppStorage(AppPreferences.hideUnusableNotesKey) private var hideUnusable = true
   @AppStorage(AppPreferences.hideFailedNotesKey) private var hideFailed = true
   @AppStorage(AppPreferences.showArchivedNotesKey) private var showArchived = false
+  @AppStorage(AppPreferences.appearanceKey) private var appearanceRawValue = AppTheme.dark.rawValue
+
+  private var appearance: AppTheme {
+    AppTheme(rawValue: appearanceRawValue) ?? .dark
+  }
 
   var body: some View {
     NavigationStack {
@@ -21,7 +27,7 @@ struct VoxoraHomeView: View {
 
         List {
           recorderControl
-            .listRowInsets(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+            .listRowInsets(EdgeInsets(top: 16, leading: 20, bottom: 8, trailing: 20))
             .listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
 
@@ -52,7 +58,7 @@ struct VoxoraHomeView: View {
               }
             }
             .padding(.top, 8)
-            .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 4, trailing: 20))
+            .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
             .listRowBackground(VoxoraTheme.page.opacity(0.96))
             .listRowSeparator(.hidden)
 
@@ -86,6 +92,7 @@ struct VoxoraHomeView: View {
       }
       .sheet(isPresented: $isShowingSettings) {
         SettingsView(store: store)
+          .preferredColorScheme(appearance.colorScheme ?? systemColorScheme)
       }
       .navigationDestination(item: $selectedNote) { note in
         TranscriptDetailView(store: store, note: note)
@@ -242,11 +249,6 @@ struct VoxoraHomeView: View {
         }
       }
 
-      if recorder.state == .idle {
-        Text("Record on iPhone or Apple Watch")
-          .font(.footnote)
-          .foregroundStyle(.tertiary)
-      }
     }
     .frame(maxWidth: .infinity)
     .padding(.top, 20)
@@ -262,7 +264,7 @@ struct VoxoraHomeView: View {
     .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
     .listRowBackground(Color.clear)
     .listRowSeparator(.hidden)
-    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
       Button("Delete", systemImage: "trash") {
         requestDelete(note)
       }
@@ -395,15 +397,15 @@ private struct RecordingMeterView: View {
   let color: Color
 
   var body: some View {
-    HStack(alignment: .center, spacing: 3) {
+    HStack(alignment: .center, spacing: 1.5) {
       ForEach(Array(samples.enumerated()), id: \.offset) { _, sample in
-        Capsule()
-          .fill(color.gradient)
-          .frame(maxWidth: .infinity)
-          .frame(height: max(5, sample * 58))
+        RoundedRectangle(cornerRadius: 1.5, style: .continuous)
+          .fill(color)
+          .frame(width: 2.5)
+          .frame(height: max(2, sample * 54))
       }
     }
-    .animation(.linear(duration: 0.16), value: samples)
+    .animation(.easeOut(duration: 0.1), value: samples)
     .accessibilityHidden(true)
   }
 }

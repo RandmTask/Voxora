@@ -429,14 +429,31 @@ final class VoxoraStore {
   func addAction() -> PromptTemplate {
     let action = PromptTemplate(
       kind: .custom,
-      title: "New Action",
-      promptBody: PromptKind.custom.defaultPrompt,
+      title: "",
+      promptBody: "",
       sortOrder: (prompts.map(\.sortOrder).max() ?? -1) + 1
     )
     context.insert(action)
     saveContext()
     reload()
     return prompts.first(where: { $0.id == action.id }) ?? action
+  }
+
+  func reorderActions(from source: IndexSet, to destination: Int) {
+    var ordered = prompts
+    ordered.move(fromOffsets: source, toOffset: destination)
+    for (index, prompt) in ordered.enumerated() {
+      prompt.sortOrder = index
+      prompt.updatedAt = Date()
+    }
+    saveContext()
+    reload()
+  }
+
+  func deleteOutput(_ output: GeneratedOutput) {
+    context.delete(output)
+    saveContext()
+    reload()
   }
 
   func deleteAction(_ action: PromptTemplate) {
@@ -673,9 +690,29 @@ final class VoxoraStore {
     saveContext()
     reload()
     normalizeStarterPromptTitles()
+    normalizePromptOrder()
   }
 
   private func normalizeStarterPromptTitles() {
+    let legacyPromptBodies: [UUID: String] = [
+      PromptKind.todo.starterID: """
+      Transform the transcript into an actionable checklist.
+      Convert implied work into concrete tasks.
+      Output markdown checkboxes only.
+      """,
+      PromptKind.numbered.starterID: """
+      Distill the transcript into a concise numbered list.
+      Preserve important names, commitments, dates, and sequence.
+      """,
+      PromptKind.bullets.starterID: """
+      Distill the transcript into a clean hierarchy of bulleted points.
+      Preserve important names, commitments, and dates.
+      """,
+      PromptKind.custom.starterID: """
+      Summarize the transcript into key takeaways, then draft the most useful next artifact for the user.
+      Keep the result concise and structured.
+      """
+    ]
     var changed = false
     for prompt in prompts {
       if prompt.id == PromptKind.todo.starterID,
@@ -687,11 +724,57 @@ final class VoxoraStore {
         prompt.title = PromptKind.bullets.defaultTitle
         changed = true
       } else if prompt.id == PromptKind.custom.starterID,
-                prompt.title == "Custom Action" {
+                ["Custom", "Custom Action"].contains(prompt.title) {
         prompt.title = PromptKind.custom.defaultTitle
         changed = true
       }
+
+      if let legacyBody = legacyPromptBodies[prompt.id],
+         prompt.promptBody.trimmingCharacters(in: .whitespacesAndNewlines)
+           == legacyBody.trimmingCharacters(in: .whitespacesAndNewlines) {
+        prompt.promptBody = PromptKind(rawValue: prompt.kindRawValue)?.defaultPrompt
+          ?? prompt.promptBody
+        changed = true
+      }
     }
+    if changed {
+      saveContext()
+      reload()
+    }
+  }
+
+  private func normalizePromptOrder() {
+    let starterOrder: [UUID: Int] = [
+      PromptKind.custom.starterID: 0,
+      PromptKind.todo.starterID: 1,
+      PromptKind.bullets.starterID: 2,
+      PromptKind.numbered.starterID: 3
+    ]
+    var changed = false
+    let customActions = prompts
+      .filter { starterOrder[$0.id] == nil }
+      .sorted {
+        if $0.sortOrder == $1.sortOrder {
+          return $0.createdAt < $1.createdAt
+        }
+        return $0.sortOrder < $1.sortOrder
+      }
+
+    for prompt in prompts {
+      guard let order = starterOrder[prompt.id], prompt.sortOrder != order else {
+        continue
+      }
+      prompt.sortOrder = order
+      changed = true
+    }
+
+    for (offset, prompt) in customActions.enumerated() {
+      let order = offset + starterOrder.count
+      guard prompt.sortOrder != order else { continue }
+      prompt.sortOrder = order
+      changed = true
+    }
+
     if changed {
       saveContext()
       reload()
@@ -736,13 +819,20 @@ final class VoxoraStore {
     for note: AudioNote,
     action: PromptTemplate
   ) {
-    let output = GeneratedOutput(
-      noteID: note.id,
-      actionID: action.id,
-      actionTitle: action.title,
-      content: result
-    )
-    context.insert(output)
+    if let existing = generatedOutputs.first(where: {
+      $0.noteID == note.id && $0.actionID == action.id
+    }) {
+      existing.content = result
+      existing.createdAt = Date()
+      existing.actionTitle = action.title
+    } else {
+      context.insert(GeneratedOutput(
+        noteID: note.id,
+        actionID: action.id,
+        actionTitle: action.title,
+        content: result
+      ))
+    }
     note.transformedOutputText = result
     note.processingStatus = .ready
     note.updatedAt = Date()
@@ -751,7 +841,12 @@ final class VoxoraStore {
   }
 
   private func runPostTranscriptionAutomation(for note: AudioNote) async {
-    if note.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    if let spoken = extractExplicitTitle(from: note.transcriptText) {
+      note.title = spoken
+      note.updatedAt = Date()
+      saveContext()
+      reload()
+    } else if note.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
       await generateTitle(for: note)
     }
 
@@ -767,6 +862,17 @@ final class VoxoraStore {
         await runAction(action, on: note)
       }
     }
+  }
+
+  private func extractExplicitTitle(from transcript: String) -> String? {
+    let trimmed = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return nil }
+    let pattern = #"^(?:title|subject)[\s:]+(.{3,80}?)(?:[,.\n]|$)"#
+    guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]),
+          let match = regex.firstMatch(in: trimmed, range: NSRange(trimmed.startIndex..., in: trimmed)),
+          let range = Range(match.range(at: 1), in: trimmed)
+    else { return nil }
+    return String(trimmed[range]).trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   private func generateTitle(for note: AudioNote) async {

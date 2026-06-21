@@ -32,7 +32,7 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
     case .bullets:
       "Bulleted List"
     case .custom:
-      "Custom"
+      "Summarise"
     }
   }
 
@@ -42,22 +42,28 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
       """
       Transform the transcript into an actionable checklist.
       Convert implied work into concrete tasks.
-      Output markdown checkboxes only.
+      Return markdown checkboxes only, with exactly one task per line.
+      Begin every line with "- [ ] ". Do not add a heading or introductory prose.
       """
     case .numbered:
       """
       Distill the transcript into a concise numbered list.
       Preserve important names, commitments, dates, and sequence.
+      Put exactly one item on each line using markdown numbering.
+      Do not add a heading or introductory prose.
       """
     case .bullets:
       """
       Distill the transcript into a clean hierarchy of bulleted points.
       Preserve important names, commitments, and dates.
+      Put exactly one item on each line using markdown bullets.
+      Do not add a heading or introductory prose.
       """
     case .custom:
       """
-      Summarize the transcript into key takeaways, then draft the most useful next artifact for the user.
-      Keep the result concise and structured.
+      Summarise the transcript into concise key takeaways.
+      Preserve important names, commitments, dates, and decisions.
+      Use short paragraphs or markdown bullets where they improve clarity.
       """
     }
   }

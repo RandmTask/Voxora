@@ -13,7 +13,7 @@ struct PhoneRecording {
 final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
   var state: RecordingState = .idle
   var elapsedTime: TimeInterval = 0
-  var meterSamples = Array(repeating: CGFloat(0.08), count: 28)
+  var meterSamples = Array(repeating: CGFloat(0), count: 60)
   var errorMessage: String?
 
   private var recorder: AVAudioRecorder?
@@ -93,7 +93,7 @@ final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
     self.recorder = nil
     state = .idle
     elapsedTime = 0
-    meterSamples = Array(repeating: 0.08, count: meterSamples.count)
+    meterSamples = Array(repeating: 0, count: meterSamples.count)
     try? AVAudioSession.sharedInstance().setActive(false)
     return result
   }
@@ -106,7 +106,7 @@ final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
         self.elapsedTime = recorder.currentTime
         recorder.updateMeters()
         let decibels = recorder.averagePower(forChannel: 0)
-        let normalized = max(0.08, min(1, pow(10, decibels / 28)))
+        let normalized = max(0, min(1, pow(10, decibels / 24)))
         self.meterSamples.removeFirst()
         self.meterSamples.append(CGFloat(normalized))
       }

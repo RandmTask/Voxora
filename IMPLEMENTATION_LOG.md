@@ -337,6 +337,8 @@ faithfully validate watchOS microphone recording or background audio execution.
 - Made Dark the default for new installs while preserving the user's selection.
 - Applied the selected color scheme once at the app root so tabs, sheets, and
   navigation destinations stay consistent.
+- Applied the selection directly to the open Settings sheet so it changes
+  appearance immediately without being dismissed and reopened.
 - Replaced the hardcoded dark page and transcript-detail backgrounds with adaptive
   light/dark theme colors.
 

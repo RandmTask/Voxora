@@ -1,0 +1,23 @@
+{
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioFileStore.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioFileStore.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioFileStore.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioFileStore.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioFileStore.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioFileStore.swiftdeps"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioNote.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNote.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNote.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNote.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNote.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNote.swiftdeps"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioNoteProcessingStatus.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNoteProcessingStatus.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNoteProcessingStatus.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNoteProcessingStatus.dia",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNoteProcessingStatus.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Widget Extension.build/Objects-normal/arm64/AudioNoteProcessingStatus.swiftdeps"
+  }
+}

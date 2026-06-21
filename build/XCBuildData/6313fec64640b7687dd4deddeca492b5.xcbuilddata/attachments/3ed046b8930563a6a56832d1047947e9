@@ -1,0 +1,279 @@
+{
+  "" : {
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/Voxora Watch-primary.dia",
+    "emit-module-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/Voxora Watch-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/Voxora Watch-primary-emit-module.dia",
+    "pch" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/Voxora Watch-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/Voxora Watch-primary.swiftdeps"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AIProvider.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AIProvider~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AppGroup.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppGroup~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AppPreferences.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AppPreferences~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioFileStore.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioFileStore~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioNote.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNote~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AudioNoteProcessingStatus.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AudioNoteProcessingStatus~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/AutomationProfile.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/AutomationProfile~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/DeepLinkRoute.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeepLinkRoute~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/DeletedAudioNote.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/DeletedAudioNote~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/GeneratedOutput.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedOutput~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/NoteTag.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTag~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/NoteTagAssignment.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/NoteTagAssignment~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/PromptKind.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptKind~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/PromptTemplate.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/PromptTemplate~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/RecordingSource.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingSource~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/RecordingState.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordingState~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/TranscriptionEngine.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TranscriptionEngine~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/TransferMetadata.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/TransferMetadata~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/VoxoraSchema.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraSchema~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Shared/WatchRecordingSnapshot.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchRecordingSnapshot~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/ContentView.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/FinalizedRecording.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/FinalizedRecording~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/RecordedChunk.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/RecordedChunk~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/VoxoraWatchApp.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/VoxoraWatchApp~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/WatchAudioEngineManager.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchAudioEngineManager~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/Watch/WatchConnectivityCoordinator.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/WatchConnectivityCoordinator~partial.swiftmodule"
+  },
+  "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/deonobrien/Documents/My Apps/Voxora/build/Voxora.build/Debug-iphonesimulator/Voxora Watch.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}
