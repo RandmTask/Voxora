@@ -6,6 +6,7 @@ import WatchConnectivity
 @Observable
 final class WatchConnectivityCoordinator: NSObject {
   var lastTransferDescription = "No transfer yet"
+  var primaryButtonBehavior: PrimaryButtonBehavior = .pause
   private var pendingCleanupURLs: [URL] = []
 
   func activate() {
@@ -16,6 +17,7 @@ final class WatchConnectivityCoordinator: NSObject {
     let session = WCSession.default
     session.delegate = self
     session.activate()
+    apply(context: session.receivedApplicationContext)
   }
 
   func transfer(recording: FinalizedRecording) {
@@ -31,6 +33,14 @@ final class WatchConnectivityCoordinator: NSObject {
     pendingCleanupURLs.append(recording.fileURL)
     lastTransferDescription = "Queued \(recording.fileURL.lastPathComponent)"
   }
+
+  private func apply(context: [String: Any]) {
+    guard let rawValue = context[AppPreferences.primaryButtonBehaviorKey] as? String,
+          let behavior = PrimaryButtonBehavior(rawValue: rawValue) else {
+      return
+    }
+    primaryButtonBehavior = behavior
+  }
 }
 
 extension WatchConnectivityCoordinator: WCSessionDelegate {
@@ -41,6 +51,15 @@ extension WatchConnectivityCoordinator: WCSessionDelegate {
   ) {}
 
   nonisolated func sessionReachabilityDidChange(_ session: WCSession) {}
+
+  nonisolated func session(
+    _ session: WCSession,
+    didReceiveApplicationContext applicationContext: [String: Any]
+  ) {
+    Task { @MainActor in
+      apply(context: applicationContext)
+    }
+  }
 
   nonisolated func session(
     _ session: WCSession,

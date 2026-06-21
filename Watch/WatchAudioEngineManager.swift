@@ -6,16 +6,19 @@ import WidgetKit
 @Observable
 final class WatchAudioEngineManager {
   private static let recordingSettings: [String: Any] = [
-    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-    AVSampleRateKey: 44_100,
+    AVFormatIDKey: Int(kAudioFormatLinearPCM),
+    AVSampleRateKey: 16_000,
     AVNumberOfChannelsKey: 1,
-    AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+    AVLinearPCMBitDepthKey: 16,
+    AVLinearPCMIsFloatKey: false,
+    AVLinearPCMIsBigEndianKey: false
   ]
 
   var recordingState: RecordingState = .idle
   var elapsedTime: TimeInterval = 0
   var chunkCount = 0
   var errorMessage: String?
+  var pausedAt: Date?
 
   private var recorder: AVAudioRecorder?
   private var recorderStartDate: Date?
@@ -35,13 +38,14 @@ final class WatchAudioEngineManager {
     }
 
     let outputURL = FileManager.default.temporaryDirectory
-      .appending(path: "\(noteID.uuidString)-chunk-\(chunks.count + 1).m4a")
+      .appending(path: "\(noteID.uuidString)-chunk-\(chunks.count + 1).caf")
 
     recorder = try AVAudioRecorder(url: outputURL, settings: Self.recordingSettings)
     recorder?.prepareToRecord()
     recorder?.record()
     recorderStartDate = .now
     recordingState = .recording
+    pausedAt = nil
     startTimer()
     persistSnapshot()
   }
@@ -57,6 +61,7 @@ final class WatchAudioEngineManager {
     self.recorder = nil
     recorderStartDate = nil
     recordingState = .paused
+    pausedAt = .now
     chunkCount = chunks.count
     stopTimer()
     persistSnapshot()
@@ -68,36 +73,35 @@ final class WatchAudioEngineManager {
     }
 
     guard !chunks.isEmpty, let sessionStartDate else {
-      throw NSError(domain: "VoiceSynapse", code: 1, userInfo: [NSLocalizedDescriptionKey: "No audio chunks were captured."])
+      throw NSError(domain: "Voxora", code: 1, userInfo: [NSLocalizedDescriptionKey: "No audio chunks were captured."])
     }
 
     recordingState = .finalizing
     persistSnapshot()
 
-    let outputURL = try AudioFileStore.destinationURL(noteID: noteID)
+    let outputURL = try AudioFileStore.destinationURL(noteID: noteID, fileExtension: "caf")
     var totalDuration: TimeInterval = 0
 
     if FileManager.default.fileExists(atPath: outputURL.path()) {
       try FileManager.default.removeItem(at: outputURL)
     }
 
-    let firstChunkFile = try AVAudioFile(forReading: chunks[0].url)
+    let firstChunk = try AVAudioFile(forReading: chunks[0].url)
     let destinationFile = try AVAudioFile(
       forWriting: outputURL,
-      settings: Self.recordingSettings,
-      commonFormat: firstChunkFile.processingFormat.commonFormat,
-      interleaved: firstChunkFile.processingFormat.isInterleaved
+      settings: firstChunk.fileFormat.settings
     )
 
     for chunk in chunks {
-      totalDuration += chunk.duration
       let sourceFile = try AVAudioFile(forReading: chunk.url)
+      totalDuration += Double(sourceFile.length) / sourceFile.processingFormat.sampleRate
       try append(sourceFile: sourceFile, to: destinationFile)
     }
 
     cleanupChunks()
     stopTimer()
     recordingState = .idle
+    pausedAt = nil
     elapsedTime = 0
     chunkCount = 0
     persistSnapshot()
@@ -120,7 +124,7 @@ final class WatchAudioEngineManager {
     }
 
     guard granted else {
-      throw NSError(domain: "VoiceSynapse", code: 4, userInfo: [NSLocalizedDescriptionKey: "Microphone permission was denied."])
+      throw NSError(domain: "Voxora", code: 4, userInfo: [NSLocalizedDescriptionKey: "Microphone permission was denied."])
     }
 
     try session.setCategory(.playAndRecord, mode: .default, options: [])
@@ -172,24 +176,23 @@ final class WatchAudioEngineManager {
 
   private func append(sourceFile: AVAudioFile, to destinationFile: AVAudioFile) throws {
     let format = sourceFile.processingFormat
-    let capacity = AVAudioFrameCount(max(1, min(sourceFile.length, 8_192)))
+    let capacity = AVAudioFrameCount(max(1, min(sourceFile.length, 16_384)))
 
     while sourceFile.framePosition < sourceFile.length {
       let remainingFrames = sourceFile.length - sourceFile.framePosition
       let frameCount = AVAudioFrameCount(min(Int64(capacity), remainingFrames))
       guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
         throw NSError(
-          domain: "VoiceSynapse",
+          domain: "Voxora",
           code: 5,
-          userInfo: [NSLocalizedDescriptionKey: "Unable to allocate audio buffer."]
+          userInfo: [NSLocalizedDescriptionKey: "Unable to allocate an audio merge buffer."]
         )
       }
-
       try sourceFile.read(into: buffer, frameCount: frameCount)
-      if buffer.frameLength == 0 {
-        break
-      }
+      guard buffer.frameLength > 0 else { break }
+      destinationFile.framePosition = destinationFile.length
       try destinationFile.write(from: buffer)
     }
   }
+
 }

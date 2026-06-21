@@ -1,33 +1,67 @@
 import SwiftUI
 
 struct SettingsView: View {
-  @Bindable var store: VoiceSynapseStore
+  @Bindable var store: VoxoraStore
   @Environment(\.dismiss) private var dismiss
-
   @State private var providerDrafts: [AIProvider: String] = [:]
 
   var body: some View {
     NavigationStack {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 18) {
-          promptSection
-          credentialsSection
+      Form {
+        Section("Recording") {
+          Picker("Big button while recording", selection: Binding(
+            get: { store.primaryButtonBehavior },
+            set: { store.primaryButtonBehavior = $0 }
+          )) {
+            ForEach(PrimaryButtonBehavior.allCases) { behavior in
+              Text(behavior.title).tag(behavior)
+            }
+          }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
+
+        Section("Apple Intelligence") {
+          Label("Runs privately on-device—no API key required.", systemImage: "apple.intelligence")
+          Button("Test Apple Intelligence") {
+            Task { await store.testProvider(.appleIntelligence) }
+          }
+          if let result = store.providerTestResults[.appleIntelligence] {
+            Text(result).font(.caption).foregroundStyle(.secondary)
+          }
+        }
+
+        Section("Cloud AI providers") {
+          ForEach(AIProvider.allCases.filter { $0.requiresAPIKey }) { provider in
+            VStack(alignment: .leading, spacing: 10) {
+              Text(provider.title).font(.headline)
+              SecureField("API key", text: Binding(
+                get: { providerDrafts[provider] ?? "" },
+                set: { providerDrafts[provider] = $0 }
+              ))
+              .textContentType(.password)
+
+              HStack {
+                Button("Save") {
+                  store.saveAPIKey(providerDrafts[provider] ?? "", for: provider)
+                }
+                Button("Test") {
+                  store.saveAPIKey(providerDrafts[provider] ?? "", for: provider)
+                  Task { await store.testProvider(provider) }
+                }
+              }
+              if let result = store.providerTestResults[provider] {
+                Text(result).font(.caption).foregroundStyle(.secondary)
+              }
+            }
+            .padding(.vertical, 6)
+          }
+        }
+
+        Section("Prompt templates") {
+          ForEach(store.prompts) { prompt in
+            PromptTemplateEditorCard(prompt: prompt)
+          }
+        }
       }
-      .background(
-        LinearGradient(
-          colors: [
-            Color(red: 0.1, green: 0.12, blue: 0.17),
-            Color(red: 0.16, green: 0.19, blue: 0.28),
-            Color(red: 0.34, green: 0.46, blue: 0.68)
-          ],
-          startPoint: .topLeading,
-          endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-      )
       .navigationTitle("Settings")
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
@@ -38,50 +72,9 @@ struct SettingsView: View {
         }
       }
       .task {
-        for provider in AIProvider.allCases {
+        for provider in AIProvider.allCases where provider.requiresAPIKey {
           providerDrafts[provider] = store.apiKey(for: provider)
         }
-      }
-    }
-  }
-
-  private var promptSection: some View {
-    VStack(alignment: .leading, spacing: 14) {
-      Text("Prompt Templates")
-        .font(.headline)
-
-      ForEach(store.prompts) { prompt in
-        PromptTemplateEditorCard(prompt: prompt)
-      }
-    }
-  }
-
-  private var credentialsSection: some View {
-    VStack(alignment: .leading, spacing: 14) {
-      Text("Provider Keys")
-        .font(.headline)
-
-      ForEach(AIProvider.allCases) { provider in
-        VStack(alignment: .leading, spacing: 10) {
-          Text(provider.title)
-            .font(.subheadline.weight(.semibold))
-
-          SecureField("API Key", text: Binding(
-            get: { providerDrafts[provider] ?? "" },
-            set: { providerDrafts[provider] = $0 }
-          ))
-          .textContentType(.password)
-          .padding(.horizontal, 14)
-          .padding(.vertical, 12)
-          .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-
-          Button("Save", systemImage: "key.horizontal") {
-            store.saveAPIKey(providerDrafts[provider] ?? "", for: provider)
-          }
-          .buttonStyle(.glass)
-        }
-        .padding(18)
-        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 24))
       }
     }
   }

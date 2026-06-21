@@ -3,14 +3,14 @@ import SwiftData
 
 @Model
 final class AudioNote {
-  @Attribute(.unique) var id: UUID
-  var timestamp: Date
-  var transcriptText: String
-  var transformedOutputText: String
-  var processingStatusRawValue: String
+  var id: UUID = UUID()
+  var timestamp: Date = Date.now
+  var transcriptText: String = ""
+  var transformedOutputText: String = ""
+  var processingStatusRawValue: String = AudioNoteProcessingStatus.idle.rawValue
   var tag: String?
-  var audioFileName: String
-  var duration: Double
+  var audioFileName: String = ""
+  var duration: Double = 0
 
   init(
     id: UUID = UUID(),

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="iconMask"><rect x="32" y="32" width="960" height="960" rx="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#iconMask)">
+    <image href="VoxoraIcon-Background.svg" width="1024" height="1024"/>
+    <image href="VoxoraIcon-Microphone.svg" width="1024" height="1024"/>
+    <image href="VoxoraIcon-Waveform.svg" width="1024" height="1024"/>
+    <image href="VoxoraIcon-Sparkle.svg" width="1024" height="1024"/>
+  </g>
+</svg>

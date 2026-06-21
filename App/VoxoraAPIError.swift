@@ -1,6 +1,6 @@
 import Foundation
 
-enum VoiceSynapseAPIError: LocalizedError {
+enum VoxoraAPIError: LocalizedError {
   case missingAPIKey(AIProvider)
   case unavailableProvider(AIProvider)
   case malformedResponse

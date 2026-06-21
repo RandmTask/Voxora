@@ -2,19 +2,19 @@ import SwiftUI
 import WidgetKit
 
 @main
-struct VoiceSynapseWidgetBundle: WidgetBundle {
+struct VoxoraWidgetBundle: WidgetBundle {
   var body: some Widget {
-    VoiceSynapseComplicationWidget()
+    VoxoraComplicationWidget()
   }
 }
 
-struct VoiceSynapseComplicationWidget: Widget {
-  private let kind = "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e.watchkitapp.widget-extension.record"
+struct VoxoraComplicationWidget: Widget {
+  private let kind = "com.swiftstudio.Voxora.watchkitapp.widget-extension.record"
 
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: kind, provider: VoiceSynapseTimelineProvider()) { entry in
-      VoiceSynapseComplicationEntryView(entry: entry)
-        .widgetURL(URL(string: "voicesynapse://record"))
+    StaticConfiguration(kind: kind, provider: VoxoraTimelineProvider()) { entry in
+      VoxoraComplicationEntryView(entry: entry)
+        .widgetURL(URL(string: "voxora://record"))
         .containerBackground(.clear, for: .widget)
     }
     .configurationDisplayName("Quick Record")
@@ -28,19 +28,19 @@ struct VoiceSynapseComplicationWidget: Widget {
   }
 }
 
-struct VoiceSynapseTimelineProvider: TimelineProvider {
-  func placeholder(in context: Context) -> VoiceSynapseEntry {
-    VoiceSynapseEntry(date: .now, snapshot: .current())
+struct VoxoraTimelineProvider: TimelineProvider {
+  func placeholder(in context: Context) -> VoxoraEntry {
+    VoxoraEntry(date: .now, snapshot: .current())
   }
 
-  func getSnapshot(in context: Context, completion: @escaping (VoiceSynapseEntry) -> Void) {
-    completion(VoiceSynapseEntry(date: .now, snapshot: .current()))
+  func getSnapshot(in context: Context, completion: @escaping (VoxoraEntry) -> Void) {
+    completion(VoxoraEntry(date: .now, snapshot: .current()))
   }
 
-  func getTimeline(in context: Context, completion: @escaping (Timeline<VoiceSynapseEntry>) -> Void) {
+  func getTimeline(in context: Context, completion: @escaping (Timeline<VoxoraEntry>) -> Void) {
     let currentDate = Date()
     let entries = stride(from: 0, to: 5, by: 1).map { offset in
-      VoiceSynapseEntry(
+      VoxoraEntry(
         date: Calendar.current.date(byAdding: .minute, value: offset * 15, to: currentDate) ?? currentDate,
         snapshot: .current()
       )
@@ -49,13 +49,13 @@ struct VoiceSynapseTimelineProvider: TimelineProvider {
   }
 }
 
-struct VoiceSynapseEntry: TimelineEntry {
+struct VoxoraEntry: TimelineEntry {
   var date: Date
   var snapshot: WatchRecordingSnapshot
 }
 
-struct VoiceSynapseComplicationEntryView: View {
-  var entry: VoiceSynapseEntry
+struct VoxoraComplicationEntryView: View {
+  var entry: VoxoraEntry
   @Environment(\.widgetFamily) private var family
 
   var body: some View {
@@ -76,7 +76,7 @@ struct VoiceSynapseComplicationEntryView: View {
       Text(inlineTitle)
     case .accessoryRectangular:
       VStack(alignment: .leading, spacing: 2) {
-        Text("VoiceSynapse")
+        Text("Voxora")
           .font(.caption2)
           .foregroundStyle(.secondary)
         Text(rectangularTitle)
@@ -90,13 +90,13 @@ struct VoiceSynapseComplicationEntryView: View {
   private var inlineTitle: String {
     switch entry.snapshot.state {
     case .recording:
-      "VoiceSynapse Recording"
+      "Voxora Recording"
     case .paused:
-      "VoiceSynapse Paused"
+      "Voxora Paused"
     case .finalizing:
-      "VoiceSynapse Stitching"
+      "Voxora Stitching"
     case .idle:
-      "VoiceSynapse Ready"
+      "Voxora Ready"
     }
   }
 

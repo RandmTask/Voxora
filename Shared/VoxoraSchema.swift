@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-enum VoiceSynapseSchema {
+enum VoxoraSchema {
   static let schema = Schema([
     AudioNote.self,
     PromptTemplate.self

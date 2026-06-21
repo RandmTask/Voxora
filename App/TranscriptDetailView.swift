@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TranscriptDetailView: View {
-  @Bindable var store: VoiceSynapseStore
+  @Bindable var store: VoxoraStore
   @Bindable var note: AudioNote
 
   var body: some View {

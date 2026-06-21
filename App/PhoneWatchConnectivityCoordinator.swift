@@ -3,9 +3,9 @@ import WatchConnectivity
 
 @MainActor
 final class PhoneWatchConnectivityCoordinator: NSObject {
-  private weak var store: VoiceSynapseStore?
+  private weak var store: VoxoraStore?
 
-  init(store: VoiceSynapseStore) {
+  init(store: VoxoraStore) {
     self.store = store
     super.init()
   }
@@ -18,6 +18,15 @@ final class PhoneWatchConnectivityCoordinator: NSObject {
     let session = WCSession.default
     session.delegate = self
     session.activate()
+    sendPreferences()
+  }
+
+  func sendPreferences() {
+    let behavior = UserDefaults.standard.string(forKey: AppPreferences.primaryButtonBehaviorKey)
+      ?? PrimaryButtonBehavior.pause.rawValue
+    try? WCSession.default.updateApplicationContext([
+      AppPreferences.primaryButtonBehaviorKey: behavior
+    ])
   }
 }
 
@@ -26,11 +35,26 @@ extension PhoneWatchConnectivityCoordinator: WCSessionDelegate {
     _ session: WCSession,
     didReceive file: WCSessionFile
   ) {
-    let fileURL = file.fileURL
+    let incomingURL = file.fileURL
     let metadata = file.metadata ?? [:]
 
-    Task { @MainActor [weak self] in
-      self?.store?.ingestTransferredAudio(fileURL: fileURL, metadata: metadata)
+    // WatchConnectivity owns the incoming URL only for the duration of this
+    // callback. Stage it synchronously before hopping to the main actor.
+    do {
+      let noteID = UUID(uuidString: metadata[TransferMetadata.noteID] as? String ?? "") ?? UUID()
+      let fileExtension = metadata[TransferMetadata.fileExtension] as? String ?? incomingURL.pathExtension
+      let stagedURL = try AudioFileStore.copyAudioFile(
+        from: incomingURL,
+        noteID: noteID,
+        fileExtension: fileExtension
+      )
+      Task { @MainActor [weak self] in
+        self?.store?.ingestStagedAudio(fileURL: stagedURL, metadata: metadata)
+      }
+    } catch {
+      Task { @MainActor [weak self] in
+        self?.store?.errorMessage = "Watch transfer could not be saved: \(error.localizedDescription)"
+      }
     }
   }
 

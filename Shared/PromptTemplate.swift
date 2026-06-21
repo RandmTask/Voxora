@@ -3,10 +3,10 @@ import SwiftData
 
 @Model
 final class PromptTemplate {
-  @Attribute(.unique) var kindRawValue: String
-  var title: String
-  var promptBody: String
-  var preferredProviderRawValue: String
+  var kindRawValue: String = PromptKind.custom.rawValue
+  var title: String = ""
+  var promptBody: String = ""
+  var preferredProviderRawValue: String = AIProvider.appleIntelligence.rawValue
 
   init(
     kind: PromptKind,

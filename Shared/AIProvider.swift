@@ -29,4 +29,8 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
   var keychainKey: String {
     "provider.\(rawValue).apiKey"
   }
+
+  var requiresAPIKey: Bool {
+    self != .appleIntelligence
+  }
 }

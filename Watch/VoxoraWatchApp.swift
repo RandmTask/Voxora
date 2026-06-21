@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct VoiceSynapseWatchApp: App {
+struct VoxoraWatchApp: App {
   private let audioEngineManager = WatchAudioEngineManager()
   private let connectivityCoordinator = WatchConnectivityCoordinator()
 

@@ -1,20 +1,23 @@
 import SwiftData
-import SwiftUI
+import SwiftUI  
 
 @main
-struct VoiceSynapseApp: App {
+struct VoxoraApp: App {
   private let container: ModelContainer
-  private let store: VoiceSynapseStore
+  private let store: VoxoraStore
   private let watchConnectivityCoordinator: PhoneWatchConnectivityCoordinator
 
   init() {
     do {
-      container = try VoiceSynapsePersistence.makeModelContainer()
+      container = try VoxoraPersistence.makeModelContainer()
     } catch {
       fatalError("Unable to create model container: \(error.localizedDescription)")
     }
-    store = VoiceSynapseStore(container: container)
+    store = VoxoraStore(container: container)
     watchConnectivityCoordinator = PhoneWatchConnectivityCoordinator(store: store)
+    store.preferenceSync = { [watchConnectivityCoordinator] in
+      watchConnectivityCoordinator.sendPreferences()
+    }
   }
 
   var body: some Scene {

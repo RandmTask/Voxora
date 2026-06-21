@@ -6,7 +6,7 @@ actor SpeechTranscriber {
     let status = await requestAuthorizationIfNeeded()
     guard status == .authorized else {
       throw NSError(
-        domain: "VoiceSynapseSpeech",
+        domain: "VoxoraSpeech",
         code: 1,
         userInfo: [NSLocalizedDescriptionKey: "Speech recognition permission was denied."]
       )
@@ -14,7 +14,7 @@ actor SpeechTranscriber {
 
     guard let recognizer = SFSpeechRecognizer() else {
       throw NSError(
-        domain: "VoiceSynapseSpeech",
+        domain: "VoxoraSpeech",
         code: 2,
         userInfo: [NSLocalizedDescriptionKey: "Speech recognition is unavailable for the current locale."]
       )

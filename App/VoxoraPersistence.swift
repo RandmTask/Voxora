@@ -1,13 +1,13 @@
 import SwiftData
 
-enum VoiceSynapsePersistence {
+enum VoxoraPersistence {
   static func makeModelContainer() throws -> ModelContainer {
     let configuration = ModelConfiguration(
-      "VoiceSynapse",
-      schema: VoiceSynapseSchema.schema,
+      "Voxora",
+      schema: VoxoraSchema.schema,
       groupContainer: .identifier(AppGroup.id),
       cloudKitDatabase: .automatic
     )
-    return try ModelContainer(for: VoiceSynapseSchema.schema, configurations: [configuration])
+    return try ModelContainer(for: VoxoraSchema.schema, configurations: [configuration])
   }
 }

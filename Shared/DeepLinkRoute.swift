@@ -5,7 +5,7 @@ enum DeepLinkRoute: Equatable {
   case note(UUID)
 
   init?(url: URL) {
-    guard url.scheme == "voicesynapse" else {
+    guard url.scheme == "voxora" else {
       return nil
     }
 

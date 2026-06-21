@@ -5,12 +5,18 @@ actor AIProcessingCoordinator {
   private let geminiClient = GeminiClient()
   private let deepSeekClient = DeepSeekClient()
   private let appleIntelligenceClient = AppleIntelligenceClient()
+  private let openAIClient = OpenAIClient()
+  private let anthropicClient = AnthropicClient()
 
   init(keychainStore: KeychainStore) {
     self.keychainStore = keychainStore
   }
 
-  func transform(text: String, using template: PromptTemplate) async throws -> String {
+  func transform(
+    text: String,
+    using template: PromptTemplate,
+    provider: AIProvider? = nil
+  ) async throws -> String {
     let prompt = """
     \(template.promptBody)
 
@@ -18,33 +24,15 @@ actor AIProcessingCoordinator {
     \(text)
     """
 
-    for provider in providerOrder(preferred: template.preferredProvider) {
-      do {
-        return try await generate(prompt: prompt, provider: provider)
-      } catch VoiceSynapseAPIError.missingAPIKey {
-        continue
-      } catch VoiceSynapseAPIError.unavailableProvider {
-        continue
-      } catch {
-        continue
-      }
-    }
-
-    throw VoiceSynapseAPIError.unavailableProvider(template.preferredProvider)
+    return try await generate(prompt: prompt, provider: provider ?? template.preferredProvider)
   }
 
-  private func providerOrder(preferred: AIProvider) -> [AIProvider] {
-    let baseOrder: [AIProvider] = [
-      preferred,
-      .gemini,
-      .deepSeek,
-      .appleIntelligence,
-      .openAI,
-      .anthropic
-    ]
-
-    var seen: Set<AIProvider> = []
-    return baseOrder.filter { seen.insert($0).inserted }
+  func test(provider: AIProvider) async throws -> String {
+    let output = try await generate(
+      prompt: "Reply with exactly: Voxora connection successful",
+      provider: provider
+    )
+    return output.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   private func generate(prompt: String, provider: AIProvider) async throws -> String {
@@ -61,8 +49,16 @@ actor AIProcessingCoordinator {
         prompt: prompt,
         apiKey: keychainStore.value(for: provider.keychainKey)
       )
-    case .openAI, .anthropic:
-      throw VoiceSynapseAPIError.unavailableProvider(provider)
+    case .openAI:
+      return try await openAIClient.generate(
+        prompt: prompt,
+        apiKey: keychainStore.value(for: provider.keychainKey)
+      )
+    case .anthropic:
+      return try await anthropicClient.generate(
+        prompt: prompt,
+        apiKey: keychainStore.value(for: provider.keychainKey)
+      )
     }
   }
 }

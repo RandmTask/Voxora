@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 final class KeychainStore {
-  private let service = "VoiceSynapse"
+  private let service = "Voxora"
 
   func value(for key: String) -> String {
     let query: [String: Any] = [

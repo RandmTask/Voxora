@@ -3,10 +3,10 @@ import Foundation
 struct GeminiClient {
   func generate(prompt: String, apiKey: String) async throws -> String {
     guard !apiKey.isEmpty else {
-      throw VoiceSynapseAPIError.missingAPIKey(.gemini)
+      throw VoxoraAPIError.missingAPIKey(.gemini)
     }
 
-    let endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=\(apiKey)"
+    let endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
     guard let url = URL(string: endpoint) else {
       throw URLError(.badURL)
     }
@@ -14,6 +14,7 @@ struct GeminiClient {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
     request.httpBody = try JSONEncoder().encode(
       GeminiGenerateRequest(
         contents: [
@@ -35,7 +36,7 @@ struct GeminiClient {
       .joined(separator: "\n")
 
     guard !text.isEmpty else {
-      throw VoiceSynapseAPIError.malformedResponse
+      throw VoxoraAPIError.malformedResponse
     }
 
     return text

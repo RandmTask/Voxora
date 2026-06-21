@@ -3,7 +3,7 @@
     "Debug": "debug",
     "Release": "release"
   },
-  "name": "VoiceSynapse",
+  "name": "Voxora",
   "options": {
     "deploymentTarget": {
       "iOS": "26.0",
@@ -15,18 +15,86 @@
   "settings": {
     "CODE_SIGN_IDENTITY": "-"
   },
+  "schemes": {
+    "Voxora": {
+      "build": {
+        "targets": {
+          "Voxora": [
+            "all"
+          ]
+        }
+      },
+      "run": {
+        "config": "Debug"
+      },
+      "test": {
+        "config": "Debug"
+      },
+      "profile": {
+        "config": "Release"
+      },
+      "analyze": {
+        "config": "Debug"
+      },
+      "archive": {
+        "config": "Release"
+      }
+    },
+    "Voxora Watch": {
+      "build": {
+        "targets": {
+          "Voxora Watch": [
+            "all"
+          ]
+        }
+      },
+      "run": {
+        "config": "Debug"
+      },
+      "profile": {
+        "config": "Release"
+      },
+      "analyze": {
+        "config": "Debug"
+      },
+      "archive": {
+        "config": "Release"
+      }
+    },
+    "Voxora Widget Extension": {
+      "build": {
+        "targets": {
+          "Voxora Widget Extension": [
+            "all"
+          ]
+        }
+      },
+      "run": {
+        "config": "Debug"
+      },
+      "profile": {
+        "config": "Release"
+      },
+      "analyze": {
+        "config": "Debug"
+      },
+      "archive": {
+        "config": "Release"
+      }
+    }
+  },
   "targets": {
-    "VoiceSynapse": {
+    "Voxora": {
       "dependencies": [
         {
           "embed": true,
-          "target": "VoiceSynapse Watch"
+          "target": "Voxora Watch"
         }
       ],
       "info": {
         "path": "App\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "VoiceSynapse",
+          "CFBundleDisplayName": "Voxora",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
@@ -34,7 +102,7 @@
             "mailto"
           ],
           "NSSupportsLiveActivities": false,
-          "NSSpeechRecognitionUsageDescription": "VoiceSynapse transcribes transferred recordings on iPhone so you can turn them into summaries, checklists, and follow-up outputs.",
+          "NSSpeechRecognitionUsageDescription": "Voxora transcribes transferred recordings on iPhone so you can turn them into summaries, checklists, and follow-up outputs.",
           "UILaunchScreen": {},
           "UIBackgroundModes": [
             "remote-notification"
@@ -45,12 +113,12 @@
             "UIInterfaceOrientationLandscapeLeft",
             "UIInterfaceOrientationLandscapeRight"
           ],
-          "NSMicrophoneUsageDescription": "VoiceSynapse records your voice notes on Apple Watch and iPhone so they can be transcribed and transformed into structured text.",
+          "NSMicrophoneUsageDescription": "Voxora records your voice notes on Apple Watch and iPhone so they can be transcribed and transformed into structured text.",
           "CFBundleURLTypes": [
             {
-              "CFBundleURLName": "VoiceSynapse",
+              "CFBundleURLName": "Voxora",
               "CFBundleURLSchemes": [
-                "voicesynapse"
+                "voxora"
               ]
             }
           ]
@@ -60,16 +128,16 @@
         "path": "App/App.entitlements",
         "properties": {
           "com.apple.developer.icloud-container-identifiers": [
-            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "iCloud.com.swiftstudio.Voxora"
           ],
           "com.apple.developer.icloud-services": [
             "CloudKit"
           ],
           "com.apple.developer.ubiquity-container-identifiers": [
-            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "iCloud.com.swiftstudio.Voxora"
           ],
           "com.apple.security.application-groups": [
-            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "group.com.swiftstudio.Voxora"
           ]
         }
       },
@@ -79,7 +147,7 @@
         "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
         "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0",
-        "PRODUCT_BUNDLE_IDENTIFIER": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.swiftstudio.Voxora",
         "PRODUCT_NAME": "$(TARGET_NAME)",
         "SWIFT_VERSION": "5.0",
         "TARGETED_DEVICE_FAMILY": "1"
@@ -94,28 +162,28 @@
       ],
       "type": "application"
     },
-    "VoiceSynapse Watch": {
+    "Voxora Watch": {
       "dependencies": [
         {
           "embed": true,
-          "target": "VoiceSynapse Widget Extension"
+          "target": "Voxora Widget Extension"
         }
       ],
       "info": {
         "path": "Watch\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "VoiceSynapse",
+          "CFBundleDisplayName": "Voxora",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
-          "NSMicrophoneUsageDescription": "VoiceSynapse records chunked audio on Apple Watch so you can pause, resume, and finish a note before it syncs to iPhone.",
+          "NSMicrophoneUsageDescription": "Voxora records chunked audio on Apple Watch so you can pause, resume, and finish a note before it syncs to iPhone.",
           "WKApplication": true,
-          "WKCompanionAppBundleIdentifier": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e",
+          "WKCompanionAppBundleIdentifier": "com.swiftstudio.Voxora",
           "CFBundleURLTypes": [
             {
-              "CFBundleURLName": "VoiceSynapse",
+              "CFBundleURLName": "Voxora",
               "CFBundleURLSchemes": [
-                "voicesynapse"
+                "voxora"
               ]
             }
           ]
@@ -125,16 +193,16 @@
         "path": "Watch/Watch.entitlements",
         "properties": {
           "com.apple.developer.icloud-container-identifiers": [
-            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "iCloud.com.swiftstudio.Voxora"
           ],
           "com.apple.developer.icloud-services": [
             "CloudKit"
           ],
           "com.apple.developer.ubiquity-container-identifiers": [
-            "iCloud.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "iCloud.com.swiftstudio.Voxora"
           ],
           "com.apple.security.application-groups": [
-            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "group.com.swiftstudio.Voxora"
           ]
         }
       },
@@ -144,7 +212,7 @@
         "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
         "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0",
-        "PRODUCT_BUNDLE_IDENTIFIER": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e.watchkitapp",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.swiftstudio.Voxora.watchkitapp",
         "PRODUCT_NAME": "$(TARGET_NAME)",
         "SWIFT_VERSION": "5.0"
       },
@@ -161,11 +229,11 @@
       ],
       "type": "application"
     },
-    "VoiceSynapse Widget Extension": {
+    "Voxora Widget Extension": {
       "info": {
         "path": "Widget Extension\/Info.plist",
         "properties": {
-          "CFBundleDisplayName": "VoiceSynapse Widget Extension",
+          "CFBundleDisplayName": "Voxora Widget Extension",
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
@@ -178,7 +246,7 @@
         "path": "Widget Extension/Widget Extension.entitlements",
         "properties": {
           "com.apple.security.application-groups": [
-            "group.app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e"
+            "group.com.swiftstudio.Voxora"
           ]
         }
       },
@@ -187,7 +255,7 @@
         "APPLICATION_EXTENSION_API_ONLY": "YES",
         "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0",
-        "PRODUCT_BUNDLE_IDENTIFIER": "app.bitrig.new.bfc9a3b4-4284-492c-86c4-550c634ba81e.watchkitapp.widget-extension",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.swiftstudio.Voxora.watchkitapp.widget-extension",
         "PRODUCT_NAME": "$(TARGET_NAME)",
         "SKIP_INSTALL": "YES",
         "SWIFT_VERSION": "5.0"

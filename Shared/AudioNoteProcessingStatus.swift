@@ -5,6 +5,9 @@ enum AudioNoteProcessingStatus: String, Codable, CaseIterable, Identifiable {
   case uploading
   case transcribing
   case ready
+  case tooShort
+  case empty
+  case failed
 
   var id: String {
     rawValue
@@ -20,6 +23,12 @@ enum AudioNoteProcessingStatus: String, Codable, CaseIterable, Identifiable {
       "Transcribing"
     case .ready:
       "Ready"
+    case .tooShort:
+      "Too short"
+    case .empty:
+      "Empty"
+    case .failed:
+      "Failed"
     }
   }
 }

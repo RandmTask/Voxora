@@ -3,7 +3,7 @@ import Foundation
 struct DeepSeekClient {
   func generate(prompt: String, apiKey: String) async throws -> String {
     guard !apiKey.isEmpty else {
-      throw VoiceSynapseAPIError.missingAPIKey(.deepSeek)
+      throw VoxoraAPIError.missingAPIKey(.deepSeek)
     }
 
     guard let url = URL(string: "https://api.deepseek.com/chat/completions") else {
@@ -32,7 +32,7 @@ struct DeepSeekClient {
     let decoded = try JSONDecoder().decode(DeepSeekResponse.self, from: data)
     guard let text = decoded.choices.first?.message.content,
           !text.isEmpty else {
-      throw VoiceSynapseAPIError.malformedResponse
+      throw VoxoraAPIError.malformedResponse
     }
 
     return text
