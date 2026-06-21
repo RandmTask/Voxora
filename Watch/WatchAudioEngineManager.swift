@@ -27,7 +27,15 @@ final class WatchAudioEngineManager {
   private var chunks: [RecordedChunk] = []
   private var timer: Timer?
 
+  init() {
+    restorePersistedSession()
+  }
+
   func startOrResumeRecording() async throws {
+    guard recordingState != .recording && recordingState != .finalizing else {
+      return
+    }
+
     try await configureAudioSession()
 
     if recordingState == .idle {
@@ -37,8 +45,8 @@ final class WatchAudioEngineManager {
       elapsedTime = 0
     }
 
-    let outputURL = FileManager.default.temporaryDirectory
-      .appending(path: "\(noteID.uuidString)-chunk-\(chunks.count + 1).caf")
+    let outputURL = try AudioFileStore.directoryURL()
+      .appending(path: "\(noteID.uuidString)-chunk-\(chunks.count + 1)-\(UUID().uuidString).caf")
 
     recorder = try AVAudioRecorder(url: outputURL, settings: Self.recordingSettings)
     recorder?.prepareToRecord()
@@ -55,8 +63,8 @@ final class WatchAudioEngineManager {
       return
     }
 
-    recorder.stop()
     let duration = recorder.currentTime
+    recorder.stop()
     chunks.append(RecordedChunk(url: recorder.url, duration: duration))
     self.recorder = nil
     recorderStartDate = nil
@@ -72,7 +80,7 @@ final class WatchAudioEngineManager {
       pauseRecording()
     }
 
-    guard !chunks.isEmpty, let sessionStartDate else {
+    guard !chunks.isEmpty, let recordingStartedAt = sessionStartDate else {
       throw NSError(domain: "Voxora", code: 1, userInfo: [NSLocalizedDescriptionKey: "No audio chunks were captured."])
     }
 
@@ -104,11 +112,12 @@ final class WatchAudioEngineManager {
     pausedAt = nil
     elapsedTime = 0
     chunkCount = 0
+    sessionStartDate = nil
     persistSnapshot()
 
     return FinalizedRecording(
       noteID: noteID,
-      createdAt: sessionStartDate,
+      createdAt: recordingStartedAt,
       duration: totalDuration,
       tag: "Watch Capture",
       fileURL: outputURL
@@ -171,7 +180,56 @@ final class WatchAudioEngineManager {
     defaults?.set(recordingState.rawValue, forKey: AppPreferences.recordingStateKey)
     defaults?.set(sessionStartDate, forKey: AppPreferences.recordingStartDateKey)
     defaults?.set(chunkCount, forKey: AppPreferences.recordingChunkCountKey)
+    defaults?.set(
+      recordingState == .idle ? nil : noteID.uuidString,
+      forKey: AppPreferences.recordingNoteIDKey
+    )
     WidgetCenter.shared.reloadAllTimelines()
+  }
+
+  private func restorePersistedSession() {
+    let defaults = UserDefaults(suiteName: AppGroup.id)
+    guard let noteIDString = defaults?.string(forKey: AppPreferences.recordingNoteIDKey),
+          let restoredNoteID = UUID(uuidString: noteIDString) else {
+      return
+    }
+
+    let rawState = defaults?.string(forKey: AppPreferences.recordingStateKey)
+      ?? RecordingState.idle.rawValue
+    let persistedState = RecordingState(rawValue: rawState) ?? .idle
+    guard persistedState == .recording || persistedState == .paused else {
+      return
+    }
+
+    do {
+      let directory = try AudioFileStore.directoryURL()
+      let prefix = "\(restoredNoteID.uuidString)-chunk-"
+      let urls = try FileManager.default.contentsOfDirectory(
+        at: directory,
+        includingPropertiesForKeys: nil
+      )
+      .filter { $0.lastPathComponent.hasPrefix(prefix) && $0.pathExtension == "caf" }
+      .sorted { $0.lastPathComponent < $1.lastPathComponent }
+
+      noteID = restoredNoteID
+      sessionStartDate = defaults?.object(
+        forKey: AppPreferences.recordingStartDateKey
+      ) as? Date
+      chunks = try urls.map { url in
+        let file = try AVAudioFile(forReading: url)
+        let duration = Double(file.length) / file.processingFormat.sampleRate
+        return RecordedChunk(url: url, duration: duration)
+      }
+      chunkCount = chunks.count
+      elapsedTime = chunks.reduce(0) { $0 + $1.duration }
+      recordingState = chunks.isEmpty ? .idle : .paused
+      pausedAt = recordingState == .paused ? Date() : nil
+      persistSnapshot()
+    } catch {
+      errorMessage = "The previous recording session could not be restored."
+      recordingState = .idle
+      persistSnapshot()
+    }
   }
 
   private func append(sourceFile: AVAudioFile, to destinationFile: AVAudioFile) throws {

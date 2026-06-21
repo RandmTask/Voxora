@@ -3,12 +3,13 @@ import SwiftUI
 
 struct MailComposerView: UIViewControllerRepresentable {
   var draft: EmailDraft
+  var onFinish: () -> Void
 
   final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
-    @Binding private var isPresented: Bool
+    private let onFinish: () -> Void
 
-    init(isPresented: Binding<Bool>) {
-      _isPresented = isPresented
+    init(onFinish: @escaping () -> Void) {
+      self.onFinish = onFinish
     }
 
     func mailComposeController(
@@ -16,19 +17,20 @@ struct MailComposerView: UIViewControllerRepresentable {
       didFinishWith result: MFMailComposeResult,
       error: Error?
     ) {
-      isPresented = false
+      controller.dismiss(animated: true)
+      onFinish()
     }
   }
 
-  @Binding var isPresented: Bool
-
   func makeCoordinator() -> Coordinator {
-    Coordinator(isPresented: $isPresented)
+    Coordinator(onFinish: onFinish)
   }
 
   func makeUIViewController(context: Context) -> MFMailComposeViewController {
     let controller = MFMailComposeViewController()
     controller.mailComposeDelegate = context.coordinator
+    controller.setToRecipients(draft.recipients)
+    controller.setCcRecipients(draft.ccRecipients)
     controller.setSubject(draft.subject)
     controller.setMessageBody(draft.body, isHTML: false)
     return controller

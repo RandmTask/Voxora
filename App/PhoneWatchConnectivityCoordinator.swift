@@ -22,10 +22,12 @@ final class PhoneWatchConnectivityCoordinator: NSObject {
   }
 
   func sendPreferences() {
-    let behavior = UserDefaults.standard.string(forKey: AppPreferences.primaryButtonBehaviorKey)
+    let behavior = UserDefaults.standard.string(
+      forKey: AppPreferences.watchPrimaryButtonBehaviorKey
+    )
       ?? PrimaryButtonBehavior.pause.rawValue
     try? WCSession.default.updateApplicationContext([
-      AppPreferences.primaryButtonBehaviorKey: behavior
+      AppPreferences.watchPrimaryButtonBehaviorKey: behavior
     ])
   }
 }

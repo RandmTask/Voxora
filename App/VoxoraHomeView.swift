@@ -5,38 +5,78 @@ struct VoxoraHomeView: View {
   @State private var recorder = PhoneAudioRecorder()
   @State private var playback = AudioPlaybackController()
   @State private var isShowingSettings = false
-  @State private var isPresentingMail = false
   @State private var actionNote: AudioNote?
   @State private var pendingDeleteNote: AudioNote?
+  @State private var selectedNote: AudioNote?
+  @State private var hideTooShort = true
+  @State private var hideEmpty = true
+  @State private var hideFailed = true
+  @State private var showArchived = false
 
   var body: some View {
     NavigationStack {
       ZStack {
         Color(red: 0.055, green: 0.06, blue: 0.1).ignoresSafeArea()
 
-        ScrollView {
-          VStack(spacing: 28) {
-            recorderControl
+        List {
+          recorderControl
+            .listRowInsets(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
 
-            if store.notes.isEmpty {
-              ContentUnavailableView(
-                "No voice notes yet",
-                systemImage: "waveform",
-                description: Text("Record here or finish a recording on Apple Watch.")
-              )
-              .foregroundStyle(.secondary)
-              .padding(.top, 24)
-            } else {
-              notesSection
+          if store.notes.isEmpty {
+            ContentUnavailableView(
+              "No voice notes yet",
+              systemImage: "waveform",
+              description: Text("Record here or finish a recording on Apple Watch.")
+            )
+            .foregroundStyle(.secondary)
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+          } else if filteredNotes.isEmpty {
+            ContentUnavailableView(
+              "No visible notes",
+              systemImage: "line.3.horizontal.decrease.circle",
+              description: Text("Change the filters to show hidden recordings.")
+            )
+              .listRowBackground(Color.clear)
+              .listRowSeparator(.hidden)
+          } else {
+            HStack {
+              Text("Recent notes")
+                .font(.title3.weight(.bold))
+              Spacer()
+              if store.isProcessing {
+                ProgressView()
+              }
+            }
+            .padding(.top, 8)
+            .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 4, trailing: 20))
+            .listRowBackground(Color(red: 0.055, green: 0.06, blue: 0.1).opacity(0.96))
+            .listRowSeparator(.hidden)
+
+            ForEach(filteredNotes) { note in
+              noteRow(note)
             }
           }
-          .padding(.horizontal, 20)
-          .padding(.bottom, 32)
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
       }
       .navigationTitle("Voxora")
       .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+          Menu {
+            Toggle("Hide too short", isOn: $hideTooShort)
+            Toggle("Hide empty", isOn: $hideEmpty)
+            Toggle("Hide failed", isOn: $hideFailed)
+            Toggle("Show archived", isOn: $showArchived)
+          } label: {
+            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+          }
+          .labelStyle(.iconOnly)
+          .buttonStyle(.glass)
+
           Button("Settings", systemImage: "slider.horizontal.3") {
             isShowingSettings = true
           }
@@ -46,6 +86,9 @@ struct VoxoraHomeView: View {
       }
       .sheet(isPresented: $isShowingSettings) {
         SettingsView(store: store)
+      }
+      .navigationDestination(item: $selectedNote) { note in
+        TranscriptDetailView(store: store, note: note)
       }
       .sheet(item: $actionNote) { note in
         NoteActionsSheet(
@@ -57,11 +100,6 @@ struct VoxoraHomeView: View {
             pendingDeleteNote = note
           }
         )
-      }
-      .sheet(isPresented: $isPresentingMail, onDismiss: store.dismissEmailDraft) {
-        if let draft = store.pendingEmailDraft {
-          MailComposerView(draft: draft, isPresented: $isPresentingMail)
-        }
       }
       .alert("Voxora", isPresented: Binding(
         get: { store.errorMessage != nil || recorder.errorMessage != nil },
@@ -99,36 +137,60 @@ struct VoxoraHomeView: View {
     .preferredColorScheme(.dark)
   }
 
+  private var filteredNotes: [AudioNote] {
+    store.notes.filter { note in
+      includes(note)
+    }
+    .sorted {
+      if $0.isFavorite != $1.isFavorite {
+        return $0.isFavorite && !$1.isFavorite
+      }
+      return $0.timestamp > $1.timestamp
+    }
+  }
+
+  private var filtersAreActive: Bool {
+    hideTooShort || hideEmpty || hideFailed || !showArchived
+  }
+
+  private func includes(_ note: AudioNote) -> Bool {
+    if hideTooShort && note.processingStatus == .tooShort { return false }
+    if hideEmpty && note.processingStatus == .empty { return false }
+    if hideFailed && note.processingStatus == .failed { return false }
+    if !showArchived && note.archivedAt != nil { return false }
+    return true
+  }
+
   private var recorderControl: some View {
     VStack(spacing: 18) {
       Button(action: primaryRecorderAction) {
-        ZStack {
-          Circle()
-            .stroke(Color.white.opacity(0.08), lineWidth: 18)
-          Circle()
-            .trim(from: 0, to: 0.985)
-            .stroke(
-              recorderColor,
-              style: StrokeStyle(lineWidth: 5, lineCap: .round, dash: [2, 7])
-            )
-            .rotationEffect(.degrees(-90))
-
-          VStack(spacing: 8) {
+        VStack(spacing: 12) {
+          HStack(spacing: 10) {
             Image(systemName: recorderIcon)
-              .font(.system(size: 34, weight: .bold))
+              .font(.system(size: 30, weight: .semibold))
             Text(recorderTitle)
-              .font(.system(size: 28, weight: .black, design: .rounded))
+              .font(.system(size: 26, weight: .bold, design: .rounded))
+          }
+
+          if recorder.state != .idle {
+            Text(formattedDuration(recorder.elapsedTime))
+              .font(.title2.monospacedDigit().weight(.semibold))
+          }
+
+          if !recorderSubtitle.isEmpty {
             Text(recorderSubtitle)
               .font(.subheadline)
               .foregroundStyle(.secondary)
-            if recorder.state != .idle {
-              Text(formattedDuration(recorder.elapsedTime))
-                .font(.title3.monospacedDigit().weight(.semibold))
-            }
           }
         }
-        .frame(width: 285, height: 285)
-        .contentShape(Circle())
+        .frame(maxWidth: .infinity)
+        .frame(height: 190)
+        .background {
+          RoundedRectangle(cornerRadius: 30, style: .continuous)
+            .fill(recorderColor.opacity(0.14))
+            .stroke(recorderColor.opacity(0.75), lineWidth: 2)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
       }
       .buttonStyle(.plain)
 
@@ -148,51 +210,61 @@ struct VoxoraHomeView: View {
     .padding(.top, 20)
   }
 
-  private var notesSection: some View {
-    LazyVStack(alignment: .leading, spacing: 12) {
-      HStack {
-        Text("Recent notes")
-          .font(.title3.weight(.bold))
-        Spacer()
-        if store.isProcessing {
-          ProgressView()
-        }
+  private func noteRow(_ note: AudioNote) -> some View {
+    Button {
+      selectedNote = note
+    } label: {
+      AudioNoteCard(note: note, isPlaying: playback.playingNoteID == note.id)
+    }
+    .buttonStyle(.plain)
+    .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
+    .listRowBackground(Color.clear)
+    .listRowSeparator(.hidden)
+    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+      Button("Delete", systemImage: "trash", role: .destructive) {
+        requestDelete(note)
       }
+      Button("Generate", systemImage: "sparkles") {
+        actionNote = note
+      }
+      .tint(.purple)
+      Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
+        store.toggleFavorite(note)
+      }
+      .tint(.yellow)
+    }
+    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+      Button(
+        playback.playingNoteID == note.id ? "Stop" : "Play",
+        systemImage: playback.playingNoteID == note.id ? "stop.fill" : "play.fill"
+      ) {
+        playback.toggle(note: note)
+      }
+      .tint(.cyan)
 
-      ForEach(store.notes) { note in
-        NavigationLink {
-          TranscriptDetailView(store: store, note: note)
-        } label: {
-          AudioNoteCard(note: note, isPlaying: playback.playingNoteID == note.id)
-        }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-          LongPressGesture(minimumDuration: 0.45)
-            .onEnded { _ in actionNote = note }
-        )
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-          Button("Delete", systemImage: "trash", role: .destructive) {
-            pendingDeleteNote = note
-          }
-          Button("Generate", systemImage: "sparkles") {
-            actionNote = note
-          }
-          .tint(.purple)
-        }
-        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-          Button(
-            playback.playingNoteID == note.id ? "Stop" : "Play",
-            systemImage: playback.playingNoteID == note.id ? "stop.fill" : "play.fill"
-          ) {
-            playback.toggle(note: note)
-          }
-          .tint(.cyan)
-
-          Button("Retranscribe", systemImage: "waveform.badge.mic") {
-            Task { await store.retry(note) }
-          }
-          .tint(.indigo)
-        }
+      Button("Retranscribe", systemImage: "waveform.badge.mic") {
+        Task { await store.retry(note) }
+      }
+      .tint(.indigo)
+    }
+    .contextMenu {
+      Button(
+        playback.playingNoteID == note.id ? "Stop Audio" : "Play Audio",
+        systemImage: playback.playingNoteID == note.id ? "stop.fill" : "play.fill"
+      ) {
+        playback.toggle(note: note)
+      }
+      Button("Retranscribe", systemImage: "waveform.badge.mic") {
+        Task { await store.retry(note) }
+      }
+      Button("Generate", systemImage: "sparkles") {
+        actionNote = note
+      }
+      Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
+        store.toggleFavorite(note)
+      }
+      Button("Delete Note", systemImage: "trash", role: .destructive) {
+        requestDelete(note)
       }
     }
   }
@@ -208,18 +280,18 @@ struct VoxoraHomeView: View {
 
   private var recorderTitle: String {
     switch recorder.state {
-    case .idle: "START"
-    case .recording: store.primaryButtonBehavior == .pause ? "PAUSE" : "SAVE"
-    case .paused: "RESUME"
-    case .finalizing: "SAVING"
+    case .idle: "Start recording"
+    case .recording: "Recording"
+    case .paused: "Paused"
+    case .finalizing: "Saving"
     }
   }
 
   private var recorderSubtitle: String {
     switch recorder.state {
-    case .idle: "Tap to record"
-    case .recording: store.primaryButtonBehavior == .pause ? "Tap to pause" : "Tap to finish"
-    case .paused: "Tap to continue"
+    case .idle: ""
+    case .recording: store.phonePrimaryButtonBehavior == .pause ? "Tap to pause" : "Tap to finish"
+    case .paused: "Tap to resume"
     case .finalizing: "Preparing transcript"
     }
   }
@@ -227,7 +299,7 @@ struct VoxoraHomeView: View {
   private var recorderIcon: String {
     switch recorder.state {
     case .idle: "mic.fill"
-    case .recording: store.primaryButtonBehavior == .pause ? "pause.fill" : "checkmark"
+    case .recording: store.phonePrimaryButtonBehavior == .pause ? "pause.fill" : "checkmark"
     case .paused: "play.fill"
     case .finalizing: "waveform"
     }
@@ -241,7 +313,7 @@ struct VoxoraHomeView: View {
         catch { recorder.errorMessage = error.localizedDescription }
       }
     case .recording:
-      if store.primaryButtonBehavior == .pause {
+      if store.phonePrimaryButtonBehavior == .pause {
         recorder.pause()
       } else {
         finishPhoneRecording()
@@ -269,5 +341,13 @@ struct VoxoraHomeView: View {
 
   private func formattedDuration(_ duration: TimeInterval) -> String {
     String(format: "%02d:%02d", Int(duration) / 60, Int(duration) % 60)
+  }
+
+  private func requestDelete(_ note: AudioNote) {
+    Task {
+      try? await Task.sleep(for: .milliseconds(180))
+      guard !Task.isCancelled else { return }
+      pendingDeleteNote = note
+    }
   }
 }

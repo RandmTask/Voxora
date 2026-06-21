@@ -16,30 +16,28 @@ struct ContentView: View {
       VStack(spacing: 8) {
         Spacer(minLength: 2)
         Button(action: primaryAction) {
-          ZStack {
-            Circle()
-              .stroke(ringColor.opacity(0.25), lineWidth: 10)
-            Circle()
-              .trim(from: 0, to: 0.96)
-              .stroke(ringColor, style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [2, 4]))
-              .rotationEffect(.degrees(-90))
-
-            VStack(spacing: 4) {
-              Image(systemName: primaryIcon)
-                .font(.title2.weight(.bold))
-              Text(primaryTitle)
-                .font(.headline.weight(.heavy))
+          VStack(spacing: 6) {
+            Image(systemName: primaryIcon)
+              .font(.title2.weight(.semibold))
+            Text(primaryTitle)
+              .font(.headline.weight(.bold))
+            if audioEngineManager.stateIsActive {
+              Text(formattedDuration(audioEngineManager.elapsedTime))
+                .font(.caption.monospacedDigit().weight(.semibold))
+            }
+            if !primarySubtitle.isEmpty {
               Text(primarySubtitle)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
-              if audioEngineManager.stateIsActive {
-                Text(formattedDuration(audioEngineManager.elapsedTime))
-                  .font(.caption.monospacedDigit().weight(.semibold))
-              }
             }
           }
-          .frame(width: 150, height: 150)
-          .contentShape(Circle())
+          .frame(width: 158, height: 132)
+          .background {
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+              .fill(ringColor.opacity(0.16))
+              .stroke(ringColor.opacity(0.8), lineWidth: 2)
+          }
+          .contentShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         }
         .buttonStyle(.plain)
 
@@ -92,16 +90,16 @@ struct ContentView: View {
 
   private var primaryTitle: String {
     switch audioEngineManager.recordingState {
-    case .idle: "START"
-    case .recording: connectivityCoordinator.primaryButtonBehavior == .pause ? "PAUSE" : "SAVE"
-    case .paused: "RESUME"
-    case .finalizing: "SAVING"
+    case .idle: "Start recording"
+    case .recording: "Recording"
+    case .paused: "Paused"
+    case .finalizing: "Sending"
     }
   }
 
   private var primarySubtitle: String {
     switch audioEngineManager.recordingState {
-    case .idle: "Tap to record"
+    case .idle: ""
     case .recording: connectivityCoordinator.primaryButtonBehavior == .pause ? "Tap to pause" : "Tap to finish"
     case .paused: "Ends after 10 min"
     case .finalizing: "Sending to iPhone"

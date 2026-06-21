@@ -14,17 +14,33 @@ actor AIProcessingCoordinator {
 
   func transform(
     text: String,
-    using template: PromptTemplate,
-    provider: AIProvider? = nil
+    promptBody: String,
+    provider: AIProvider
   ) async throws -> String {
     let prompt = """
-    \(template.promptBody)
+    \(promptBody)
 
     Transcript:
     \(text)
     """
 
-    return try await generate(prompt: prompt, provider: provider ?? template.preferredProvider)
+    return try await generate(prompt: prompt, provider: provider)
+  }
+
+  func generateTitle(text: String, provider: AIProvider) async throws -> String {
+    let result = try await generate(
+      prompt: """
+      Create a concise title for this voice memo.
+      Use at most eight words.
+      Preserve important names or topics.
+      Return only the title with no quotation marks or punctuation at the end.
+
+      Voice memo:
+      \(text)
+      """,
+      provider: provider
+    )
+    return result.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   func test(provider: AIProvider) async throws -> String {
@@ -33,6 +49,20 @@ actor AIProcessingCoordinator {
       provider: provider
     )
     return output.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  func polishEmail(body: String, instructions: String, provider: AIProvider) async throws -> String {
+    let guidance = instructions.trimmingCharacters(in: .whitespacesAndNewlines)
+    let prompt = """
+    Rewrite the following voice memo as a polished email body.
+    Preserve names, dates, commitments, and factual details.
+    Return only the email body, with no subject line or commentary.
+    \(guidance.isEmpty ? "" : "Style instructions: \(guidance)")
+
+    Voice memo:
+    \(body)
+    """
+    return try await generate(prompt: prompt, provider: provider)
   }
 
   private func generate(prompt: String, provider: AIProvider) async throws -> String {

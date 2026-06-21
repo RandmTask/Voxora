@@ -21,8 +21,13 @@ struct VoxoraWatchApp: App {
         }
 
         if route == .record {
-          Task {
-            try? await audioEngineManager.startOrResumeRecording()
+          switch audioEngineManager.recordingState {
+          case .idle, .paused:
+            Task {
+              try? await audioEngineManager.startOrResumeRecording()
+            }
+          case .recording, .finalizing:
+            break
           }
         }
       }

@@ -7,8 +7,8 @@ struct NoteActionsSheet: View {
   let onDelete: () -> Void
 
   @Environment(\.dismiss) private var dismiss
-  @State private var selectedProvider: AIProvider = .appleIntelligence
   @State private var transcriptionEngine: TranscriptionEngine = .appleSpeech
+  @State private var isEmailing = false
 
   var body: some View {
     NavigationStack {
@@ -43,27 +43,26 @@ struct NoteActionsSheet: View {
           }
         }
 
-        Section("Generate with") {
-          Picker("AI provider", selection: $selectedProvider) {
-            ForEach(AIProvider.allCases) { provider in
-              Text(provider.title).tag(provider)
+        Section("Generate") {
+          ForEach(store.prompts.filter(\.isEnabled)) { action in
+            Button(action.title, systemImage: action.iconName) {
+              Task {
+                await store.runAction(action, on: note)
+                dismiss()
+              }
             }
           }
-
-          Button("Create to-do list", systemImage: "checklist") {
-            generate(.todo)
-          }
-          Button("Create structured notes", systemImage: "list.bullet.rectangle") {
-            generate(.bullets)
-          }
-          Button("Run custom action", systemImage: "wand.and.stars") {
-            generate(.custom)
+          Button("Email memo", systemImage: "envelope") {
+            isEmailing = true
           }
         }
         .disabled(note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
         Section {
-          Button("Archive", systemImage: "archivebox") {
+          Button(note.isFavorite ? "Remove Favorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
+            store.toggleFavorite(note)
+          }
+          Button(note.archivedAt == nil ? "Archive" : "Unarchive", systemImage: "archivebox") {
             store.archive(note)
             dismiss()
           }
@@ -79,13 +78,9 @@ struct NoteActionsSheet: View {
           Button("Done") { dismiss() }
         }
       }
-    }
-  }
-
-  private func generate(_ kind: PromptKind) {
-    Task {
-      await store.transform(note, kind: kind, provider: selectedProvider)
-      dismiss()
+      .sheet(isPresented: $isEmailing) {
+        EmailWorkflowSheet(store: store, note: note)
+      }
     }
   }
 }

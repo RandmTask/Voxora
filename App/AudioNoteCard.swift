@@ -6,39 +6,64 @@ struct AudioNoteCard: View {
 
   var body: some View {
     GlassEffectContainer(spacing: 14) {
-      VStack(alignment: .leading, spacing: 12) {
-        HStack(alignment: .top) {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(note.tag ?? "Voice note")
-              .font(.headline)
-            Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
+      HStack(spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
+          HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+              HStack(spacing: 6) {
+                if note.isFavorite {
+                  Image(systemName: "star.fill")
+                    .foregroundStyle(.yellow)
+                }
+                Text(note.displayTitle)
+                  .font(.headline)
+              }
+              Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            if isPlaying || note.processingStatus != .ready {
+              Label(
+                isPlaying ? "Playing" : note.processingStatus.title,
+                systemImage: isPlaying ? "speaker.wave.2.fill" : statusIcon
+              )
+              .font(.caption.weight(.semibold))
+              .foregroundStyle(statusColor)
+            } else {
+              Image(systemName: statusIcon)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(statusColor)
+                .accessibilityLabel("Ready")
+            }
+          }
+
+          Text(previewText)
+            .font(.subheadline)
+            .lineLimit(3)
+
+          if note.archivedAt != nil {
+            Label("Archived", systemImage: "archivebox")
               .font(.caption)
               .foregroundStyle(.secondary)
           }
 
-          Spacer()
-
-          Label(
-            isPlaying ? "Playing" : note.processingStatus.title,
-            systemImage: isPlaying ? "speaker.wave.2.fill" : statusIcon
-          )
-          .font(.caption.weight(.semibold))
-          .foregroundStyle(statusColor)
-        }
-
-        Text(previewText)
-          .font(.subheadline)
-          .lineLimit(3)
-
-        HStack {
-          Text(formattedDuration)
-          if !note.audioFileName.isEmpty {
-            Text("•")
-            Text("Long-press for actions")
+          HStack {
+            Text(formattedDuration)
+            if !note.audioFileName.isEmpty {
+              Text("•")
+              Text("Long-press for actions")
+            }
           }
+          .font(.caption2)
+          .foregroundStyle(.tertiary)
         }
-        .font(.caption2)
-        .foregroundStyle(.tertiary)
+
+        Image(systemName: "chevron.right")
+          .font(.body.weight(.semibold))
+          .foregroundStyle(.tertiary)
       }
       .padding(18)
       .frame(maxWidth: .infinity, alignment: .leading)

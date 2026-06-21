@@ -51,4 +51,20 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
       """
     }
   }
+
+  var defaultIcon: String {
+    switch self {
+    case .todo: "checklist"
+    case .bullets: "list.bullet.rectangle"
+    case .custom: "wand.and.stars"
+    }
+  }
+
+  var starterID: UUID {
+    switch self {
+    case .todo: UUID(uuidString: "A1000000-0000-0000-0000-000000000001")!
+    case .bullets: UUID(uuidString: "A1000000-0000-0000-0000-000000000002")!
+    case .custom: UUID(uuidString: "A1000000-0000-0000-0000-000000000003")!
+    }
+  }
 }

@@ -35,7 +35,7 @@ final class WatchConnectivityCoordinator: NSObject {
   }
 
   private func apply(context: [String: Any]) {
-    guard let rawValue = context[AppPreferences.primaryButtonBehaviorKey] as? String,
+    guard let rawValue = context[AppPreferences.watchPrimaryButtonBehaviorKey] as? String,
           let behavior = PrimaryButtonBehavior(rawValue: rawValue) else {
       return
     }

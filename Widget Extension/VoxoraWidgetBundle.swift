@@ -61,26 +61,37 @@ struct VoxoraComplicationEntryView: View {
   var body: some View {
     switch family {
     case .accessoryCorner:
-      Text(entry.snapshot.state == .recording ? "REC" : "GO")
-        .font(.system(.headline, design: .rounded, weight: .bold))
+      Image("VoxoraComplication")
+        .resizable()
+        .scaledToFit()
+        .padding(3)
         .foregroundStyle(entry.snapshot.state == .recording ? .red : .blue)
     case .accessoryCircular:
       ZStack {
         Circle()
           .fill(.black.opacity(0.15))
-        Image(systemName: entry.snapshot.state == .recording ? "waveform.circle.fill" : "record.circle")
-          .font(.title3)
+        Image("VoxoraComplication")
+          .resizable()
+          .scaledToFit()
+          .padding(7)
           .foregroundStyle(entry.snapshot.state == .recording ? .red : .blue)
       }
     case .accessoryInline:
       Text(inlineTitle)
     case .accessoryRectangular:
-      VStack(alignment: .leading, spacing: 2) {
-        Text("Voxora")
-          .font(.caption2)
-          .foregroundStyle(.secondary)
-        Text(rectangularTitle)
-          .font(.headline)
+      HStack(spacing: 6) {
+        Image("VoxoraComplication")
+          .resizable()
+          .scaledToFit()
+          .frame(width: 24, height: 24)
+          .foregroundStyle(entry.snapshot.state == .recording ? .red : .blue)
+        VStack(alignment: .leading, spacing: 2) {
+          Text("Voxora")
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+          Text(rectangularTitle)
+            .font(.headline)
+        }
       }
     default:
       Text(entry.date, style: .time)

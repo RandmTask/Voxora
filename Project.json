@@ -13,7 +13,8 @@
     "transitivelyLinkDependencies": false
   },
   "settings": {
-    "CODE_SIGN_IDENTITY": "-"
+    "CODE_SIGN_STYLE": "Automatic",
+    "DEVELOPMENT_TEAM": "NWB3XNKTN6"
   },
   "schemes": {
     "Voxora": {
@@ -87,6 +88,9 @@
     "Voxora": {
       "dependencies": [
         {
+          "sdk": "CloudKit.framework"
+        },
+        {
           "embed": true,
           "target": "Voxora Watch"
         }
@@ -105,7 +109,11 @@
           "NSSpeechRecognitionUsageDescription": "Voxora transcribes transferred recordings on iPhone so you can turn them into summaries, checklists, and follow-up outputs.",
           "UILaunchScreen": {},
           "UIBackgroundModes": [
+            "processing",
             "remote-notification"
+          ],
+          "BGTaskSchedulerPermittedIdentifiers": [
+            "com.apple.coredata.cloudkit.activity"
           ],
           "UISupportedInterfaceOrientations": [
             "UIInterfaceOrientationPortrait",
@@ -127,6 +135,8 @@
       "entitlements": {
         "path": "App/App.entitlements",
         "properties": {
+          "aps-environment": "development",
+          "com.apple.developer.aps-environment": "development",
           "com.apple.developer.icloud-container-identifiers": [
             "iCloud.com.swiftstudio.Voxora"
           ],
@@ -136,6 +146,7 @@
           "com.apple.developer.ubiquity-container-identifiers": [
             "iCloud.com.swiftstudio.Voxora"
           ],
+          "com.apple.developer.ubiquity-kvstore-identifier": "$(TeamIdentifierPrefix)com.swiftstudio.Voxora",
           "com.apple.security.application-groups": [
             "group.com.swiftstudio.Voxora"
           ]
@@ -181,6 +192,9 @@
           "CFBundleVersion": "1",
           "ITSAppUsesNonExemptEncryption": false,
           "NSMicrophoneUsageDescription": "Voxora records chunked audio on Apple Watch so you can pause, resume, and finish a note before it syncs to iPhone.",
+          "UIBackgroundModes": [
+            "audio"
+          ],
           "WKApplication": true,
           "WKCompanionAppBundleIdentifier": "com.swiftstudio.Voxora",
           "CFBundleURLTypes": [
@@ -271,6 +285,9 @@
       "sources": [
         {
           "path": "Widget Extension"
+        },
+        {
+          "path": "App\/Assets.xcassets"
         },
         {
           "path": "Shared"

@@ -78,13 +78,15 @@ final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
         userInfo: [NSLocalizedDescriptionKey: "There is no active recording."]
       )
     }
+    let duration = max(recorder.currentTime, elapsedTime)
+    let fileURL = recorder.url
     recorder.stop()
     stopTimer()
     let result = PhoneRecording(
       noteID: noteID,
       createdAt: createdAt,
-      duration: recorder.currentTime,
-      fileURL: recorder.url
+      duration: duration,
+      fileURL: fileURL
     )
     self.recorder = nil
     state = .idle

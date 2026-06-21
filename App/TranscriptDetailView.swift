@@ -1,8 +1,11 @@
 import SwiftUI
+import UIKit
 
 struct TranscriptDetailView: View {
   @Bindable var store: VoxoraStore
   @Bindable var note: AudioNote
+  @State private var isEditing = false
+  @State private var isEmailing = false
 
   var body: some View {
     ScrollView {
@@ -28,6 +31,35 @@ struct TranscriptDetailView: View {
     )
     .navigationTitle("Transcript")
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Menu {
+          Button("Edit", systemImage: "pencil") {
+            isEditing = true
+          }
+
+          Button("Copy", systemImage: "doc.on.doc") {
+            UIPasteboard.general.string = shareText
+          }
+
+          ShareLink(item: shareText) {
+            Label("Share", systemImage: "square.and.arrow.up")
+          }
+
+          Button("Email Memo", systemImage: "envelope") {
+            isEmailing = true
+          }
+        } label: {
+          Label("Note Actions", systemImage: "ellipsis.circle")
+        }
+      }
+    }
+    .sheet(isPresented: $isEditing) {
+      NoteEditorSheet(store: store, note: note)
+    }
+    .sheet(isPresented: $isEmailing) {
+      EmailWorkflowSheet(store: store, note: note)
+    }
   }
 
   private var transcriptBlock: some View {
@@ -46,35 +78,19 @@ struct TranscriptDetailView: View {
   private var actionBlock: some View {
     GlassEffectContainer(spacing: 14) {
       VStack(alignment: .leading, spacing: 12) {
-        Text("3-Prompt Manager")
+        Text("AI Actions")
           .font(.headline)
 
-        Button {
-          Task {
-            await store.transform(note, kind: .todo)
+        ForEach(store.prompts.filter(\.isEnabled)) { action in
+          Button {
+            Task {
+              await store.runAction(action, on: note)
+            }
+          } label: {
+            actionLabel(title: action.title, systemImage: action.iconName)
           }
-        } label: {
-          actionLabel(title: "To-Do Transformer", systemImage: "checklist")
+          .buttonStyle(.glassProminent)
         }
-        .buttonStyle(.glassProminent)
-
-        Button {
-          Task {
-            await store.transform(note, kind: .bullets)
-          }
-        } label: {
-          actionLabel(title: "Numbered/Bulleted List", systemImage: "list.bullet.rectangle.portrait")
-        }
-        .buttonStyle(.glassProminent)
-
-        Button {
-          Task {
-            await store.transform(note, kind: .custom)
-          }
-        } label: {
-          actionLabel(title: "Custom Action", systemImage: "wand.and.stars")
-        }
-        .buttonStyle(.glass)
       }
       .padding(20)
       .glassEffect(.regular.tint(.blue).interactive(), in: .rect(cornerRadius: 28))
@@ -84,10 +100,31 @@ struct TranscriptDetailView: View {
   private var outputBlock: some View {
     GlassEffectContainer(spacing: 16) {
       VStack(alignment: .leading, spacing: 10) {
-        Label("Transformed Output", systemImage: "sparkles")
+        Label("Output History", systemImage: "sparkles")
           .font(.headline)
-        Text(note.transformedOutputText.isEmpty ? "Run one of the prompts above to generate the polished output." : note.transformedOutputText)
-          .frame(maxWidth: .infinity, alignment: .leading)
+        if store.outputs(for: note).isEmpty {
+          Text("Run an action above to generate an output.")
+            .foregroundStyle(.secondary)
+        } else {
+          ForEach(store.outputs(for: note)) { output in
+            VStack(alignment: .leading, spacing: 6) {
+              HStack {
+                Text(output.actionTitle)
+                  .font(.subheadline.weight(.semibold))
+                Spacer()
+                Text(output.createdAt.formatted(date: .abbreviated, time: .shortened))
+                  .font(.caption2)
+                  .foregroundStyle(.secondary)
+              }
+              Text(output.content)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.vertical, 6)
+            if output.id != store.outputs(for: note).last?.id {
+              Divider()
+            }
+          }
+        }
       }
       .padding(20)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
@@ -103,5 +140,11 @@ struct TranscriptDetailView: View {
     .padding(.horizontal, 16)
     .padding(.vertical, 14)
     .frame(maxWidth: .infinity)
+  }
+
+  private var shareText: String {
+    ([note.transcriptText] + store.outputs(for: note).map(\.content))
+      .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+      .joined(separator: "\n\n")
   }
 }

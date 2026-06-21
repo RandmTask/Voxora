@@ -35,6 +35,10 @@
 	<false/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Voxora records chunked audio on Apple Watch so you can pause, resume, and finish a note before it syncs to iPhone.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>
