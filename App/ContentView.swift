@@ -1,19 +1,23 @@
 import SwiftUI
 
 struct ContentView: View {
+  private enum AppTab: Hashable {
+    case record
+    case search
+  }
+
   @Bindable var store: VoxoraStore
+  @State private var selection: AppTab = .record
 
   var body: some View {
-    TabView {
-      VoxoraHomeView(store: store)
-        .tabItem {
-          Label("Record", systemImage: "waveform")
-        }
+    TabView(selection: $selection) {
+      Tab("Record", systemImage: "waveform", value: .record) {
+        VoxoraHomeView(store: store)
+      }
 
-      TranscriptSearchView(store: store)
-        .tabItem {
-          Label("Search", systemImage: "magnifyingglass")
-        }
+      Tab("Search", systemImage: "magnifyingglass", value: .search, role: .search) {
+        TranscriptSearchView(store: store)
+      }
     }
   }
 }

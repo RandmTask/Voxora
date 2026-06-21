@@ -6,76 +6,82 @@ struct AudioNoteCard: View {
 
   var body: some View {
     GlassEffectContainer(spacing: 14) {
-      HStack(spacing: 14) {
-        VStack(alignment: .leading, spacing: 12) {
-          HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-              HStack(spacing: 6) {
-                if note.isFavorite {
-                  Image(systemName: "star.fill")
-                    .foregroundStyle(.yellow)
-                }
-                Text(note.displayTitle)
-                  .font(.headline)
-              }
-              Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+      VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 4) {
+          HStack(spacing: 6) {
+            if note.isFavorite {
+              Image(systemName: "star.fill")
+                .foregroundStyle(.yellow)
             }
-
-            Spacer()
-
-            if isPlaying || (note.processingStatus != .ready && note.processingStatus != .idle) {
-              Label(
-                isPlaying ? "Playing" : note.processingStatus.title,
-                systemImage: isPlaying ? "speaker.wave.2.fill" : statusIcon
-              )
-              .font(.caption.weight(.semibold))
-              .foregroundStyle(statusColor)
-            }
+            Text(note.displayTitle)
+              .font(.headline)
           }
+          Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .padding(.trailing, 100)
 
-          Text(previewText)
-            .font(.subheadline)
-            .lineLimit(3)
+        Text(previewText)
+          .font(.subheadline)
+          .lineLimit(3)
 
-          if note.archivedAt != nil {
-            Label("Archived", systemImage: "archivebox")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-          }
-
-          HStack {
-            Text(formattedDuration)
-            if !note.audioFileName.isEmpty {
-              Text("•")
-              Text("Long-press for actions")
-            }
-          }
-          .font(.caption2)
-          .foregroundStyle(.tertiary)
+        if note.archivedAt != nil {
+          Label("Archived", systemImage: "archivebox")
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
 
-        VStack(spacing: 0) {
-          if !isPlaying && note.processingStatus == .ready {
-            Image(systemName: "checkmark.circle")
-              .font(.title3.weight(.semibold))
-              .foregroundStyle(.green)
-              .accessibilityLabel("Ready")
+        HStack {
+          Text(formattedDuration)
+          if !note.audioFileName.isEmpty {
+            Text("•")
+            Text("Long-press for actions")
           }
-
-          Spacer()
-
-          Image(systemName: "chevron.right")
-            .font(.body.weight(.semibold))
-            .foregroundStyle(.tertiary)
         }
-        .frame(width: 22)
+        .font(.caption2)
+        .foregroundStyle(.tertiary)
       }
       .padding(18)
+      .padding(.trailing, 28)
       .frame(maxWidth: .infinity, alignment: .leading)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26))
+      .overlay(alignment: .topTrailing) {
+        statusView
+          .padding(.top, 18)
+          .padding(.trailing, 18)
+      }
+      .overlay(alignment: .trailing) {
+        Image(systemName: "chevron.right")
+          .font(.body.weight(.semibold))
+          .foregroundStyle(.tertiary)
+          .padding(.trailing, 18)
+      }
     }
+  }
+
+  @ViewBuilder
+  private var statusView: some View {
+    if isPlaying {
+      statusLabel("Playing", systemImage: "speaker.wave.2.fill")
+    } else if note.processingStatus == .ready {
+      Image(systemName: "checkmark.circle")
+        .font(.title3.weight(.semibold))
+        .foregroundStyle(.green)
+        .accessibilityLabel("Ready")
+    } else if note.processingStatus != .idle {
+      statusLabel(note.processingStatus.title, systemImage: statusIcon)
+    }
+  }
+
+  private func statusLabel(_ title: String, systemImage: String) -> some View {
+    HStack(spacing: 5) {
+      Text(title)
+      Image(systemName: systemImage)
+        .font(.title3.weight(.semibold))
+    }
+    .font(.caption.weight(.semibold))
+    .foregroundStyle(statusColor)
   }
 
   private var previewText: String {

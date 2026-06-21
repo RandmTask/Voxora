@@ -6,6 +6,7 @@ struct TranscriptSearchView: View {
   @State private var hideTooShort = true
   @State private var hideEmpty = true
   @State private var hideFailed = true
+  @State private var isSearchPresented = false
 
   var body: some View {
     NavigationStack {
@@ -35,10 +36,17 @@ struct TranscriptSearchView: View {
       }
       .listStyle(.plain)
       .scrollContentBackground(.hidden)
+      .scrollDismissesKeyboard(.immediately)
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          isSearchPresented = false
+        }
+      )
       .background(Color(red: 0.055, green: 0.06, blue: 0.1))
       .navigationTitle("Search")
       .searchable(
         text: $searchText,
+        isPresented: $isSearchPresented,
         placement: .navigationBarDrawer(displayMode: .always),
         prompt: "Search transcripts"
       )

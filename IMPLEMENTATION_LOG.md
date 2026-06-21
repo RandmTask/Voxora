@@ -1,5 +1,39 @@
 # Voxora Implementation Log
 
+## 2026-06-21 — Note-list gestures, search focus, and Voice Memo polish
+
+- Moved Copy Transcript out of swipe actions and added both Copy Transcript and
+  Email Memo to the note-row long-press menu.
+- Reduced the trailing swipe set to Delete, Generate, and Favorite; note rows should
+  not expose four swipe actions unless a future product decision explicitly calls
+  for it.
+- Reworked note-card trailing presentation:
+  - The disclosure chevron is vertically centered.
+  - Ready, failed, too-short, empty, and in-progress icons share one position.
+  - Non-ready status text sits immediately to the left of its icon.
+- Replaced the position-sensitive delete confirmation dialog with a standard alert
+  containing an explicit destructive Delete Note action.
+- Promoted AI Actions to a section heading and applied fading horizontal edges to
+  the independently scrolling action buttons.
+- Renamed transcript detail to Voice Memo and removed Share Timestamp from that
+  screen and from its Copy/Share payload.
+- Adopted the iOS 26 search tab role and bound search presentation so selecting
+  Search again focuses the field.
+- Added immediate keyboard dismissal when scrolling or tapping the search-results
+  list.
+- Verified a successful full build for the iPhone 17 Pro iOS 26.5 simulator and its
+  dependent watchOS targets.
+
+### Schema changes
+
+None.
+
+### Next validation
+
+On a physical iPhone, verify repeated Search-tab focus, context-menu Email Memo
+presentation, delete-alert placement, and compact status alignment with long titles.
+The requested pause-function change still needs a specific desired behavior.
+
 ## 2026-06-21 — Email Memo composition controls
 
 - Added horizontally scrolling subject chips for the configured prefix, recording

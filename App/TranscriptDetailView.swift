@@ -32,7 +32,7 @@ struct TranscriptDetailView: View {
       )
       .ignoresSafeArea()
     )
-    .navigationTitle("Transcript")
+    .navigationTitle("Voice Memo")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
@@ -85,22 +85,12 @@ struct TranscriptDetailView: View {
             isEditingTitle = false
           }
 
-        HStack {
-          Label(
-            note.timestamp.formatted(date: .abbreviated, time: .shortened),
-            systemImage: "calendar"
-          )
-          .font(.caption)
-          .foregroundStyle(.secondary)
-
-          Spacer()
-
-          Toggle("Share timestamp", isOn: Binding(
-            get: { store.includeTimestampInExports },
-            set: { store.includeTimestampInExports = $0 }
-          ))
-          .font(.caption)
-        }
+        Label(
+          note.timestamp.formatted(date: .abbreviated, time: .shortened),
+          systemImage: "calendar"
+        )
+        .font(.caption)
+        .foregroundStyle(.secondary)
       }
       .padding(20)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
@@ -127,11 +117,12 @@ struct TranscriptDetailView: View {
   }
 
   private var actionBlock: some View {
-    GlassEffectContainer(spacing: 14) {
-      VStack(alignment: .leading, spacing: 12) {
-        Text("AI Actions")
-          .font(.headline)
+    VStack(alignment: .leading, spacing: 10) {
+      Text("AI Actions")
+        .font(.headline)
+        .padding(.horizontal, 4)
 
+      GlassEffectContainer(spacing: 14) {
         ScrollView(.horizontal) {
           HStack(spacing: 10) {
             ForEach(store.prompts.filter(\.isEnabled)) { action in
@@ -149,11 +140,26 @@ struct TranscriptDetailView: View {
               .buttonStyle(.glassProminent)
             }
           }
+          .padding(.horizontal, 8)
+          .padding(.vertical, 2)
         }
         .scrollIndicators(.hidden)
+        .contentMargins(.horizontal, 8, for: .scrollContent)
+        .mask {
+          LinearGradient(
+            stops: [
+              .init(color: .clear, location: 0),
+              .init(color: .black, location: 0.035),
+              .init(color: .black, location: 0.965),
+              .init(color: .clear, location: 1)
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+          )
+        }
+        .padding(20)
+        .glassEffect(.regular.tint(.blue).interactive(), in: .rect(cornerRadius: 28))
       }
-      .padding(20)
-      .glassEffect(.regular.tint(.blue).interactive(), in: .rect(cornerRadius: 28))
     }
   }
 
@@ -198,14 +204,9 @@ struct TranscriptDetailView: View {
   }
 
   private var shareText: String {
-    ([shareTimestamp, note.transcriptText] + store.outputs(for: note).map(\.content))
+    ([note.transcriptText] + store.outputs(for: note).map(\.content))
       .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
       .joined(separator: "\n\n")
-  }
-
-  private var shareTimestamp: String {
-    guard store.includeTimestampInExports else { return "" }
-    return note.timestamp.formatted(date: .long, time: .shortened)
   }
 
   private func saveTitle() {

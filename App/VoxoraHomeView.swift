@@ -7,6 +7,7 @@ struct VoxoraHomeView: View {
   @State private var playback = AudioPlaybackController()
   @State private var isShowingSettings = false
   @State private var actionNote: AudioNote?
+  @State private var emailNote: AudioNote?
   @State private var pendingDeleteNote: AudioNote?
   @State private var selectedNote: AudioNote?
   @State private var hideTooShort = true
@@ -102,6 +103,9 @@ struct VoxoraHomeView: View {
           }
         )
       }
+      .sheet(item: $emailNote) { note in
+        EmailWorkflowSheet(store: store, note: note)
+      }
       .alert("Voxora", isPresented: Binding(
         get: { store.errorMessage != nil || recorder.errorMessage != nil },
         set: {
@@ -115,13 +119,12 @@ struct VoxoraHomeView: View {
       } message: {
         Text(store.errorMessage ?? recorder.errorMessage ?? "")
       }
-      .confirmationDialog(
-        "Delete this voice note?",
+      .alert(
+        "Delete voice note?",
         isPresented: Binding(
           get: { pendingDeleteNote != nil },
           set: { if !$0 { pendingDeleteNote = nil } }
-        ),
-        titleVisibility: .visible
+        )
       ) {
         Button("Delete Note", role: .destructive) {
           if let note = pendingDeleteNote {
@@ -133,6 +136,8 @@ struct VoxoraHomeView: View {
         Button("Cancel", role: .cancel) {
           pendingDeleteNote = nil
         }
+      } message: {
+        Text("This permanently deletes the recording, transcript, and generated outputs.")
       }
     }
     .preferredColorScheme(.dark)
@@ -265,10 +270,6 @@ struct VoxoraHomeView: View {
         actionNote = note
       }
       .tint(.purple)
-      Button("Copy Transcript", systemImage: "doc.on.doc") {
-        UIPasteboard.general.string = note.transcriptText
-      }
-      .disabled(note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
       Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
         store.toggleFavorite(note)
       }
@@ -300,6 +301,13 @@ struct VoxoraHomeView: View {
       }
       Button("Generate", systemImage: "sparkles") {
         actionNote = note
+      }
+      Button("Copy Transcript", systemImage: "doc.on.doc") {
+        UIPasteboard.general.string = note.transcriptText
+      }
+      .disabled(note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+      Button("Email Memo", systemImage: "envelope") {
+        emailNote = note
       }
       Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
         store.toggleFavorite(note)
