@@ -27,7 +27,6 @@ struct AudioNoteCard: View {
             .font(.caption)
             .foregroundStyle(.secondary)
         }
-        .padding(.trailing, 30)
 
         Text(previewText)
           .font(.subheadline)
@@ -40,14 +39,15 @@ struct AudioNoteCard: View {
         }
       }
       .padding(18)
-      .padding(.trailing, 28)
       .frame(maxWidth: .infinity, alignment: .leading)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26))
       .overlay(alignment: .trailing) {
-        Image(systemName: "chevron.right")
-          .font(.body.weight(.semibold))
-          .foregroundStyle(.tertiary)
-          .padding(.trailing, 18)
+        if !showsStatus {
+          Image(systemName: "chevron.right")
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.tertiary)
+            .padding(.trailing, 18)
+        }
       }
     }
   }
@@ -110,5 +110,9 @@ struct AudioNoteCard: View {
     let minutes = seconds / 60
     let remainder = seconds % 60
     return minutes == 0 ? "\(remainder)s" : "\(minutes)m\(remainder)s"
+  }
+
+  private var showsStatus: Bool {
+    isPlaying || note.displayedProcessingStatus != .idle
   }
 }

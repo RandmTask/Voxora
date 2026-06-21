@@ -10,10 +10,9 @@ struct VoxoraHomeView: View {
   @State private var emailNote: AudioNote?
   @State private var pendingDeleteNote: AudioNote?
   @State private var selectedNote: AudioNote?
-  @State private var hideTooShort = true
-  @State private var hideEmpty = true
-  @State private var hideFailed = true
-  @State private var showArchived = false
+  @AppStorage(AppPreferences.hideUnusableNotesKey) private var hideUnusable = true
+  @AppStorage(AppPreferences.hideFailedNotesKey) private var hideFailed = true
+  @AppStorage(AppPreferences.showArchivedNotesKey) private var showArchived = false
 
   var body: some View {
     NavigationStack {
@@ -69,8 +68,7 @@ struct VoxoraHomeView: View {
       .toolbar {
         ToolbarItemGroup(placement: .topBarTrailing) {
           Menu {
-            Toggle("Hide too short", isOn: $hideTooShort)
-            Toggle("Hide empty", isOn: $hideEmpty)
+            Toggle("Hide unusable", isOn: $hideUnusable)
             Toggle("Hide failed", isOn: $hideFailed)
             Toggle("Show archived", isOn: $showArchived)
           } label: {
@@ -161,14 +159,12 @@ struct VoxoraHomeView: View {
     }
   }
 
-  private var filtersAreActive: Bool {
-    hideTooShort || hideEmpty || hideFailed || !showArchived
-  }
-
   private func includes(_ note: AudioNote) -> Bool {
-    if hideTooShort && note.displayedProcessingStatus == .tooShort { return false }
-    if hideEmpty && note.displayedProcessingStatus == .empty { return false }
-    if hideFailed && note.displayedProcessingStatus == .failed { return false }
+    let status = note.displayedProcessingStatus
+    if hideUnusable && (status == .tooShort || status == .empty) {
+      return false
+    }
+    if hideFailed && status == .failed { return false }
     if !showArchived && note.archivedAt != nil { return false }
     return true
   }

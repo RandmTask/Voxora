@@ -33,6 +33,22 @@ private struct VoxoraPhoneTimelineProvider: TimelineProvider {
   }
 }
 
+private enum VoxoraWidgetStyle {
+  static let accent = Color(red: 0.08, green: 0.78, blue: 0.92)
+  static let primaryText = Color.white
+  static let secondaryText = Color.white.opacity(0.68)
+  static let actionFill = Color.white.opacity(0.12)
+  static let actionStroke = Color.white.opacity(0.2)
+  static let background = LinearGradient(
+    colors: [
+      Color(red: 0.045, green: 0.075, blue: 0.13),
+      Color(red: 0.035, green: 0.2, blue: 0.25)
+    ],
+    startPoint: .topLeading,
+    endPoint: .bottomTrailing
+  )
+}
+
 private struct VoxoraQuickRecordWidget: Widget {
   private let kind = "com.swiftstudio.Voxora.widget.quick-record"
 
@@ -41,14 +57,7 @@ private struct VoxoraQuickRecordWidget: Widget {
       VoxoraQuickRecordView()
         .widgetURL(URL(string: "voxora://record"))
         .containerBackground(for: .widget) {
-          LinearGradient(
-            colors: [
-              Color(red: 0.04, green: 0.11, blue: 0.17),
-              Color(red: 0.04, green: 0.25, blue: 0.3)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-          )
+          VoxoraWidgetStyle.background
         }
     }
     .configurationDisplayName("Quick Record")
@@ -70,47 +79,44 @@ private struct VoxoraQuickRecordView: View {
     switch family {
     case .systemSmall:
       VStack(alignment: .leading, spacing: 10) {
-        Image(systemName: "mic.fill")
-          .font(.system(size: 32, weight: .semibold))
-          .foregroundStyle(.cyan)
+        Image(systemName: "waveform")
+          .font(.system(size: 34, weight: .semibold))
+          .foregroundStyle(VoxoraWidgetStyle.accent)
         Spacer()
         Text("Quick Record")
           .font(.headline)
+          .foregroundStyle(VoxoraWidgetStyle.primaryText)
         Text("Tap to start")
           .font(.caption)
-          .foregroundStyle(.secondary)
+          .foregroundStyle(VoxoraWidgetStyle.secondaryText)
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     case .systemMedium:
-      HStack(spacing: 16) {
-        VStack(alignment: .leading, spacing: 8) {
+      HStack(spacing: 18) {
+        VStack(alignment: .leading, spacing: 7) {
           Image(systemName: "waveform")
-            .font(.title2.weight(.semibold))
-            .foregroundStyle(.cyan)
+            .font(.system(size: 34, weight: .semibold))
+            .foregroundStyle(VoxoraWidgetStyle.accent)
           Text("Capture a thought")
             .font(.headline)
-          Text("Start recording immediately or open your recent notes.")
+            .foregroundStyle(VoxoraWidgetStyle.primaryText)
+          Text("Record now or open your notes.")
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(VoxoraWidgetStyle.secondaryText)
         }
 
         Spacer(minLength: 0)
 
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
           Link(destination: URL(string: "voxora://record")!) {
-            Label("Record", systemImage: "mic.fill")
-              .frame(maxWidth: .infinity)
+            VoxoraWidgetActionLabel(title: "Record", systemImage: "mic.fill", isPrimary: true)
           }
-          .buttonStyle(.borderedProminent)
-          .tint(.cyan)
 
           Link(destination: URL(string: "voxora://open")!) {
-            Label("Open App", systemImage: "arrow.up.forward.app")
-              .frame(maxWidth: .infinity)
+            VoxoraWidgetActionLabel(title: "Open", systemImage: "arrow.up.forward.app")
           }
-          .buttonStyle(.bordered)
         }
-        .frame(width: 116)
+        .frame(width: 108)
       }
     case .accessoryCircular:
       Image(systemName: "mic.fill")
@@ -144,14 +150,7 @@ private struct VoxoraOpenAppWidget: Widget {
       VoxoraOpenAppView()
         .widgetURL(URL(string: "voxora://open"))
         .containerBackground(for: .widget) {
-          LinearGradient(
-            colors: [
-              Color(red: 0.08, green: 0.07, blue: 0.16),
-              Color(red: 0.16, green: 0.1, blue: 0.28)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-          )
+          VoxoraWidgetStyle.background
         }
     }
     .configurationDisplayName("Open Voxora")
@@ -174,29 +173,35 @@ private struct VoxoraOpenAppView: View {
     case .systemSmall:
       VStack(alignment: .leading, spacing: 10) {
         Image(systemName: "waveform")
-          .font(.system(size: 32, weight: .semibold))
-          .foregroundStyle(.purple)
+          .font(.system(size: 34, weight: .semibold))
+          .foregroundStyle(VoxoraWidgetStyle.accent)
         Spacer()
-        Text("Voxora")
+        Text("Open Voxora")
           .font(.headline)
-        Text("Open voice notes")
+          .foregroundStyle(VoxoraWidgetStyle.primaryText)
+        Text("View your notes")
           .font(.caption)
-          .foregroundStyle(.secondary)
+          .foregroundStyle(VoxoraWidgetStyle.secondaryText)
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     case .systemMedium:
-      HStack(spacing: 16) {
-        Image(systemName: "waveform")
-          .font(.system(size: 42, weight: .semibold))
-          .foregroundStyle(.purple)
-        VStack(alignment: .leading, spacing: 6) {
+      HStack(spacing: 18) {
+        VStack(alignment: .leading, spacing: 7) {
+          Image(systemName: "waveform")
+            .font(.system(size: 34, weight: .semibold))
+            .foregroundStyle(VoxoraWidgetStyle.accent)
           Text("Open Voxora")
-            .font(.title3.weight(.bold))
-          Text("Review recordings, transcripts, summaries, and AI outputs.")
+            .font(.headline)
+            .foregroundStyle(VoxoraWidgetStyle.primaryText)
+          Text("Review recordings and transcripts.")
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(VoxoraWidgetStyle.secondaryText)
         }
+
         Spacer(minLength: 0)
+
+        VoxoraWidgetActionLabel(title: "Open", systemImage: "arrow.up.forward.app", isPrimary: true)
+          .frame(width: 108)
       }
     case .accessoryCircular:
       Image(systemName: "waveform")
@@ -219,5 +224,30 @@ private struct VoxoraOpenAppView: View {
     default:
       EmptyView()
     }
+  }
+}
+
+private struct VoxoraWidgetActionLabel: View {
+  let title: String
+  let systemImage: String
+  var isPrimary = false
+
+  var body: some View {
+    Label(title, systemImage: systemImage)
+      .font(.caption.weight(.semibold))
+      .lineLimit(1)
+      .foregroundStyle(isPrimary ? Color(red: 0.02, green: 0.12, blue: 0.16) : .white)
+      .frame(maxWidth: .infinity)
+      .frame(height: 38)
+      .background(
+        isPrimary ? VoxoraWidgetStyle.accent : VoxoraWidgetStyle.actionFill,
+        in: Capsule()
+      )
+      .overlay {
+        if !isPrimary {
+          Capsule()
+            .stroke(VoxoraWidgetStyle.actionStroke, lineWidth: 1)
+        }
+      }
   }
 }

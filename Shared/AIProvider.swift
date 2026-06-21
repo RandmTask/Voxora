@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum AIProvider: String, Codable, CaseIterable, Identifiable {
   case appleIntelligence
@@ -32,5 +33,15 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
 
   var requiresAPIKey: Bool {
     self != .appleIntelligence
+  }
+
+  var tint: Color {
+    switch self {
+    case .appleIntelligence: .blue
+    case .gemini: .cyan
+    case .deepSeek: .indigo
+    case .openAI: .green
+    case .anthropic: .orange
+    }
   }
 }

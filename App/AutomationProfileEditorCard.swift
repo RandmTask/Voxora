@@ -45,6 +45,8 @@ struct AutomationProfileEditorCard: View {
       Button("Delete Automation", systemImage: "trash", role: .destructive) {
         onDelete()
       }
+      .foregroundStyle(.red)
+      .tint(.red)
     }
     .padding(.vertical, 6)
   }

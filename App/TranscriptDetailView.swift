@@ -88,8 +88,10 @@ struct TranscriptDetailView: View {
   private var titleBlock: some View {
     GlassEffectContainer(spacing: 16) {
       VStack(alignment: .leading, spacing: 12) {
-        TextField("Note title", text: $titleDraft)
+        TextField("Note title", text: $titleDraft, axis: .vertical)
           .font(.title2.weight(.bold))
+          .lineLimit(1...3)
+          .fixedSize(horizontal: false, vertical: true)
           .focused($isEditingTitle)
           .submitLabel(.done)
           .onSubmit {
@@ -144,43 +146,39 @@ struct TranscriptDetailView: View {
         .font(.headline)
         .padding(.horizontal, 4)
 
-      GlassEffectContainer(spacing: 14) {
-        ScrollView(.horizontal) {
-          HStack(spacing: 10) {
-            ForEach(store.prompts.filter(\.isEnabled)) { action in
-              Button {
-                Task {
-                  await store.runAction(action, on: note)
-                }
-              } label: {
-                Label(action.title, systemImage: action.iconName)
-                  .font(.subheadline.weight(.semibold))
-                  .padding(.horizontal, 14)
-                  .padding(.vertical, 10)
-                  .fixedSize()
+      ScrollView(.horizontal) {
+        HStack(spacing: 12) {
+          ForEach(store.prompts.filter(\.isEnabled)) { action in
+            Button {
+              Task {
+                await store.runAction(action, on: note)
               }
-              .buttonStyle(.glassProminent)
+            } label: {
+              Label(action.title, systemImage: action.iconName)
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 11)
+                .fixedSize()
             }
+            .buttonStyle(.glassProminent)
           }
-          .padding(.horizontal, 8)
-          .padding(.vertical, 2)
         }
-        .scrollIndicators(.hidden)
-        .contentMargins(.horizontal, 8, for: .scrollContent)
-        .mask {
-          LinearGradient(
-            stops: [
-              .init(color: .clear, location: 0),
-              .init(color: .black, location: 0.035),
-              .init(color: .black, location: 0.965),
-              .init(color: .clear, location: 1)
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-          )
-        }
-        .padding(20)
-        .glassEffect(.regular.tint(.blue).interactive(), in: .rect(cornerRadius: 28))
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+      }
+      .scrollIndicators(.hidden)
+      .contentMargins(.horizontal, 4, for: .scrollContent)
+      .mask {
+        LinearGradient(
+          stops: [
+            .init(color: .clear, location: 0),
+            .init(color: .black, location: 0.025),
+            .init(color: .black, location: 0.975),
+            .init(color: .clear, location: 1)
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
       }
     }
   }
@@ -204,7 +202,7 @@ struct TranscriptDetailView: View {
                   .font(.caption2)
                   .foregroundStyle(.secondary)
               }
-              Text(output.content)
+              Text(renderedMarkdown(output.content))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .textSelection(.enabled)
                 .contextMenu {
@@ -244,5 +242,12 @@ struct TranscriptDetailView: View {
     let minutes = seconds / 60
     let remainder = seconds % 60
     return minutes == 0 ? "\(remainder)s" : "\(minutes)m\(remainder)s"
+  }
+
+  private func renderedMarkdown(_ source: String) -> AttributedString {
+    (try? AttributedString(
+      markdown: source,
+      options: .init(interpretedSyntax: .full)
+    )) ?? AttributedString(source)
   }
 }

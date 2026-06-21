@@ -1,6 +1,19 @@
 import SwiftUI
 
 struct PromptTemplateEditorCard: View {
+  private static let symbolChoices = [
+    "wand.and.stars",
+    "checklist",
+    "list.bullet.rectangle",
+    "list.number",
+    "text.badge.checkmark",
+    "sparkles",
+    "doc.text",
+    "lightbulb",
+    "calendar",
+    "envelope"
+  ]
+
   @Bindable var prompt: PromptTemplate
   var defaultProvider: AIProvider
   var onDelete: () -> Void
@@ -10,18 +23,37 @@ struct PromptTemplateEditorCard: View {
       TextField("Title", text: $prompt.title)
         .font(.headline)
 
-      TextField("SF Symbol", text: $prompt.iconName)
-
-      Picker("Provider", selection: Binding(
-        get: { prompt.providerOverride },
-        set: { prompt.providerOverride = $0 }
-      )) {
-        Text("Default (\(defaultProvider.title))").tag(AIProvider?.none)
-        ForEach(AIProvider.allCases) { provider in
-          Text(provider.title).tag(Optional(provider))
+      LabeledContent("Symbol") {
+        Menu {
+          ForEach(Self.symbolChoices, id: \.self) { symbolName in
+            Button {
+              prompt.iconName = symbolName
+            } label: {
+              Label(symbolName.replacingOccurrences(of: ".", with: " "), systemImage: symbolName)
+            }
+          }
+        } label: {
+          Image(systemName: prompt.iconName)
+            .font(.title3)
+            .frame(width: 32, height: 32)
         }
       }
-      .pickerStyle(.menu)
+
+      LabeledContent("Provider") {
+        Menu {
+          Button(defaultProvider.title) {
+            prompt.providerOverride = nil
+          }
+          ForEach(AIProvider.allCases.filter { $0 != defaultProvider }) { provider in
+            Button(provider.title) {
+              prompt.providerOverride = provider
+            }
+          }
+        } label: {
+          Text(effectiveProvider.title)
+            .foregroundStyle(effectiveProvider.tint)
+        }
+      }
 
       Toggle("Enabled", isOn: $prompt.isEnabled)
 
@@ -34,8 +66,14 @@ struct PromptTemplateEditorCard: View {
       Button("Delete Action", systemImage: "trash", role: .destructive) {
         onDelete()
       }
+      .foregroundStyle(.red)
+      .tint(.red)
     }
     .padding(18)
     .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 24))
+  }
+
+  private var effectiveProvider: AIProvider {
+    prompt.providerOverride ?? defaultProvider
   }
 }

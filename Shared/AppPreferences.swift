@@ -11,6 +11,9 @@ enum AppPreferences {
   static let defaultEmailRecipientKey = "defaultEmailRecipient"
   static let emailSubjectPrefixKey = "emailSubjectPrefix"
   static let includeTimestampInExportsKey = "includeTimestampInExports"
+  static let hideUnusableNotesKey = "hideUnusableNotes"
+  static let hideFailedNotesKey = "hideFailedNotes"
+  static let showArchivedNotesKey = "showArchivedNotes"
 }
 
 enum PrimaryButtonBehavior: String, CaseIterable, Identifiable {

@@ -1,5 +1,67 @@
 # Voxora Implementation Log
 
+## 2026-06-21 — Compact settings navigation and Voice Memo presentation
+
+- Moved note status indicators to the true trailing edge of the title row.
+  Status replaces the disclosure chevron when present; idle rows retain the
+  centered chevron.
+- Replaced the long inline Settings editor with a compact landing page:
+  - Email, AI Model, AI Actions, Automations, and Tags now have dedicated screens.
+  - Individual AI actions and automations open in editor sheets.
+  - Email recipient and subject-prefix controls now live in Email Settings.
+- Replaced raw SF Symbol names in action lists/editors with rendered symbols and a
+  curated symbol menu.
+- Simplified action provider presentation to `Provider: Apple Intelligence` style
+  naming and added provider color treatments; Apple Intelligence is blue.
+- Made destructive trash icons and labels consistently red.
+- Updated Voice Memo detail:
+  - Editable titles can wrap across multiple lines.
+  - AI actions are independent horizontally scrolling glass buttons.
+  - Generated output is rendered as Markdown rather than shown as raw markup.
+- Verified a successful full iPhone 17 Pro iOS 26.5 simulator build, including
+  dependent Watch and widget targets.
+
+### Schema changes
+
+None.
+
+### Next validation
+
+On a physical iPhone, verify trailing status placement with long titles, action and
+automation editor sheet presentation, destructive colors, and Markdown list/heading
+rendering in Summary.
+
+## 2026-06-21 — iPhone widgets and persistent note filters
+
+- Added a separate iOS WidgetKit extension embedded in the iPhone app.
+- Added Quick Record and Open Voxora widgets for small, medium, and Lock Screen
+  accessory families.
+  - Quick Record opens the Record tab and starts exactly one iPhone recording.
+  - Open Voxora opens the Record tab without starting a recording.
+  - Medium Quick Record provides separate Record and Open actions.
+- Added a second Apple Watch complication that opens Voxora without starting or
+  resuming a recording; the existing Quick Record complication remains unchanged.
+- Added explicit deep-link consumption by the iPhone recording screen.
+- Unified both iPhone widgets around one dark teal palette, consistent 34-point
+  waveform artwork, explicit high-contrast text colors, and compact custom action
+  capsules.
+- Replaced the wrapping `Open App` widget action with the single-line label `Open`.
+- Persisted note-list filters with `AppStorage`.
+- Combined Hide too short and Hide empty into one Hide unusable filter.
+- Regenerated the Xcode project and verified a successful full build for the
+  iPhone 17 Pro iOS 26.5 simulator and dependent watchOS targets.
+
+### Schema changes
+
+None. Widget configuration is target-local and filter choices use local
+`UserDefaults`.
+
+### Next validation
+
+On a physical iPhone, add both Voxora widgets and verify Quick Record starts once,
+Open does not start recording, the medium actions remain single-line, and filter
+choices survive an app relaunch.
+
 ## 2026-06-21 — Note status alignment, duration labels, and deferred Watch transcription
 
 - Moved each note status into the title row with first-baseline alignment so Ready,
