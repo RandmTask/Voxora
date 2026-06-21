@@ -5,6 +5,13 @@ import WidgetKit
 @MainActor
 @Observable
 final class WatchAudioEngineManager {
+  private static let recordingSettings: [String: Any] = [
+    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+    AVSampleRateKey: 44_100,
+    AVNumberOfChannelsKey: 1,
+    AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+  ]
+
   var recordingState: RecordingState = .idle
   var elapsedTime: TimeInterval = 0
   var chunkCount = 0
@@ -16,10 +23,6 @@ final class WatchAudioEngineManager {
   private var noteID = UUID()
   private var chunks: [RecordedChunk] = []
   private var timer: Timer?
-
-  deinit {
-    timer?.invalidate()
-  }
 
   func startOrResumeRecording() async throws {
     try await configureAudioSession()
@@ -34,14 +37,7 @@ final class WatchAudioEngineManager {
     let outputURL = FileManager.default.temporaryDirectory
       .appending(path: "\(noteID.uuidString)-chunk-\(chunks.count + 1).m4a")
 
-    let settings: [String: Any] = [
-      AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-      AVSampleRateKey: 44_100,
-      AVNumberOfChannelsKey: 1,
-      AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-    ]
-
-    recorder = try AVAudioRecorder(url: outputURL, settings: settings)
+    recorder = try AVAudioRecorder(url: outputURL, settings: Self.recordingSettings)
     recorder?.prepareToRecord()
     recorder?.record()
     recorderStartDate = .now
@@ -79,43 +75,24 @@ final class WatchAudioEngineManager {
     persistSnapshot()
 
     let outputURL = try AudioFileStore.destinationURL(noteID: noteID)
-    let composition = AVMutableComposition()
-    guard let track = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-      throw NSError(domain: "VoiceSynapse", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unable to create composition track."])
-    }
-
-    var cursor = CMTime.zero
     var totalDuration: TimeInterval = 0
-    for chunk in chunks {
-      let asset = AVURLAsset(url: chunk.url)
-      guard let sourceTrack = asset.tracks(withMediaType: .audio).first else {
-        continue
-      }
-      let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
-      try track.insertTimeRange(timeRange, of: sourceTrack, at: cursor)
-      cursor = cursor + asset.duration
-      totalDuration += chunk.duration
-    }
 
     if FileManager.default.fileExists(atPath: outputURL.path()) {
       try FileManager.default.removeItem(at: outputURL)
     }
 
-    guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A) else {
-      throw NSError(domain: "VoiceSynapse", code: 3, userInfo: [NSLocalizedDescriptionKey: "Unable to create export session."])
-    }
+    let firstChunkFile = try AVAudioFile(forReading: chunks[0].url)
+    let destinationFile = try AVAudioFile(
+      forWriting: outputURL,
+      settings: Self.recordingSettings,
+      commonFormat: firstChunkFile.processingFormat.commonFormat,
+      interleaved: firstChunkFile.processingFormat.isInterleaved
+    )
 
-    exportSession.outputURL = outputURL
-    exportSession.outputFileType = .m4a
-
-    try await withCheckedThrowingContinuation { continuation in
-      exportSession.exportAsynchronously {
-        if let error = exportSession.error {
-          continuation.resume(throwing: error)
-        } else {
-          continuation.resume(returning: ())
-        }
-      }
+    for chunk in chunks {
+      totalDuration += chunk.duration
+      let sourceFile = try AVAudioFile(forReading: chunk.url)
+      try append(sourceFile: sourceFile, to: destinationFile)
     }
 
     cleanupChunks()
@@ -137,7 +114,7 @@ final class WatchAudioEngineManager {
   private func configureAudioSession() async throws {
     let session = AVAudioSession.sharedInstance()
     let granted = await withCheckedContinuation { continuation in
-      session.requestRecordPermission { allowed in
+      AVAudioApplication.requestRecordPermission { allowed in
         continuation.resume(returning: allowed)
       }
     }
@@ -191,5 +168,28 @@ final class WatchAudioEngineManager {
     defaults?.set(sessionStartDate, forKey: AppPreferences.recordingStartDateKey)
     defaults?.set(chunkCount, forKey: AppPreferences.recordingChunkCountKey)
     WidgetCenter.shared.reloadAllTimelines()
+  }
+
+  private func append(sourceFile: AVAudioFile, to destinationFile: AVAudioFile) throws {
+    let format = sourceFile.processingFormat
+    let capacity = AVAudioFrameCount(max(1, min(sourceFile.length, 8_192)))
+
+    while sourceFile.framePosition < sourceFile.length {
+      let remainingFrames = sourceFile.length - sourceFile.framePosition
+      let frameCount = AVAudioFrameCount(min(Int64(capacity), remainingFrames))
+      guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+        throw NSError(
+          domain: "VoiceSynapse",
+          code: 5,
+          userInfo: [NSLocalizedDescriptionKey: "Unable to allocate audio buffer."]
+        )
+      }
+
+      try sourceFile.read(into: buffer, frameCount: frameCount)
+      if buffer.frameLength == 0 {
+        break
+      }
+      try destinationFile.write(from: buffer)
+    }
   }
 }
