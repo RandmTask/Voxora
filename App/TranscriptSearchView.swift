@@ -42,7 +42,7 @@ struct TranscriptSearchView: View {
           isSearchPresented = false
         }
       )
-      .background(Color(red: 0.055, green: 0.06, blue: 0.1))
+      .background(VoxoraTheme.page)
       .navigationTitle("Search")
       .searchable(
         text: $searchText,
@@ -56,7 +56,6 @@ struct TranscriptSearchView: View {
         }
       }
     }
-    .preferredColorScheme(.dark)
   }
 
   private var results: [AudioNote] {

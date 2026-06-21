@@ -17,7 +17,7 @@ struct VoxoraHomeView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        Color(red: 0.055, green: 0.06, blue: 0.1).ignoresSafeArea()
+        VoxoraTheme.page.ignoresSafeArea()
 
         List {
           recorderControl
@@ -53,7 +53,7 @@ struct VoxoraHomeView: View {
             }
             .padding(.top, 8)
             .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 4, trailing: 20))
-            .listRowBackground(Color(red: 0.055, green: 0.06, blue: 0.1).opacity(0.96))
+            .listRowBackground(VoxoraTheme.page.opacity(0.96))
             .listRowSeparator(.hidden)
 
             ForEach(filteredNotes) { note in
@@ -138,7 +138,6 @@ struct VoxoraHomeView: View {
         Text("This permanently deletes the recording, transcript, and generated outputs.")
       }
     }
-    .preferredColorScheme(.dark)
     .onAppear {
       handlePendingRoute()
     }

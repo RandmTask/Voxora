@@ -35,9 +35,9 @@ struct TranscriptDetailView: View {
     .background(
       LinearGradient(
         colors: [
-          Color(red: 0.04, green: 0.08, blue: 0.16),
-          Color(red: 0.12, green: 0.28, blue: 0.43),
-          Color(red: 0.84, green: 0.92, blue: 0.98)
+          VoxoraTheme.detailGradientTop,
+          VoxoraTheme.detailGradientMiddle,
+          VoxoraTheme.detailGradientBottom
         ],
         startPoint: .top,
         endPoint: .bottom

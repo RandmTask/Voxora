@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
   @Bindable var store: VoxoraStore
   @Environment(\.dismiss) private var dismiss
+  @AppStorage(AppPreferences.appearanceKey) private var appearanceRawValue = AppTheme.dark.rawValue
   @State private var providerDrafts: [AIProvider: String] = [:]
   @State private var editingAction: PromptTemplate?
   @State private var editingAutomation: AutomationProfile?
@@ -13,6 +14,15 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       Form {
+        Section("Appearance") {
+          Picker("Theme", selection: $appearanceRawValue) {
+            ForEach(AppTheme.allCases) { theme in
+              Text(theme.title).tag(theme.rawValue)
+            }
+          }
+          .pickerStyle(.menu)
+        }
+
         Section("Recording controls") {
           Picker("iPhone tap action", selection: Binding(
             get: { store.phonePrimaryButtonBehavior },

@@ -330,3 +330,16 @@ None in this follow-up batch.
 
 Run the Watch background-continuity test on physical hardware. The simulator cannot
 faithfully validate watchOS microphone recording or background audio execution.
+
+## 2026-06-21 — Appearance modes
+
+- Added Light, Dark, and System appearance choices in Settings.
+- Made Dark the default for new installs while preserving the user's selection.
+- Applied the selected color scheme once at the app root so tabs, sheets, and
+  navigation destinations stay consistent.
+- Replaced the hardcoded dark page and transcript-detail backgrounds with adaptive
+  light/dark theme colors.
+
+### Schema changes
+
+None.
