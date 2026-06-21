@@ -9,6 +9,8 @@ enum AppPreferences {
   static let watchPrimaryButtonBehaviorKey = "watchPrimaryButtonBehavior"
   static let defaultAIProviderKey = "defaultAIProvider"
   static let defaultEmailRecipientKey = "defaultEmailRecipient"
+  static let emailSubjectPrefixKey = "emailSubjectPrefix"
+  static let includeTimestampInExportsKey = "includeTimestampInExports"
 }
 
 enum PrimaryButtonBehavior: String, CaseIterable, Identifiable {

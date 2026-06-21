@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct VoxoraHomeView: View {
   @Bindable var store: VoxoraStore
@@ -163,44 +164,79 @@ struct VoxoraHomeView: View {
 
   private var recorderControl: some View {
     VStack(spacing: 18) {
-      Button(action: primaryRecorderAction) {
+      if recorder.state == .idle {
+        Button(action: primaryRecorderAction) {
+          VStack(spacing: 12) {
+            HStack(spacing: 10) {
+              Image(systemName: "mic.fill")
+                .font(.system(size: 30, weight: .semibold))
+              Text("Start recording")
+                .font(.system(size: 26, weight: .bold, design: .rounded))
+            }
+          }
+          .frame(maxWidth: .infinity)
+          .frame(height: 190)
+          .background {
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+              .fill(Color.cyan.opacity(0.14))
+              .stroke(Color.cyan.opacity(0.75), lineWidth: 2)
+          }
+          .contentShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+        }
+        .buttonStyle(.plain)
+      } else {
         VStack(spacing: 12) {
-          HStack(spacing: 10) {
-            Image(systemName: recorderIcon)
-              .font(.system(size: 30, weight: .semibold))
-            Text(recorderTitle)
-              .font(.system(size: 26, weight: .bold, design: .rounded))
-          }
+          Text(formattedDuration(recorder.elapsedTime))
+            .font(.title2.monospacedDigit().weight(.semibold))
 
-          if recorder.state != .idle {
-            Text(formattedDuration(recorder.elapsedTime))
-              .font(.title2.monospacedDigit().weight(.semibold))
-          }
+          RecordingMeterView(samples: recorder.meterSamples, color: recorderColor)
+            .frame(height: 64)
 
-          if !recorderSubtitle.isEmpty {
-            Text(recorderSubtitle)
-              .font(.subheadline)
-              .foregroundStyle(.secondary)
+          if recorder.state == .finalizing {
+            ProgressView("Preparing transcript")
+          } else {
+            HStack(spacing: 26) {
+              if store.phonePrimaryButtonBehavior == .pause {
+                Button {
+                  if recorder.state == .paused {
+                    recorder.resume()
+                  } else {
+                    recorder.pause()
+                  }
+                } label: {
+                  Image(systemName: recorder.state == .paused ? "play.fill" : "pause.fill")
+                    .font(.title3.weight(.semibold))
+                    .frame(width: 46, height: 46)
+                }
+                .buttonStyle(.glass)
+                .accessibilityLabel(recorder.state == .paused ? "Resume recording" : "Pause recording")
+              }
+
+              Button {
+                finishPhoneRecording()
+              } label: {
+                Image(systemName: "stop.fill")
+                  .font(.system(size: 18, weight: .bold))
+                  .foregroundStyle(.white)
+                  .frame(width: 52, height: 52)
+                  .background(.red, in: Circle())
+              }
+              .buttonStyle(.plain)
+              .accessibilityLabel("Stop and transcribe")
+            }
           }
         }
+        .padding(24)
         .frame(maxWidth: .infinity)
-        .frame(height: 190)
+        .frame(minHeight: 190)
         .background {
           RoundedRectangle(cornerRadius: 30, style: .continuous)
             .fill(recorderColor.opacity(0.14))
             .stroke(recorderColor.opacity(0.75), lineWidth: 2)
         }
-        .contentShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
       }
-      .buttonStyle(.plain)
 
-      if recorder.state == .recording || recorder.state == .paused {
-        Button("End & transcribe", systemImage: "stop.fill") {
-          finishPhoneRecording()
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(.red)
-      } else {
+      if recorder.state == .idle {
         Text("Record on iPhone or Apple Watch")
           .font(.footnote)
           .foregroundStyle(.tertiary)
@@ -221,13 +257,18 @@ struct VoxoraHomeView: View {
     .listRowBackground(Color.clear)
     .listRowSeparator(.hidden)
     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-      Button("Delete", systemImage: "trash", role: .destructive) {
+      Button("Delete", systemImage: "trash") {
         requestDelete(note)
       }
+      .tint(.red)
       Button("Generate", systemImage: "sparkles") {
         actionNote = note
       }
       .tint(.purple)
+      Button("Copy Transcript", systemImage: "doc.on.doc") {
+        UIPasteboard.general.string = note.transcriptText
+      }
+      .disabled(note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
       Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
         store.toggleFavorite(note)
       }
@@ -278,33 +319,6 @@ struct VoxoraHomeView: View {
     }
   }
 
-  private var recorderTitle: String {
-    switch recorder.state {
-    case .idle: "Start recording"
-    case .recording: "Recording"
-    case .paused: "Paused"
-    case .finalizing: "Saving"
-    }
-  }
-
-  private var recorderSubtitle: String {
-    switch recorder.state {
-    case .idle: ""
-    case .recording: store.phonePrimaryButtonBehavior == .pause ? "Tap to pause" : "Tap to finish"
-    case .paused: "Tap to resume"
-    case .finalizing: "Preparing transcript"
-    }
-  }
-
-  private var recorderIcon: String {
-    switch recorder.state {
-    case .idle: "mic.fill"
-    case .recording: store.phonePrimaryButtonBehavior == .pause ? "pause.fill" : "checkmark"
-    case .paused: "play.fill"
-    case .finalizing: "waveform"
-    }
-  }
-
   private func primaryRecorderAction() {
     switch recorder.state {
     case .idle:
@@ -344,10 +358,24 @@ struct VoxoraHomeView: View {
   }
 
   private func requestDelete(_ note: AudioNote) {
-    Task {
-      try? await Task.sleep(for: .milliseconds(180))
-      guard !Task.isCancelled else { return }
-      pendingDeleteNote = note
+    pendingDeleteNote = note
+  }
+}
+
+private struct RecordingMeterView: View {
+  let samples: [CGFloat]
+  let color: Color
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 3) {
+      ForEach(Array(samples.enumerated()), id: \.offset) { _, sample in
+        Capsule()
+          .fill(color.gradient)
+          .frame(maxWidth: .infinity)
+          .frame(height: max(5, sample * 58))
+      }
     }
+    .animation(.linear(duration: 0.16), value: samples)
+    .accessibilityHidden(true)
   }
 }

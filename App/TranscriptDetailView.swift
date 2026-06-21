@@ -6,10 +6,13 @@ struct TranscriptDetailView: View {
   @Bindable var note: AudioNote
   @State private var isEditing = false
   @State private var isEmailing = false
+  @State private var titleDraft = ""
+  @FocusState private var isEditingTitle: Bool
 
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 18) {
+        titleBlock
         transcriptBlock
         actionBlock
         outputBlock
@@ -60,6 +63,48 @@ struct TranscriptDetailView: View {
     .sheet(isPresented: $isEmailing) {
       EmailWorkflowSheet(store: store, note: note)
     }
+    .onAppear {
+      titleDraft = note.title
+    }
+    .onChange(of: isEditingTitle) { _, isFocused in
+      if !isFocused {
+        saveTitle()
+      }
+    }
+  }
+
+  private var titleBlock: some View {
+    GlassEffectContainer(spacing: 16) {
+      VStack(alignment: .leading, spacing: 12) {
+        TextField("Note title", text: $titleDraft)
+          .font(.title2.weight(.bold))
+          .focused($isEditingTitle)
+          .submitLabel(.done)
+          .onSubmit {
+            saveTitle()
+            isEditingTitle = false
+          }
+
+        HStack {
+          Label(
+            note.timestamp.formatted(date: .abbreviated, time: .shortened),
+            systemImage: "calendar"
+          )
+          .font(.caption)
+          .foregroundStyle(.secondary)
+
+          Spacer()
+
+          Toggle("Share timestamp", isOn: Binding(
+            get: { store.includeTimestampInExports },
+            set: { store.includeTimestampInExports = $0 }
+          ))
+          .font(.caption)
+        }
+      }
+      .padding(20)
+      .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
+    }
   }
 
   private var transcriptBlock: some View {
@@ -69,6 +114,12 @@ struct TranscriptDetailView: View {
           .font(.headline)
         Text(note.transcriptText.isEmpty ? "Transcription will appear here after watch handoff finishes." : note.transcriptText)
           .frame(maxWidth: .infinity, alignment: .leading)
+          .textSelection(.enabled)
+          .contextMenu {
+            Button("Copy Transcript", systemImage: "doc.on.doc") {
+              UIPasteboard.general.string = note.transcriptText
+            }
+          }
       }
       .padding(20)
       .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
@@ -81,16 +132,25 @@ struct TranscriptDetailView: View {
         Text("AI Actions")
           .font(.headline)
 
-        ForEach(store.prompts.filter(\.isEnabled)) { action in
-          Button {
-            Task {
-              await store.runAction(action, on: note)
+        ScrollView(.horizontal) {
+          HStack(spacing: 10) {
+            ForEach(store.prompts.filter(\.isEnabled)) { action in
+              Button {
+                Task {
+                  await store.runAction(action, on: note)
+                }
+              } label: {
+                Label(action.title, systemImage: action.iconName)
+                  .font(.subheadline.weight(.semibold))
+                  .padding(.horizontal, 14)
+                  .padding(.vertical, 10)
+                  .fixedSize()
+              }
+              .buttonStyle(.glassProminent)
             }
-          } label: {
-            actionLabel(title: action.title, systemImage: action.iconName)
           }
-          .buttonStyle(.glassProminent)
         }
+        .scrollIndicators(.hidden)
       }
       .padding(20)
       .glassEffect(.regular.tint(.blue).interactive(), in: .rect(cornerRadius: 28))
@@ -118,6 +178,12 @@ struct TranscriptDetailView: View {
               }
               Text(output.content)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .textSelection(.enabled)
+                .contextMenu {
+                  Button("Copy Output", systemImage: "doc.on.doc") {
+                    UIPasteboard.general.string = output.content
+                  }
+                }
             }
             .padding(.vertical, 6)
             if output.id != store.outputs(for: note).last?.id {
@@ -131,20 +197,22 @@ struct TranscriptDetailView: View {
     }
   }
 
-  private func actionLabel(title: String, systemImage: String) -> some View {
-    HStack {
-      Label(title, systemImage: systemImage)
-      Spacer()
-      Image(systemName: "arrow.up.right")
-    }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 14)
-    .frame(maxWidth: .infinity)
-  }
-
   private var shareText: String {
-    ([note.transcriptText] + store.outputs(for: note).map(\.content))
+    ([shareTimestamp, note.transcriptText] + store.outputs(for: note).map(\.content))
       .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
       .joined(separator: "\n\n")
+  }
+
+  private var shareTimestamp: String {
+    guard store.includeTimestampInExports else { return "" }
+    return note.timestamp.formatted(date: .long, time: .shortened)
+  }
+
+  private func saveTitle() {
+    let cleaned = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard cleaned != note.title else { return }
+    note.title = cleaned
+    note.updatedAt = .now
+    store.persistChanges()
   }
 }

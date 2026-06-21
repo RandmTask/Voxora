@@ -31,8 +31,16 @@ struct MailComposerView: UIViewControllerRepresentable {
     controller.mailComposeDelegate = context.coordinator
     controller.setToRecipients(draft.recipients)
     controller.setCcRecipients(draft.ccRecipients)
+    controller.setBccRecipients(draft.bccRecipients)
     controller.setSubject(draft.subject)
     controller.setMessageBody(draft.body, isHTML: false)
+    for attachment in draft.attachments {
+      controller.addAttachmentData(
+        attachment.data,
+        mimeType: attachment.mimeType,
+        fileName: attachment.fileName
+      )
+    }
     return controller
   }
 

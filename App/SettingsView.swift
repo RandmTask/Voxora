@@ -29,6 +29,11 @@ struct SettingsView: View {
           .textContentType(.emailAddress)
           .textInputAutocapitalization(.never)
           .keyboardType(.emailAddress)
+
+          TextField("Email subject prefix (for example, Voice Memo:)", text: Binding(
+            get: { store.emailSubjectPrefix },
+            set: { store.emailSubjectPrefix = $0 }
+          ))
         }
 
         Section("Apple Watch app") {

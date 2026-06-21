@@ -2,6 +2,7 @@ import Foundation
 
 enum PromptKind: String, Codable, CaseIterable, Identifiable {
   case todo
+  case numbered
   case bullets
   case custom
 
@@ -13,6 +14,8 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
     switch self {
     case .todo:
       "To-Do"
+    case .numbered:
+      "Numbered"
     case .bullets:
       "Bullets"
     case .custom:
@@ -23,11 +26,13 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
   var defaultTitle: String {
     switch self {
     case .todo:
-      "To-Do Transformer"
+      "To Do"
+    case .numbered:
+      "Numbered List"
     case .bullets:
-      "Numbered/Bulleted List"
+      "Bulleted List"
     case .custom:
-      "Custom Action"
+      "Custom"
     }
   }
 
@@ -39,9 +44,14 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
       Convert implied work into concrete tasks.
       Output markdown checkboxes only.
       """
+    case .numbered:
+      """
+      Distill the transcript into a concise numbered list.
+      Preserve important names, commitments, dates, and sequence.
+      """
     case .bullets:
       """
-      Distill the transcript into a clean hierarchy of numbered or bulleted points.
+      Distill the transcript into a clean hierarchy of bulleted points.
       Preserve important names, commitments, and dates.
       """
     case .custom:
@@ -55,6 +65,7 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
   var defaultIcon: String {
     switch self {
     case .todo: "checklist"
+    case .numbered: "list.number"
     case .bullets: "list.bullet.rectangle"
     case .custom: "wand.and.stars"
     }
@@ -63,6 +74,7 @@ enum PromptKind: String, Codable, CaseIterable, Identifiable {
   var starterID: UUID {
     switch self {
     case .todo: UUID(uuidString: "A1000000-0000-0000-0000-000000000001")!
+    case .numbered: UUID(uuidString: "A1000000-0000-0000-0000-000000000004")!
     case .bullets: UUID(uuidString: "A1000000-0000-0000-0000-000000000002")!
     case .custom: UUID(uuidString: "A1000000-0000-0000-0000-000000000003")!
     }

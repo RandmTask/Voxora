@@ -1,5 +1,97 @@
 # Voxora Implementation Log
 
+## 2026-06-21 — Email Memo composition controls
+
+- Added horizontally scrolling subject chips for the configured prefix, recording
+  date, recording time, source device, and assigned tags.
+- Added fading leading and trailing edges to the chip scrollers so clipped controls
+  visually recede as they move offscreen.
+- Added body presets for transcript only, latest AI output, both, and all AI outputs.
+- Kept the email body editable after choosing a preset or applying AI polish.
+- Added independent body timestamp and transcript `.txt` attachment controls.
+- Added a recipient options menu for restoring the default recipient and revealing
+  optional Cc and Bcc fields.
+- Extended the native Mail handoff to include Bcc recipients and attachments.
+- Regenerated the Xcode project and verified a successful full build for the iPhone
+  17 Pro iOS 26.5 simulator and its dependent watchOS targets.
+
+### Schema changes
+
+None. The new controls are draft-local and reuse existing note, tag, output, and
+local preference data.
+
+### Next validation
+
+On a physical iPhone, confirm chip fading and keyboard behavior, then send test
+messages covering Cc/Bcc, each body preset, AI polish, and the transcript attachment.
+
+## 2026-06-21 — Transcript, note-list, and email workflow UI pass
+
+- Removed the duplicated row of large Edit, Copy, Share, and Email buttons from
+  transcript detail; these secondary actions remain in the trailing toolbar menu.
+- Replaced `NavigationLink` note rows with explicit button-driven navigation so the
+  disclosure chevron can live inside each glass card.
+- Simplified ready-state presentation to the green checkmark only, retaining an
+  accessibility label without repeating the visible word “Ready.”
+- Replaced the sticky `Recent notes` section header with an opaque in-flow list row
+  so it no longer becomes translucent or overlaps note content while scrolling.
+- Kept the filter icon outlined whether or not filters are active.
+- Expanded the Email Memo workflow:
+  - Added a persisted default recipient setting.
+  - Added an optional Cc field and passed Cc recipients to the native Mail composer.
+  - Added concise, friendly, formal, and action-focused polish presets.
+  - Retained custom AI polish instructions.
+  - Added a local blue progress treatment reading “Cooking with [provider]…” while
+    polishing, rather than allowing the disabled state to wash the label white.
+  - Moved Compose to the trailing navigation-bar action.
+- Verified a successful full build for the iPhone 17 Pro iOS 26.5 simulator,
+  including its paired watchOS targets.
+
+### Schema changes
+
+None. The default email recipient is stored in local `UserDefaults`.
+
+### Reusable lessons
+
+Added cross-app guidance to `_shared/ui-conventions.md` covering secondary-action
+duplication, custom navigation-row chevrons, sticky list headers, async button state,
+and icon-only status accessibility.
+
+### Next validation
+
+Run the note-list scroll, Email Memo polish, and native Mail handoff on a physical
+iPhone to confirm keyboard behavior, Apple Intelligence progress timing, and the
+configured default recipient/Cc values.
+
+## 2026-06-21 — Voice-note interaction and transcript polish
+
+- Added Copy Transcript to the note-row long-press menu and copy actions to
+  transcript/output text.
+- Moved the ready checkmark to the same trailing alignment as the disclosure
+  chevron.
+- Replaced the recording completion checkmark and large End & Transcribe button
+  with a Voice Memos-style live audio meter and compact red stop control.
+- Kept pause/resume visible only when the pause recording preference is enabled.
+- Removed the destructive swipe role that caused note rows to disappear before
+  delete confirmation.
+- Added a configurable email subject prefix.
+- Replaced vertically stacked AI actions with compact horizontally scrolling
+  buttons and split the starter list action into Numbered List and Bulleted List.
+- Added inline transcript-title editing and a Share Timestamp preference that
+  includes the recording date/time in copied, shared, and emailed note content.
+- Verified successful iPhone arm64 simulator and watchOS simulator builds.
+
+### Schema changes
+
+None. New settings use local preferences, and the new starter AI action uses the
+existing `PromptTemplate` model.
+
+### Next phase
+
+Add synced custom transcription vocabulary/keywords for names and terms that are
+commonly mistranscribed, then feed them into each supported transcription engine
+where the engine API permits contextual vocabulary.
+
 ## 2026-06-21 — Phase 1 workflow tools and recording re-entry fix
 
 - Added searchable voice notes with All, Active, Archived, and Failed filters.

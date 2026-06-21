@@ -25,18 +25,13 @@ struct AudioNoteCard: View {
 
             Spacer()
 
-            if isPlaying || note.processingStatus != .ready {
+            if isPlaying || (note.processingStatus != .ready && note.processingStatus != .idle) {
               Label(
                 isPlaying ? "Playing" : note.processingStatus.title,
                 systemImage: isPlaying ? "speaker.wave.2.fill" : statusIcon
               )
               .font(.caption.weight(.semibold))
               .foregroundStyle(statusColor)
-            } else {
-              Image(systemName: statusIcon)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(statusColor)
-                .accessibilityLabel("Ready")
             }
           }
 
@@ -61,9 +56,21 @@ struct AudioNoteCard: View {
           .foregroundStyle(.tertiary)
         }
 
-        Image(systemName: "chevron.right")
-          .font(.body.weight(.semibold))
-          .foregroundStyle(.tertiary)
+        VStack(spacing: 0) {
+          if !isPlaying && note.processingStatus == .ready {
+            Image(systemName: "checkmark.circle")
+              .font(.title3.weight(.semibold))
+              .foregroundStyle(.green)
+              .accessibilityLabel("Ready")
+          }
+
+          Spacer()
+
+          Image(systemName: "chevron.right")
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.tertiary)
+        }
+        .frame(width: 22)
       }
       .padding(18)
       .frame(maxWidth: .infinity, alignment: .leading)

@@ -49,6 +49,22 @@ final class VoxoraStore {
       )
     }
   }
+  var emailSubjectPrefix = "" {
+    didSet {
+      UserDefaults.standard.set(
+        emailSubjectPrefix,
+        forKey: AppPreferences.emailSubjectPrefixKey
+      )
+    }
+  }
+  var includeTimestampInExports = false {
+    didSet {
+      UserDefaults.standard.set(
+        includeTimestampInExports,
+        forKey: AppPreferences.includeTimestampInExportsKey
+      )
+    }
+  }
 
   private let container: ModelContainer
   private let context: ModelContext
@@ -79,6 +95,12 @@ final class VoxoraStore {
     defaultEmailRecipient = UserDefaults.standard.string(
       forKey: AppPreferences.defaultEmailRecipientKey
     ) ?? ""
+    emailSubjectPrefix = UserDefaults.standard.string(
+      forKey: AppPreferences.emailSubjectPrefixKey
+    ) ?? ""
+    includeTimestampInExports = UserDefaults.standard.bool(
+      forKey: AppPreferences.includeTimestampInExportsKey
+    )
   }
 
   func prepare() async {
@@ -546,6 +568,30 @@ final class VoxoraStore {
     }
     saveContext()
     reload()
+    normalizeStarterPromptTitles()
+  }
+
+  private func normalizeStarterPromptTitles() {
+    var changed = false
+    for prompt in prompts {
+      if prompt.id == PromptKind.todo.starterID,
+         prompt.title == "To-Do Transformer" {
+        prompt.title = PromptKind.todo.defaultTitle
+        changed = true
+      } else if prompt.id == PromptKind.bullets.starterID,
+                prompt.title == "Numbered/Bulleted List" {
+        prompt.title = PromptKind.bullets.defaultTitle
+        changed = true
+      } else if prompt.id == PromptKind.custom.starterID,
+                prompt.title == "Custom Action" {
+        prompt.title = PromptKind.custom.defaultTitle
+        changed = true
+      }
+    }
+    if changed {
+      saveContext()
+      reload()
+    }
   }
 
   private func migrateLegacyRecords() {
