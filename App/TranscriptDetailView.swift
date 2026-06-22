@@ -128,7 +128,7 @@ struct TranscriptDetailView: View {
         Label {
           Text("\(note.timestamp.formatted(date: .abbreviated, time: .shortened)) (\(formattedDuration))")
         } icon: {
-          Image(systemName: "calendar")
+          Image(systemName: note.source.systemImage)
         }
         .font(.caption)
         .foregroundStyle(.secondary)
@@ -166,18 +166,10 @@ struct TranscriptDetailView: View {
     }
   }
 
-  /// Resting inset of the first/last button from the screen edge. Kept smaller
-  /// than `actionRowFade` so buttons dissolve into the fade instead of leaving
-  /// an empty dead-zone before them.
-  private let actionRowInset: CGFloat = 8
-  /// Width of the soft fade at each edge of the action strip.
-  private let actionRowFade: CGFloat = 22
-
   private var actionBlock: some View {
     VStack(alignment: .leading, spacing: 10) {
       Text("AI Actions")
         .font(.headline)
-        .padding(.horizontal, 4)
 
       ScrollView(.horizontal) {
         HStack(spacing: 12) {
@@ -193,7 +185,8 @@ struct TranscriptDetailView: View {
                 .padding(.vertical, 11)
                 .fixedSize()
             }
-            .buttonStyle(.glassProminent)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
           }
 
           Button {
@@ -205,35 +198,17 @@ struct TranscriptDetailView: View {
               .padding(.vertical, 11)
               .fixedSize()
           }
-          .buttonStyle(.glass)
+          .buttonStyle(.bordered)
+          .buttonBorderShape(.capsule)
         }
         .padding(.vertical, 4)
       }
       .scrollIndicators(.hidden)
-      // Suppress the scroll view's default edge material so the page gradient
-      // shows through cleanly between/behind the glass buttons.
-      .scrollContentBackground(.hidden)
-      .background(Color.clear)
-      // Bleed the scroller out to the true screen edges (undo the parent's 20pt
-      // padding), then re-inset the content so the first button rests aligned
-      // with the "AI Actions" title above it.
+      // Bleed to the true screen edges (undo the parent's 20pt padding) so the
+      // strip scrolls off-screen cleanly, but rest the first/last button at the
+      // 20pt page margin so it lines up with the title and section picker.
       .padding(.horizontal, -20)
-      .contentMargins(.horizontal, actionRowInset, for: .scrollContent)
-      // Constant-width soft fade on both edges so buttons dissolve off-screen
-      // instead of hard-clipping. Fixed points (not fractions) keep the fade
-      // the same width on every device.
-      .mask {
-        GeometryReader { geo in
-          HStack(spacing: 0) {
-            LinearGradient(colors: [.clear, .black], startPoint: .leading, endPoint: .trailing)
-              .frame(width: actionRowFade)
-            Color.black
-              .frame(width: max(0, geo.size.width - actionRowFade * 2))
-            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-              .frame(width: actionRowFade)
-          }
-        }
-      }
+      .contentMargins(.horizontal, 20, for: .scrollContent)
     }
   }
 

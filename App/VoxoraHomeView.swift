@@ -432,18 +432,6 @@ struct VoxoraHomeView: View {
       Button("Delete Note", systemImage: "trash", role: .destructive) {
         requestDelete(note)
       }
-    } preview: {
-      // The card's glass renders flat (dim) in the default lift snapshot. A custom
-      // preview on a solid page background keeps the lifted card looking bright.
-      // It needs an explicit width or the card collapses to its smallest content.
-      AudioNoteCard(
-        note: note,
-        isPlaying: playback.playingNoteID == note.id,
-        tags: store.tags(for: note)
-      )
-      .frame(width: UIScreen.main.bounds.width - 40)
-      .padding(10)
-      .background(VoxoraTheme.page)
     }
   }
 

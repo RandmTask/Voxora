@@ -57,6 +57,10 @@ struct AudioNoteCard: View {
       .padding(18)
       .frame(maxWidth: .infinity, alignment: .leading)
       .glassEffect(.regular, in: .rect(cornerRadius: 26))
+      // Solid page-coloured backing behind the glass. Invisible normally (the page
+      // is the same colour), but it travels with the row into the context-menu lift
+      // snapshot, so the glass no longer renders dim/flat when long-pressed.
+      .background(VoxoraTheme.page, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
       .overlay(alignment: .trailing) {
         if !showsStatus {
           Image(systemName: "chevron.right")
