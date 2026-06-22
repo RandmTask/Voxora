@@ -1,11 +1,19 @@
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 struct VoxoraHomeView: View {
   @Bindable var store: VoxoraStore
   @State private var recorder = PhoneAudioRecorder()
   @State private var playback = AudioPlaybackController()
   @State private var isShowingSettings = false
+  @State private var isImporting = false
+  @State private var isSelecting = false
+  @State private var selectedIDs = Set<UUID>()
+  @State private var pendingBatchDelete = false
+  @State private var shareItems: [Any]?
+  @State private var batchEmailDraft: EmailDraft?
+  @State private var activeTagFilter: UUID?
   @Environment(\.colorScheme) private var systemColorScheme
   @State private var actionNote: AudioNote?
   @State private var emailNote: AudioNote?
@@ -26,10 +34,19 @@ struct VoxoraHomeView: View {
         VoxoraTheme.page.ignoresSafeArea()
 
         List {
-          recorderControl
-            .listRowInsets(EdgeInsets(top: 16, leading: 20, bottom: 8, trailing: 20))
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
+          if !isSelecting {
+            recorderControl
+              .listRowInsets(EdgeInsets(top: 16, leading: 20, bottom: 8, trailing: 20))
+              .listRowBackground(Color.clear)
+              .listRowSeparator(.hidden)
+          }
+
+          if !isSelecting && !store.notes.isEmpty && !store.tags.isEmpty {
+            tagFilterStrip
+              .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 6, trailing: 0))
+              .listRowBackground(Color.clear)
+              .listRowSeparator(.hidden)
+          }
 
           if store.notes.isEmpty {
             ContentUnavailableView(
@@ -50,7 +67,7 @@ struct VoxoraHomeView: View {
               .listRowSeparator(.hidden)
           } else {
             HStack {
-              Text("Recent notes")
+              Text(isSelecting ? selectionHeaderText : "Recent notes")
                 .font(.title3.weight(.bold))
               Spacer()
               if store.isProcessing {
@@ -72,22 +89,67 @@ struct VoxoraHomeView: View {
       }
       .navigationTitle("Voxora")
       .toolbar {
-        ToolbarItemGroup(placement: .topBarTrailing) {
-          Menu {
-            Toggle("Hide unusable", isOn: $hideUnusable)
-            Toggle("Hide failed", isOn: $hideFailed)
-            Toggle("Show archived", isOn: $showArchived)
-          } label: {
-            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+        if isSelecting {
+          ToolbarItem(placement: .topBarLeading) {
+            Button(selectedIDs.count == filteredNotes.count ? "Deselect All" : "Select All") {
+              if selectedIDs.count == filteredNotes.count {
+                selectedIDs.removeAll()
+              } else {
+                selectedIDs = Set(filteredNotes.map(\.id))
+              }
+            }
           }
-          .labelStyle(.iconOnly)
-          .buttonStyle(.glass)
+          ToolbarItem(placement: .topBarTrailing) {
+            Button("Done") {
+              exitSelection()
+            }
+            .fontWeight(.semibold)
+          }
+        } else {
+          ToolbarItemGroup(placement: .topBarTrailing) {
+            Menu {
+              Section {
+                Toggle("Hide unusable", isOn: $hideUnusable)
+                Toggle("Hide failed", isOn: $hideFailed)
+                Toggle("Show archived", isOn: $showArchived)
+              }
+              Section {
+                Button("Select Notes", systemImage: "checkmark.circle") {
+                  isSelecting = true
+                }
+                Button("Import Audio", systemImage: "square.and.arrow.down") {
+                  isImporting = true
+                }
+              }
+            } label: {
+              Label("Options", systemImage: "ellipsis.circle")
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass)
 
-          Button("Settings", systemImage: "slider.horizontal.3") {
-            isShowingSettings = true
+            Button("Settings", systemImage: "slider.horizontal.3") {
+              isShowingSettings = true
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass)
           }
-          .labelStyle(.iconOnly)
-          .buttonStyle(.glass)
+        }
+      }
+      .safeAreaInset(edge: .bottom) {
+        if isSelecting {
+          selectionActionBar
+        }
+      }
+      .fileImporter(
+        isPresented: $isImporting,
+        allowedContentTypes: [.audio],
+        allowsMultipleSelection: true
+      ) { result in
+        switch result {
+        case .success(let urls):
+          Task { await store.importAudioFiles(urls) }
+        case .failure(let error):
+          store.errorMessage = error.localizedDescription
         }
       }
       .sheet(isPresented: $isShowingSettings) {
@@ -110,6 +172,30 @@ struct VoxoraHomeView: View {
       }
       .sheet(item: $emailNote) { note in
         EmailWorkflowSheet(store: store, note: note)
+      }
+      .sheet(item: $batchEmailDraft) { draft in
+        MailComposerView(draft: draft) {
+          batchEmailDraft = nil
+          exitSelection()
+        }
+        .ignoresSafeArea()
+      }
+      .sheet(isPresented: Binding(
+        get: { shareItems != nil },
+        set: { if !$0 { shareItems = nil } }
+      )) {
+        if let shareItems {
+          ActivityView(items: shareItems)
+        }
+      }
+      .alert(
+        "Delete \(selectedIDs.count) \(selectedIDs.count == 1 ? "note" : "notes")?",
+        isPresented: $pendingBatchDelete
+      ) {
+        Button("Delete", role: .destructive) { performBatchDelete() }
+        Button("Cancel", role: .cancel) {}
+      } message: {
+        Text("This permanently deletes the recordings, transcripts, and generated outputs.")
       }
       .alert("Voxora", isPresented: Binding(
         get: { store.errorMessage != nil || recorder.errorMessage != nil },
@@ -172,7 +258,41 @@ struct VoxoraHomeView: View {
     }
     if hideFailed && status == .failed { return false }
     if !showArchived && note.archivedAt != nil { return false }
+    if let activeTagFilter,
+       !store.tags(for: note).contains(where: { $0.id == activeTagFilter }) {
+      return false
+    }
     return true
+  }
+
+  @ViewBuilder
+  private var tagFilterStrip: some View {
+    if !store.tags.isEmpty {
+      ScrollView(.horizontal) {
+        HStack(spacing: 8) {
+          ForEach(store.tags) { tag in
+            let isActive = activeTagFilter == tag.id
+            Button {
+              activeTagFilter = isActive ? nil : tag.id
+              Haptics.fire(.selectionChanged)
+            } label: {
+              Label(tag.name, systemImage: "tag")
+                .font(.caption.weight(.medium))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+            }
+            .buttonStyle(.plain)
+            .background(
+              isActive ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.thinMaterial),
+              in: Capsule()
+            )
+            .foregroundStyle(isActive ? .white : .primary)
+          }
+        }
+        .padding(.horizontal, 20)
+      }
+      .scrollIndicators(.hidden)
+    }
   }
 
   private var recorderControl: some View {
@@ -256,16 +376,28 @@ struct VoxoraHomeView: View {
 
   private func noteRow(_ note: AudioNote) -> some View {
     Button {
-      selectedNote = note
+      if isSelecting {
+        toggleSelection(note)
+      } else {
+        selectedNote = note
+      }
     } label: {
-      AudioNoteCard(note: note, isPlaying: playback.playingNoteID == note.id)
+      HStack(spacing: 10) {
+        if isSelecting {
+          Image(systemName: selectedIDs.contains(note.id) ? "checkmark.circle.fill" : "circle")
+            .font(.title2)
+            .foregroundStyle(selectedIDs.contains(note.id) ? Color.accentColor : .secondary)
+            .transition(.scale.combined(with: .opacity))
+        }
+        AudioNoteCard(note: note, isPlaying: playback.playingNoteID == note.id)
+      }
     }
     .buttonStyle(.plain)
     .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
     .listRowBackground(Color.clear)
     .listRowSeparator(.hidden)
     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-      Button("Delete", systemImage: "trash") {
+      Button("Delete", systemImage: "trash", role: .destructive) {
         requestDelete(note)
       }
       .tint(.red)
@@ -333,17 +465,20 @@ struct VoxoraHomeView: View {
   private func primaryRecorderAction() {
     switch recorder.state {
     case .idle:
+      Haptics.fire(.start)
       Task {
         do { try await recorder.start() }
         catch { recorder.errorMessage = error.localizedDescription }
       }
     case .recording:
       if store.phonePrimaryButtonBehavior == .pause {
+        Haptics.fire(.light)
         recorder.pause()
       } else {
         finishPhoneRecording()
       }
     case .paused:
+      Haptics.fire(.light)
       recorder.resume()
     case .finalizing:
       break
@@ -371,6 +506,7 @@ struct VoxoraHomeView: View {
 
   private func finishPhoneRecording() {
     do {
+      Haptics.fire(.stop)
       let recording = try recorder.finish()
       store.ingestPhoneRecording(
         fileURL: recording.fileURL,
@@ -390,6 +526,136 @@ struct VoxoraHomeView: View {
   private func requestDelete(_ note: AudioNote) {
     pendingDeleteNote = note
   }
+
+  // MARK: - Multi-select
+
+  private var selectionHeaderText: String {
+    selectedIDs.isEmpty ? "Select notes" : "\(selectedIDs.count) selected"
+  }
+
+  private var selectionActionBar: some View {
+    HStack(spacing: 0) {
+      selectionAction("Delete", systemImage: "trash", tint: .red) {
+        pendingBatchDelete = true
+      }
+      selectionAction("Export", systemImage: "square.and.arrow.up") {
+        exportSelection()
+      }
+      selectionAction("Email", systemImage: "envelope") {
+        emailSelection()
+      }
+    }
+    .padding(.vertical, 10)
+    .background(.bar)
+    .disabled(selectedIDs.isEmpty)
+    .animation(.easeInOut, value: selectedIDs.isEmpty)
+  }
+
+  private func selectionAction(
+    _ title: String,
+    systemImage: String,
+    tint: Color = .accentColor,
+    action: @escaping () -> Void
+  ) -> some View {
+    Button(action: action) {
+      VStack(spacing: 3) {
+        Image(systemName: systemImage)
+          .font(.title3)
+        Text(title)
+          .font(.caption2)
+      }
+      .frame(maxWidth: .infinity)
+      .foregroundStyle(selectedIDs.isEmpty ? AnyShapeStyle(.secondary) : AnyShapeStyle(tint))
+    }
+  }
+
+  private var selectedNotes: [AudioNote] {
+    store.notes.filter { selectedIDs.contains($0.id) }
+      .sorted { $0.timestamp < $1.timestamp }
+  }
+
+  private func toggleSelection(_ note: AudioNote) {
+    if selectedIDs.contains(note.id) {
+      selectedIDs.remove(note.id)
+    } else {
+      selectedIDs.insert(note.id)
+    }
+    Haptics.fire(.selectionChanged)
+  }
+
+  private func exitSelection() {
+    isSelecting = false
+    selectedIDs.removeAll()
+  }
+
+  private func performBatchDelete() {
+    for note in selectedNotes {
+      if playback.playingNoteID == note.id { playback.stop() }
+      store.delete(note)
+    }
+    exitSelection()
+  }
+
+  private func combinedText(for notes: [AudioNote]) -> String {
+    notes.map { note in
+      var parts = ["# \(note.displayTitle)"]
+      if store.includeTimestampInExports {
+        parts.append(note.timestamp.formatted(date: .abbreviated, time: .shortened))
+      }
+      let transcript = note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines)
+      if !transcript.isEmpty { parts.append(transcript) }
+      for output in store.outputs(for: note) where
+        !output.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        parts.append("## \(output.actionTitle)\n\(output.content)")
+      }
+      return parts.joined(separator: "\n\n")
+    }
+    .joined(separator: "\n\n---\n\n")
+  }
+
+  private func exportSelection() {
+    let notes = selectedNotes
+    guard !notes.isEmpty else { return }
+    var items: [Any] = [combinedText(for: notes)]
+    if let directory = try? AudioFileStore.directoryURL() {
+      for note in notes where !note.audioFileName.isEmpty {
+        let url = directory.appending(path: note.audioFileName)
+        if FileManager.default.fileExists(atPath: url.path()) {
+          items.append(url)
+        }
+      }
+    }
+    shareItems = items
+  }
+
+  private func emailSelection() {
+    let notes = selectedNotes
+    guard !notes.isEmpty else { return }
+    guard MailComposerView.canSendMail else {
+      store.errorMessage = "Mail isn't set up on this device."
+      return
+    }
+    let recipient = store.defaultEmailRecipient.trimmingCharacters(in: .whitespacesAndNewlines)
+    let prefix = store.emailSubjectPrefix.trimmingCharacters(in: .whitespacesAndNewlines)
+    let subject = prefix.isEmpty
+      ? "\(notes.count) Voxora memos"
+      : "\(prefix) — \(notes.count) memos"
+    batchEmailDraft = EmailDraft(
+      recipients: recipient.isEmpty ? [] : [recipient],
+      subject: subject,
+      body: combinedText(for: notes)
+    )
+  }
+}
+
+private struct ActivityView: UIViewControllerRepresentable {
+  let items: [Any]
+
+  func makeUIViewController(context: Context) -> UIActivityViewController {
+    UIActivityViewController(activityItems: items, applicationActivities: nil)
+  }
+
+  func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 private struct RecordingMeterView: View {

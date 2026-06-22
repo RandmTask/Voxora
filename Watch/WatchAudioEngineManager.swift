@@ -54,6 +54,7 @@ final class WatchAudioEngineManager {
     recorderStartDate = .now
     recordingState = .recording
     pausedAt = nil
+    Haptics.fire(.start)
     startTimer()
     persistSnapshot()
   }
@@ -71,6 +72,7 @@ final class WatchAudioEngineManager {
     recordingState = .paused
     pausedAt = .now
     chunkCount = chunks.count
+    Haptics.fire(.light)
     stopTimer()
     persistSnapshot()
   }
@@ -113,6 +115,7 @@ final class WatchAudioEngineManager {
     elapsedTime = 0
     chunkCount = 0
     sessionStartDate = nil
+    Haptics.fire(.stop)
     persistSnapshot()
 
     return FinalizedRecording(

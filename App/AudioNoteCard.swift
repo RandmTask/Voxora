@@ -27,6 +27,7 @@ struct AudioNoteCard: View {
           HStack(spacing: 5) {
             if showSourceIcon && note.source != .either {
               Image(systemName: note.source.systemImage)
+                .font(.system(size: 14))
             }
             Text("\(note.timestamp.formatted(date: .abbreviated, time: .shortened)) (\(formattedDuration))")
           }

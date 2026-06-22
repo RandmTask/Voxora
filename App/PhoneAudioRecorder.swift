@@ -100,13 +100,17 @@ final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
 
   private func startTimer() {
     timer?.invalidate()
-    timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+    timer = Timer.scheduledTimer(withTimeInterval: 0.06, repeats: true) { [weak self] _ in
       Task { @MainActor in
         guard let self, let recorder = self.recorder else { return }
         self.elapsedTime = recorder.currentTime
         recorder.updateMeters()
         let decibels = recorder.averagePower(forChannel: 0)
-        let normalized = max(0, min(1, pow(10, decibels / 24)))
+        // Map the useful speech range (noise floor → 0 dB) onto 0...1, then
+        // apply a gentle curve so quiet speech still produces a visible bar.
+        let floor: Float = -45
+        let linear = max(0, min(1, (decibels - floor) / -floor))
+        let normalized = pow(linear, 0.6)
         self.meterSamples.removeFirst()
         self.meterSamples.append(CGFloat(normalized))
       }

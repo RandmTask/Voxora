@@ -165,27 +165,34 @@ proxy ships.
 Surface these in batch-summary "next step" questions; don't build unprompted.
 
 **Audio input**
-- **Import audio files (approved)** — `.fileImporter` / `UIDocumentPickerViewController` accepting
-  `UTType.audio` (MP3, M4A, WAV, etc.). Copy into AudioFileStore, create `AudioNote`, route
-  through the same transcription pipeline. Apple Speech handles M4A; Gemini/OpenAI handle MP3.
-  Needs `NSMicrophoneUsageDescription` already present; no new entitlement.
+- ✅ **Import audio files** — `.fileImporter` (multi-file) → `VoxoraStore.importAudioFiles`,
+  `RecordingSource.imported`. Done 2026-06-21.
+- **Long-file transcription handling** — Apple Speech has a ~60s hard ceiling and silently fails
+  or truncates beyond it. All new recordings also use Apple Speech by default (see `VoxoraStore.transcribeAppleAudio`).
+  Two parts to fix: (1) **auto-detect** at transcription time — if audio duration > threshold (e.g. 90s),
+  auto-select the user's preferred cloud engine (Gemini/OpenAI) instead of Apple Speech, with a
+  visible indicator; (2) **smart retry** — if Apple Speech produces an empty or suspiciously short
+  transcript vs. duration, surface a "Transcription may be incomplete — retry with cloud?" prompt.
+  Until this ships, users can manually retranscribe via the note detail menu.
 - **Audio trimming / re-record** before transcription.
 - **Live transcription while recording** — stream partials on iPhone.
 - **Watch standalone transcription** when the phone is unreachable (deferred today).
 
 **Organisation (approved direction: tag-based, not folders)**
-- **Tag system like SteadyState** — tag pills in list header, tap to filter, multi-tag per note
-  already supported via `NoteTagAssignment`. Build a horizontal pill strip filter above the list.
-  No schema change needed.
+- 🟡 **Tag system like SteadyState** — tag pill filter strip in list header DONE 2026-06-21.
+  Still TODO for full parity: confirm SteadyState's exact UX, add tag assignment from multi-select,
+  multi-tag AND/OR filtering, tag colors.
 - **Saved searches** — persist a search query + active filters as a named shortcut.
-- **Bulk / multi-select** — select multiple notes to: delete with confirm, archive, assign tags,
-  export as bundle, or email combined. Needs a multi-select mode toggle in the list toolbar.
+- ✅ **Bulk / multi-select** — delete / export / email combined. Done 2026-06-21.
+  TODO: add archive + assign-tags batch actions.
 - **Recording presets** (Meeting / Memo / Idea) bundling source + action + tags.
 
 **Automation & workflows**
-- **Auto-email** — after transcription, if note duration ≥ user-set threshold, post a local
-  notification deep-linking to the email compose sheet (iOS Mail requires foreground; cannot
-  send silently). Complexity: medium. Settings: toggle on/off + minimum seconds.
+- **Auto-email (gated on backend)** — Whisper Memos does this **server-side**: the backend
+  transcribes and emails via a transactional service (SendGrid/Postmark). iOS cannot send mail
+  silently from the client. So auto-email must live in the same pre-release proxy that holds the
+  API keys (see Rule #2). Do NOT build the client-notification workaround — wait for the backend.
+  Settings will be: toggle + minimum-seconds threshold + recipient.
 - **Shortcuts / App Intents** — "Record a Voxora memo", "Summarise last memo", "Email last memo".
 - **Apple Reminders from action items** — parse to-do output → preview list → confirm → `EKReminder`.
   Needs Reminders entitlement + `NSRemindersFullAccessUsageDescription`.
@@ -200,10 +207,9 @@ Surface these in batch-summary "next step" questions; don't build unprompted.
   file is present without `FileManager.default.fileExists` check at call time.
 
 **Haptics**
-- **iPhone haptics** — `UIFeedbackGenerator` (light impact on record start, heavy on stop,
-  success notification on transcription complete, error on failure). See `../_shared/haptics.md`.
-- **Apple Watch haptics** — `WKHapticType` in the Watch target: `.start` on record, `.stop` on
-  stop, `.success` on transfer complete.
+- ✅ **iPhone + Watch haptics** — `Shared/Haptics.swift` (done 2026-06-21). Wired to record
+  start/stop/pause, transcription success/failure, favorite, delete, multi-select tick, and Watch
+  start/pause/finish. TODO: tune Watch `.success` on phone-side transfer-complete confirmation.
 
 **AI & output**
 - **Speaker / chapter segmentation** — timestamped sections; tap to seek.

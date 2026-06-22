@@ -1,3 +1,4 @@
+import AVFoundation
 import Observation
 import SwiftData
 import SwiftUI
@@ -220,6 +221,56 @@ final class VoxoraStore {
     }
   }
 
+  func importAudioFiles(_ urls: [URL]) async {
+    var importedIDs: [UUID] = []
+    for url in urls {
+      let accessed = url.startAccessingSecurityScopedResource()
+      defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+
+      let noteID = UUID()
+      let ext = url.pathExtension.isEmpty ? "m4a" : url.pathExtension
+      do {
+        let destination = try AudioFileStore.copyAudioFile(
+          from: url,
+          noteID: noteID,
+          fileExtension: ext
+        )
+        let duration = await audioDuration(at: destination)
+        let createdAt = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?
+          .contentModificationDate ?? Date()
+
+        let note = AudioNote(
+          id: noteID,
+          timestamp: createdAt,
+          title: url.deletingPathExtension().lastPathComponent,
+          processingStatus: .uploading,
+          source: .imported,
+          audioFileName: destination.lastPathComponent,
+          duration: duration
+        )
+        context.insert(note)
+        importedIDs.append(noteID)
+      } catch {
+        errorMessage = "Couldn't import \(url.lastPathComponent): \(error.localizedDescription)"
+      }
+    }
+
+    guard !importedIDs.isEmpty else { return }
+    saveContext()
+    reload()
+    Haptics.fire(.success)
+    for noteID in importedIDs {
+      await processImportedAudio(noteID: noteID)
+    }
+  }
+
+  private func audioDuration(at url: URL) async -> TimeInterval {
+    let asset = AVURLAsset(url: url)
+    guard let duration = try? await asset.load(.duration) else { return 0 }
+    let seconds = CMTimeGetSeconds(duration)
+    return seconds.isFinite ? seconds : 0
+  }
+
   func ingestPhoneRecording(fileURL: URL, noteID: UUID, createdAt: Date, duration: TimeInterval) {
     ingestStagedAudio(
       fileURL: fileURL,
@@ -422,6 +473,7 @@ final class VoxoraStore {
   func toggleFavorite(_ note: AudioNote) {
     note.isFavorite.toggle()
     note.updatedAt = Date()
+    Haptics.fire(.light)
     saveContext()
     reload()
   }
@@ -519,6 +571,7 @@ final class VoxoraStore {
 
   func delete(_ note: AudioNote) {
     do {
+      Haptics.fire(.error)
       try AudioFileStore.removeAudioFile(named: note.audioFileName)
       for assignment in tagAssignments where assignment.noteID == note.id {
         context.delete(assignment)
@@ -573,6 +626,7 @@ final class VoxoraStore {
       saveContext()
       reload()
       if !cleanedTranscript.isEmpty {
+        Haptics.fire(.success)
         await runPostTranscriptionAutomation(for: note)
       }
     } catch {
@@ -582,6 +636,7 @@ final class VoxoraStore {
       saveContext()
       reload()
       if UIApplication.shared.applicationState == .active {
+        Haptics.fire(.error)
         errorMessage = error.localizedDescription
       }
     }

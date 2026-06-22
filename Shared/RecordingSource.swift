@@ -3,6 +3,7 @@ import Foundation
 enum RecordingSource: String, CaseIterable, Identifiable {
   case iPhone
   case watch
+  case imported
   case either
 
   var id: String { rawValue }
@@ -11,7 +12,8 @@ enum RecordingSource: String, CaseIterable, Identifiable {
     switch self {
     case .iPhone: "iPhone"
     case .watch: "Watch"
-    case .either: "Either"
+    case .imported: "Imported"
+    case .either: "Any source"
     }
   }
 
@@ -23,6 +25,7 @@ enum RecordingSource: String, CaseIterable, Identifiable {
     switch self {
     case .iPhone: "iphone"
     case .watch: "applewatch"
+    case .imported: "square.and.arrow.down"
     case .either: "iphone"
     }
   }

@@ -1,5 +1,40 @@
 # Voxora Implementation Log
 
+## 2026-06-21 — Haptics, audio import, multi-select, tag filtering, UX polish
+
+- **Settings UX**: live theme updates (fixed System), Email page relabelled with
+  no caption text, Apple Intelligence hidden on unsupported devices, AI Actions
+  reorder (drag), output delete + overwrite-on-rerun, blank-action placeholders,
+  Advanced settings page, Tags add button, empty-state copy for Tags/Automations.
+- **Haptics**: new `Shared/Haptics.swift` (iOS + watchOS). Wired to record
+  start/stop/pause, transcription success/failure, favorite, delete, and Watch
+  start/pause/finish. Follows `_shared/haptics.md`.
+- **Audio import**: `.fileImporter` (multi-file) → `VoxoraStore.importAudioFiles`.
+  New `RecordingSource.imported` case + download icon. Imported files transcribe
+  via Apple Speech by default (retranscribe to a cloud engine for long files).
+- **Multi-select mode**: Select Notes from the options menu → checkmark rows,
+  Select/Deselect All, bottom action bar with Delete (confirm), Export (share sheet
+  with combined Markdown + audio files), and Email (combined Mail draft).
+- **Tag filtering**: horizontal tag pill strip in the list header; tap to filter.
+- **Recording UI**: thin Voice-Memos-style waveform (60 bars), far more sensitive
+  dB mapping, faster refresh; removed the redundant subtitle; tighter padding.
+- **Full-swipe delete** now slides the row fully off the leading edge
+  (`role: .destructive`). Source icon enlarged +2pt and made visible.
+- Regenerated the Xcode project (xcodegen) for the two new Shared files.
+- Verified a successful full iPhone 17 Pro iOS 26.5 simulator build incl. Watch +
+  widget targets.
+
+### Schema changes
+
+None. `RecordingSource.imported` is a string raw value stored in the existing
+`AudioNote.sourceRawValue`; no `@Model` field added or changed.
+
+### Architecture note — auto-email
+
+Whisper Memos sends auto-emails **server-side** (backend transcribes + emails via a
+transactional service), not via a client notification. Voxora's auto-email is
+therefore gated on the required pre-release backend proxy and deferred until then.
+
 ## 2026-06-21 — Compact settings navigation and Voice Memo presentation
 
 - Moved note status indicators to the true trailing edge of the title row.

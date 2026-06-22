@@ -2,6 +2,8 @@ import MessageUI
 import SwiftUI
 
 struct MailComposerView: UIViewControllerRepresentable {
+  static var canSendMail: Bool { MFMailComposeViewController.canSendMail() }
+
   var draft: EmailDraft
   var onFinish: () -> Void
 
