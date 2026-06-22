@@ -1,5 +1,34 @@
 # Voxora Implementation Log
 
+## 2026-06-22 — Tags like SteadyState, combine notes, multi-select & UX polish
+
+- **Tags (SteadyState parity)**: `NoteTag` gains `colorHex` + `isPinned`
+  (**schema change — CloudKit Dev→Prod redeploy required before next TestFlight**).
+  New `Shared/Color+Hex.swift` (Color(hex:) + curated `TagPalette`) and
+  `App/TagViews.swift` (`TagPill`, `TagColorSwatchPicker`, `TagManageRow`).
+  Coloured pills now render in the home filter strip and on note cards; the Tags
+  settings screen is a SteadyState-style manage list (swatch picker, pin, rename,
+  count badge, inline "New Tag" row). Pinned tags sort first (`store.sortedTags`).
+- **Combine (multi-select)**: new `store.combineNotes` merges selected transcripts
+  into one new `.ready` note (audio not combined), carries the union of tags, opens
+  the result. Combine button enabled only with 2+ selected.
+- **Multi-select bar**: tab bar now hides in selection mode; Export opens a
+  Text / Audio / Both confirmation dialog.
+- **AI actions**: the create button moved to the front of the detail action strip
+  and relabelled `+ Add`.
+- **Swipe delete**: trailing swipe is now `allowsFullSwipe: false` so the row no
+  longer collapses-then-bounces behind the confirmation alert.
+- **Waveform**: replaced the −45 dB floor with a −38 dB noise gate so ambient room
+  noise reads as silence; speech band mapped with a `pow(…, 1.4)` curve.
+- Regenerated the Xcode project (xcodegen) for the two new files; verified a
+  successful iPhone 17 Pro iOS 26.5 build incl. Watch + widget targets.
+
+### Schema changes
+
+`NoteTag` added `colorHex` (default `#7C5CFC`) and `isPinned` (default `false`),
+both with defaults per the data-safety rules. **CloudKit Dev→Prod redeploy required
+before the next TestFlight build.** Existing tags backfill to violet / unpinned.
+
 ## 2026-06-21 — Haptics, audio import, multi-select, tag filtering, UX polish
 
 - **Settings UX**: live theme updates (fixed System), Email page relabelled with

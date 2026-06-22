@@ -19,8 +19,8 @@ struct NoteEditorSheet: View {
         }
 
         Section("Tags") {
-          ForEach(store.tags) { tag in
-            Toggle(tag.name, isOn: Binding(
+          ForEach(store.sortedTags) { tag in
+            Toggle(isOn: Binding(
               get: { selectedTagIDs.contains(tag.id) },
               set: {
                 if $0 {
@@ -29,7 +29,14 @@ struct NoteEditorSheet: View {
                   selectedTagIDs.remove(tag.id)
                 }
               }
-            ))
+            )) {
+              HStack(spacing: 8) {
+                Circle()
+                  .fill(Color(hex: tag.colorHex))
+                  .frame(width: 10, height: 10)
+                Text(tag.name)
+              }
+            }
           }
 
           HStack {

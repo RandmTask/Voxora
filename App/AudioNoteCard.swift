@@ -3,6 +3,7 @@ import SwiftUI
 struct AudioNoteCard: View {
   var note: AudioNote
   var isPlaying = false
+  var tags: [NoteTag] = []
   @AppStorage(AppPreferences.showSourceIconKey) private var showSourceIcon = true
 
   var body: some View {
@@ -38,6 +39,14 @@ struct AudioNoteCard: View {
         Text(previewText)
           .font(.subheadline)
           .lineLimit(3)
+
+        if !tags.isEmpty {
+          HStack(spacing: 6) {
+            ForEach(tags) { tag in
+              TagPill(tag: tag, isCompact: true)
+            }
+          }
+        }
 
         if note.archivedAt != nil {
           Label("Archived", systemImage: "archivebox")

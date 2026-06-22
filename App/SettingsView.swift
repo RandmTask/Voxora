@@ -15,8 +15,10 @@ struct SettingsView: View {
   @State private var pendingActionDelete: PromptTemplate?
   @State private var pendingAutomationDelete: AutomationProfile?
   @State private var pendingTagDelete: NoteTag?
-  @State private var isAddingTag = false
   @State private var newTagDraft = ""
+  @State private var newTagColor = TagPalette.default
+  @State private var renamingTag: NoteTag?
+  @State private var renameDraft = ""
 
   private var availableProviders: [AIProvider] {
     #if canImport(FoundationModels)
@@ -413,16 +415,30 @@ struct SettingsView: View {
 
   private var tagsSettings: some View {
     List {
-      ForEach(store.tags) { tag in
-        HStack {
-          Label(tag.name, systemImage: "tag")
-          Spacer()
-          Button("Delete", systemImage: "trash", role: .destructive) {
-            pendingTagDelete = tag
+      if !store.tags.isEmpty {
+        Section("Your Tags") {
+          ForEach(store.sortedTags) { tag in
+            TagManageRow(
+              tag: tag,
+              count: store.noteCount(for: tag),
+              onColor: { store.setTagColor(tag, hex: $0) },
+              onPin: { store.toggleTagPinned(tag) },
+              onRename: { beginRenameTag(tag) },
+              onDelete: { pendingTagDelete = tag }
+            )
           }
-          .labelStyle(.iconOnly)
-          .foregroundStyle(.red)
-          .tint(.red)
+        }
+      }
+
+      Section("New Tag") {
+        HStack(spacing: 12) {
+          TagColorSwatchPicker(selectedHex: $newTagColor)
+          TextField("Tag name…", text: $newTagDraft)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .onSubmit(addNewTag)
+          Button("Add", action: addNewTag)
+            .disabled(newTagDraft.trimmingCharacters(in: .whitespaces).isEmpty)
         }
       }
     }
@@ -431,30 +447,41 @@ struct SettingsView: View {
         ContentUnavailableView(
           "No Tags Yet",
           systemImage: "tag",
-          description: Text("Tags are like folders, but without the guilt of never organising them. Add your first one.")
+          description: Text("Tags are like folders, but without the guilt of never organising them. Add your first one above.")
         )
+        .allowsHitTesting(false)
       }
     }
     .navigationTitle("Tags")
     .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      ToolbarItem(placement: .topBarTrailing) {
-        Button("Add Tag", systemImage: "plus") {
-          newTagDraft = ""
-          isAddingTag = true
-        }
+    .alert(
+      renamingTag.map { "Rename \"\($0.name)\"" } ?? "Rename Tag",
+      isPresented: Binding(
+        get: { renamingTag != nil },
+        set: { if !$0 { renamingTag = nil; renameDraft = "" } }
+      )
+    ) {
+      TextField("Tag name", text: $renameDraft)
+      Button("Save") {
+        if let tag = renamingTag { store.renameTag(tag, to: renameDraft) }
+        renamingTag = nil
+        renameDraft = ""
       }
+      .disabled(renameDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+      Button("Cancel", role: .cancel) { renamingTag = nil; renameDraft = "" }
     }
-    .alert("New Tag", isPresented: $isAddingTag) {
-      TextField("Tag name", text: $newTagDraft)
-      Button("Add") {
-        store.addTag(named: newTagDraft)
-        newTagDraft = ""
-      }
-      Button("Cancel", role: .cancel) {
-        newTagDraft = ""
-      }
-    }
+  }
+
+  private func addNewTag() {
+    let cleaned = newTagDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !cleaned.isEmpty else { return }
+    store.addTag(named: cleaned, colorHex: newTagColor)
+    newTagDraft = ""
+  }
+
+  private func beginRenameTag(_ tag: NoteTag) {
+    renameDraft = tag.name
+    renamingTag = tag
   }
 
   private var advancedSettings: some View {

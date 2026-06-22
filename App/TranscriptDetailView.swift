@@ -174,6 +174,17 @@ struct TranscriptDetailView: View {
 
       ScrollView(.horizontal) {
         HStack(spacing: 12) {
+          Button {
+            editingAction = store.addAction()
+          } label: {
+            Label("Add", systemImage: "plus")
+              .font(.subheadline.weight(.semibold))
+              .padding(.horizontal, 14)
+              .padding(.vertical, 11)
+              .fixedSize()
+          }
+          .buttonStyle(.glass)
+
           ForEach(orderedActions) { action in
             Button {
               Task {
@@ -188,17 +199,6 @@ struct TranscriptDetailView: View {
             }
             .buttonStyle(.glassProminent)
           }
-
-          Button {
-            editingAction = store.addAction()
-          } label: {
-            Label("Create Action", systemImage: "plus")
-              .font(.subheadline.weight(.semibold))
-              .padding(.horizontal, 14)
-              .padding(.vertical, 11)
-              .fixedSize()
-          }
-          .buttonStyle(.glass)
         }
         .padding(.horizontal, 30)
         .padding(.vertical, 4)

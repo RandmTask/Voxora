@@ -69,6 +69,7 @@
 		8140B2CEBADF11493E7D2460 /* DeletedAudioNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE99BC64BA6A66303C23DCA8 /* DeletedAudioNote.swift */; };
 		849C8B42F974830F49790F14 /* AutomationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7FC1D7875E71A37012F92C /* AutomationProfile.swift */; };
 		87FDAC0BADDC30AA21A24ACC /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D106E54452EACA97203473 /* StatusPill.swift */; };
+		8DA970043CD914E139E0B53C /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF5E7E7F20099A73004B33 /* Color+Hex.swift */; };
 		8DD1E691E8C6786B498CA14D /* Voxora Widget Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 88D836A19D780BD49BE6E5EC /* Voxora Widget Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8DFFEBC82A1EF0BC7313098D /* TransferMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA0F5B313EB17F81D204D1 /* TransferMetadata.swift */; };
 		8E48A88BBA7F39F13DEA470A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF37C0A7B1BFED2E391DF7A4 /* Assets.xcassets */; };
@@ -85,6 +86,7 @@
 		A05D4E3105DDDC7E0382EA99 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED4805C257313156BD16F88 /* CloudKit.framework */; };
 		A11F8B19638CDA9351F9A5A5 /* AnthropicClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681A231EE5D8C0E43AC2F72D /* AnthropicClient.swift */; };
 		A231DC94EF5EEFCE8E44C93E /* AutomationProfileEditorCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BF9F30F8597B60CEEF88A4 /* AutomationProfileEditorCard.swift */; };
+		A23B937250E1A8892294FA04 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF5E7E7F20099A73004B33 /* Color+Hex.swift */; };
 		A5FE6ABE5B54AA8321AB95AF /* NoteTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86018AFBEE8105C741B1CA77 /* NoteTag.swift */; };
 		A656D11889598D62FACB5134 /* AIProcessingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1771B8D61D6DF56D89C461 /* AIProcessingCoordinator.swift */; };
 		A986B81F4B03DE4D6B87BD3F /* NoteEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF9E041035544330D3A2F96 /* NoteEditorSheet.swift */; };
@@ -107,6 +109,7 @@
 		D9B6853ADB1CAD9CBA50B86B /* AutomationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7FC1D7875E71A37012F92C /* AutomationProfile.swift */; };
 		DA08AB3913FF53626077BF5B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4EE900E174436617E13519B9 /* AppIcon.icon */; };
 		DB02F5EBD46B8CB7F818801D /* VoxoraPhoneWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7893F84AF512E84403886A54 /* VoxoraPhoneWidgetBundle.swift */; };
+		DD356B4C7C5FFD8FB1D3546B /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF5E7E7F20099A73004B33 /* Color+Hex.swift */; };
 		DFE8F741DEADB2E075328AC9 /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E577CC1E54E4C8269FABF /* AIProvider.swift */; };
 		E3F37EA9D4E4A523A3018121 /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26821F56E9B1AACFE0BDAF /* PromptTemplate.swift */; };
 		E4590B36E0538201952B6336 /* DeletedAudioNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE99BC64BA6A66303C23DCA8 /* DeletedAudioNote.swift */; };
@@ -115,6 +118,7 @@
 		EA8CF0B7458E38F70C833616 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF37C0A7B1BFED2E391DF7A4 /* Assets.xcassets */; };
 		EC9BDAE3A8F40627D361CF34 /* EmailDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D850D26BB5928F6162003A /* EmailDraft.swift */; };
 		F27D8B1FE4C577453552F01A /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C25728EC0CA04A85C8531E /* KeychainStore.swift */; };
+		F933E3F0A0FD47C44171BBF8 /* TagViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E5077AFEDFCD9284F91751 /* TagViews.swift */; };
 		FB05214D1FE439C9F4F3DA23 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046F32C63E22CB3B088BE746 /* AppGroup.swift */; };
 		FD8423C9B76936DF3B26E1CA /* AudioNoteProcessingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0B5AF09ED93BD762F9DC21 /* AudioNoteProcessingStatus.swift */; };
 /* End PBXBuildFile section */
@@ -228,9 +232,10 @@
 		917185081FE83956168B839E /* AudioFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileStore.swift; sourceTree = "<group>"; };
 		99326E29A4CA5E73E1F2FE32 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		9BB7EA57E04B829AF93717FE /* FinalizedRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizedRecording.swift; sourceTree = "<group>"; };
-		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A316DB39AB52C4B7344B20D2 /* CloudAudioTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudAudioTranscriber.swift; sourceTree = "<group>"; };
 		A7640A3618B168281EDE9396 /* EmailWorkflowSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailWorkflowSheet.swift; sourceTree = "<group>"; };
+		A7E5077AFEDFCD9284F91751 /* TagViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViews.swift; sourceTree = "<group>"; };
 		A8F1DAE292B8F8CF7D4FE473 /* VoxoraAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraAPIError.swift; sourceTree = "<group>"; };
 		ACDFF7659B951173000191AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AFAFA03DD65BC6C33A41EAAE /* VoxoraPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraPersistence.swift; sourceTree = "<group>"; };
@@ -242,6 +247,7 @@
 		CB60F41D372780AD22C5EDBB /* GeneratedOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedOutput.swift; sourceTree = "<group>"; };
 		CED4805C257313156BD16F88 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		D0F2F5FD86BC1618FEA9DA84 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D2CF5E7E7F20099A73004B33 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		D3565ACB968FC3E8F9BDDB29 /* NoteActionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteActionsSheet.swift; sourceTree = "<group>"; };
 		DB0357D9D24B5BE63C7A3953 /* AppleIntelligenceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceClient.swift; sourceTree = "<group>"; };
 		E5C25728EC0CA04A85C8531E /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -278,6 +284,7 @@
 				BEC4FF175648B01ACF98C8AB /* AudioNote.swift */,
 				5D0B5AF09ED93BD762F9DC21 /* AudioNoteProcessingStatus.swift */,
 				3C7FC1D7875E71A37012F92C /* AutomationProfile.swift */,
+				D2CF5E7E7F20099A73004B33 /* Color+Hex.swift */,
 				1C422FF7C1E4090B459B0F39 /* DeepLinkRoute.swift */,
 				FE99BC64BA6A66303C23DCA8 /* DeletedAudioNote.swift */,
 				CB60F41D372780AD22C5EDBB /* GeneratedOutput.swift */,
@@ -325,6 +332,7 @@
 				858CF8EA8E08ABD038A2E3AD /* SettingsView.swift */,
 				BAD6D6DD64591ED786178036 /* SpeechTranscriber.swift */,
 				B3D106E54452EACA97203473 /* StatusPill.swift */,
+				A7E5077AFEDFCD9284F91751 /* TagViews.swift */,
 				76075E09948353F36F6690A1 /* TranscriptDetailView.swift */,
 				832A17861DBD3C9C7CADA113 /* TranscriptSearchView.swift */,
 				A8F1DAE292B8F8CF7D4FE473 /* VoxoraAPIError.swift */,
@@ -584,6 +592,7 @@
 				61826B0A774F9D8D743959D6 /* AudioNote.swift in Sources */,
 				086D6222CDEE6FB4E4EBFEB7 /* AudioNoteProcessingStatus.swift in Sources */,
 				849C8B42F974830F49790F14 /* AutomationProfile.swift in Sources */,
+				A23B937250E1A8892294FA04 /* Color+Hex.swift in Sources */,
 				49D58445082DF126FC58843C /* DeepLinkRoute.swift in Sources */,
 				8140B2CEBADF11493E7D2460 /* DeletedAudioNote.swift in Sources */,
 				B80767F0DED83AEC17083B46 /* GeneratedOutput.swift in Sources */,
@@ -620,6 +629,7 @@
 				D9B6853ADB1CAD9CBA50B86B /* AutomationProfile.swift in Sources */,
 				A231DC94EF5EEFCE8E44C93E /* AutomationProfileEditorCard.swift in Sources */,
 				90D23A826672C8D032C9C095 /* CloudAudioTranscriber.swift in Sources */,
+				DD356B4C7C5FFD8FB1D3546B /* Color+Hex.swift in Sources */,
 				640300F8265F9223D4BE36D4 /* ContentView.swift in Sources */,
 				67D7281E79461158C95FDDAD /* DeepLinkRoute.swift in Sources */,
 				051849C1C0BE6DAEF304687D /* DeepSeekClient.swift in Sources */,
@@ -646,6 +656,7 @@
 				924F1C876353926052FD873D /* SettingsView.swift in Sources */,
 				0CDA2B59F528403BCA2F309E /* SpeechTranscriber.swift in Sources */,
 				87FDAC0BADDC30AA21A24ACC /* StatusPill.swift in Sources */,
+				F933E3F0A0FD47C44171BBF8 /* TagViews.swift in Sources */,
 				52312630477DF341CD9ADCC2 /* TranscriptDetailView.swift in Sources */,
 				0BDE0690A7E5FF6FC5467E37 /* TranscriptSearchView.swift in Sources */,
 				0EC153612BE9B80EEE1CB4CF /* TranscriptionEngine.swift in Sources */,
@@ -671,6 +682,7 @@
 				94E14970208FDB02A6C97E76 /* AudioNote.swift in Sources */,
 				681003EB2E6C9015EA232F9F /* AudioNoteProcessingStatus.swift in Sources */,
 				08DEFE96B8765570420DF196 /* AutomationProfile.swift in Sources */,
+				8DA970043CD914E139E0B53C /* Color+Hex.swift in Sources */,
 				984513B533428170D7AF6241 /* ContentView.swift in Sources */,
 				5C515A4D5E07DE50FD8ECFAF /* DeepLinkRoute.swift in Sources */,
 				E4590B36E0538201952B6336 /* DeletedAudioNote.swift in Sources */,
@@ -805,8 +817,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftstudio.Voxora;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -973,8 +987,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftstudio.Voxora;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

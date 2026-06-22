@@ -445,11 +445,11 @@ final class VoxoraStore {
     reload()
   }
 
-  func addTag(named name: String, to note: AudioNote? = nil) {
+  func addTag(named name: String, colorHex: String = TagPalette.default, to note: AudioNote? = nil) {
     let cleaned = name.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !cleaned.isEmpty else { return }
     let tag = tags.first { $0.name.localizedCaseInsensitiveCompare(cleaned) == .orderedSame }
-      ?? NoteTag(name: cleaned)
+      ?? NoteTag(name: cleaned, colorHex: colorHex)
     if !tags.contains(where: { $0.id == tag.id }) {
       context.insert(tag)
     }
@@ -467,6 +467,41 @@ final class VoxoraStore {
     }
     context.delete(tag)
     saveContext()
+    reload()
+  }
+
+  /// Tags ordered for display: pinned first, then alphabetical.
+  var sortedTags: [NoteTag] {
+    tags.sorted {
+      if $0.isPinned != $1.isPinned { return $0.isPinned && !$1.isPinned }
+      return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+    }
+  }
+
+  func noteCount(for tag: NoteTag) -> Int {
+    tagAssignments.filter { $0.tagID == tag.id }.count
+  }
+
+  func renameTag(_ tag: NoteTag, to name: String) {
+    let cleaned = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !cleaned.isEmpty else { return }
+    tag.name = cleaned
+    tag.updatedAt = Date()
+    saveContext()
+    reload()
+  }
+
+  func setTagColor(_ tag: NoteTag, hex: String) {
+    tag.colorHex = hex
+    tag.updatedAt = Date()
+    try? context.save()
+    reload()
+  }
+
+  func toggleTagPinned(_ tag: NoteTag) {
+    tag.isPinned.toggle()
+    tag.updatedAt = Date()
+    try? context.save()
     reload()
   }
 
@@ -586,6 +621,44 @@ final class VoxoraStore {
     } catch {
       errorMessage = error.localizedDescription
     }
+  }
+
+  /// Merges several notes' transcripts into one new note, leaving the originals
+  /// untouched. Audio isn't combined — the new note is transcript-only so AI
+  /// actions (summaries etc.) can run across the whole set. Returns the new note.
+  @discardableResult
+  func combineNotes(_ notes: [AudioNote]) -> AudioNote? {
+    let ordered = notes.sorted { $0.timestamp < $1.timestamp }
+    guard ordered.count > 1 else { return nil }
+
+    let combinedTranscript = ordered
+      .map { note in
+        let title = note.displayTitle
+        let body = note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return body.isEmpty ? "## \(title)" : "## \(title)\n\(body)"
+      }
+      .joined(separator: "\n\n")
+
+    let merged = AudioNote(
+      timestamp: Date(),
+      title: "Combined note",
+      transcriptText: combinedTranscript,
+      processingStatus: .ready,
+      source: .either,
+      duration: ordered.reduce(0) { $0 + $1.duration }
+    )
+    context.insert(merged)
+
+    // Carry over the union of the sources' tags so the combined note stays findable.
+    let tagIDs = Set(ordered.flatMap { tags(for: $0).map(\.id) })
+    for tagID in tagIDs {
+      context.insert(NoteTagAssignment(noteID: merged.id, tagID: tagID))
+    }
+
+    saveContext()
+    reload()
+    Haptics.fire(.success)
+    return notes.first(where: { $0.id == merged.id }) ?? merged
   }
 
   private func process(note: AudioNote) async {

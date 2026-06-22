@@ -106,11 +106,12 @@ final class PhoneAudioRecorder: NSObject, AVAudioRecorderDelegate {
         self.elapsedTime = recorder.currentTime
         recorder.updateMeters()
         let decibels = recorder.averagePower(forChannel: 0)
-        // Map the useful speech range (noise floor → 0 dB) onto 0...1, then
-        // apply a gentle curve so quiet speech still produces a visible bar.
-        let floor: Float = -45
-        let linear = max(0, min(1, (decibels - floor) / -floor))
-        let normalized = pow(linear, 0.6)
+        // Gate out ambient room noise: anything quieter than `gate` reads as
+        // silence, so the meter stays flat until you actually speak. The speech
+        // band (gate → 0 dB) maps onto 0...1 with a mild curve.
+        let gate: Float = -38
+        let linear = max(0, min(1, (decibels - gate) / -gate))
+        let normalized = pow(linear, 1.4)
         self.meterSamples.removeFirst()
         self.meterSamples.append(CGFloat(normalized))
       }

@@ -12,6 +12,7 @@ struct VoxoraHomeView: View {
   @State private var selectedIDs = Set<UUID>()
   @State private var pendingBatchDelete = false
   @State private var shareItems: [Any]?
+  @State private var isShowingExportOptions = false
   @State private var batchEmailDraft: EmailDraft?
   @State private var activeTagFilter: UUID?
   @Environment(\.colorScheme) private var systemColorScheme
@@ -87,6 +88,7 @@ struct VoxoraHomeView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
       }
+      .toolbar(isSelecting ? .hidden : .visible, for: .tabBar)
       .navigationTitle("Voxora")
       .toolbar {
         if isSelecting {
@@ -270,23 +272,15 @@ struct VoxoraHomeView: View {
     if !store.tags.isEmpty {
       ScrollView(.horizontal) {
         HStack(spacing: 8) {
-          ForEach(store.tags) { tag in
+          ForEach(store.sortedTags) { tag in
             let isActive = activeTagFilter == tag.id
             Button {
               activeTagFilter = isActive ? nil : tag.id
               Haptics.fire(.selectionChanged)
             } label: {
-              Label(tag.name, systemImage: "tag")
-                .font(.caption.weight(.medium))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
+              TagPill(tag: tag, isActive: isActive)
             }
             .buttonStyle(.plain)
-            .background(
-              isActive ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.thinMaterial),
-              in: Capsule()
-            )
-            .foregroundStyle(isActive ? .white : .primary)
           }
         }
         .padding(.horizontal, 20)
@@ -389,14 +383,18 @@ struct VoxoraHomeView: View {
             .foregroundStyle(selectedIDs.contains(note.id) ? Color.accentColor : .secondary)
             .transition(.scale.combined(with: .opacity))
         }
-        AudioNoteCard(note: note, isPlaying: playback.playingNoteID == note.id)
+        AudioNoteCard(
+          note: note,
+          isPlaying: playback.playingNoteID == note.id,
+          tags: store.tags(for: note)
+        )
       }
     }
     .buttonStyle(.plain)
     .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
     .listRowBackground(Color.clear)
     .listRowSeparator(.hidden)
-    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
       Button("Delete", systemImage: "trash", role: .destructive) {
         requestDelete(note)
       }
@@ -538,8 +536,15 @@ struct VoxoraHomeView: View {
       selectionAction("Delete", systemImage: "trash", tint: .red) {
         pendingBatchDelete = true
       }
+      selectionAction(
+        "Combine",
+        systemImage: "arrow.triangle.merge",
+        isEnabled: selectedIDs.count > 1
+      ) {
+        combineSelection()
+      }
       selectionAction("Export", systemImage: "square.and.arrow.up") {
-        exportSelection()
+        isShowingExportOptions = true
       }
       selectionAction("Email", systemImage: "envelope") {
         emailSelection()
@@ -547,17 +552,24 @@ struct VoxoraHomeView: View {
     }
     .padding(.vertical, 10)
     .background(.bar)
-    .disabled(selectedIDs.isEmpty)
-    .animation(.easeInOut, value: selectedIDs.isEmpty)
+    .animation(.easeInOut, value: selectedIDs.count)
+    .confirmationDialog("Export", isPresented: $isShowingExportOptions, titleVisibility: .visible) {
+      Button("Text Only") { exportSelection(includeAudio: false) }
+      Button("Audio Only") { exportSelection(includeText: false) }
+      Button("Text & Audio") { exportSelection() }
+      Button("Cancel", role: .cancel) {}
+    }
   }
 
   private func selectionAction(
     _ title: String,
     systemImage: String,
     tint: Color = .accentColor,
+    isEnabled: Bool? = nil,
     action: @escaping () -> Void
   ) -> some View {
-    Button(action: action) {
+    let enabled = isEnabled ?? !selectedIDs.isEmpty
+    return Button(action: action) {
       VStack(spacing: 3) {
         Image(systemName: systemImage)
           .font(.title3)
@@ -565,8 +577,9 @@ struct VoxoraHomeView: View {
           .font(.caption2)
       }
       .frame(maxWidth: .infinity)
-      .foregroundStyle(selectedIDs.isEmpty ? AnyShapeStyle(.secondary) : AnyShapeStyle(tint))
+      .foregroundStyle(enabled ? AnyShapeStyle(tint) : AnyShapeStyle(.secondary))
     }
+    .disabled(!enabled)
   }
 
   private var selectedNotes: [AudioNote] {
@@ -613,11 +626,14 @@ struct VoxoraHomeView: View {
     .joined(separator: "\n\n---\n\n")
   }
 
-  private func exportSelection() {
+  private func exportSelection(includeText: Bool = true, includeAudio: Bool = true) {
     let notes = selectedNotes
     guard !notes.isEmpty else { return }
-    var items: [Any] = [combinedText(for: notes)]
-    if let directory = try? AudioFileStore.directoryURL() {
+    var items: [Any] = []
+    if includeText {
+      items.append(combinedText(for: notes))
+    }
+    if includeAudio, let directory = try? AudioFileStore.directoryURL() {
       for note in notes where !note.audioFileName.isEmpty {
         let url = directory.appending(path: note.audioFileName)
         if FileManager.default.fileExists(atPath: url.path()) {
@@ -625,7 +641,16 @@ struct VoxoraHomeView: View {
         }
       }
     }
+    guard !items.isEmpty else { return }
     shareItems = items
+  }
+
+  private func combineSelection() {
+    let combined = store.combineNotes(selectedNotes)
+    exitSelection()
+    if let combined {
+      selectedNote = combined
+    }
   }
 
   private func emailSelection() {
