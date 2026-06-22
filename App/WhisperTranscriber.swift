@@ -50,7 +50,10 @@ actor WhisperTranscriber {
     }
     let config = WhisperKitConfig(
       model: variant.rawValue,
-      modelFolder: modelFolder.path(),
+      // Non-encoded path — "Application Support" has a literal space; `.path()`
+      // would percent-encode it to "Application%20Support" and WhisperKit's file
+      // lookups (MelSpectrogram.mlmodelc, etc.) would miss.
+      modelFolder: modelFolder.path(percentEncoded: false),
       download: false
     )
     let pipeline = try await WhisperKit(config)

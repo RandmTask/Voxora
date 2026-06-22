@@ -343,7 +343,7 @@ struct TagColorSwatchPicker: View {
         .contentShape(Circle())
     }
     .buttonStyle(.plain)
-    .popover(isPresented: $isShowingPalette, arrowEdge: .bottom) {
+    .popover(isPresented: $isShowingPalette) {
       paletteGrid
         .presentationCompactAdaptation(.popover)
     }

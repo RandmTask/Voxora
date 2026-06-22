@@ -21,6 +21,8 @@ struct SettingsView: View {
   @State private var renamingTag: NoteTag?
   @State private var renameDraft = ""
   @State private var pendingLargeDownload: WhisperModelStore.Variant?
+  @State private var pendingActivateDownload: WhisperModelStore.Variant?
+  @State private var pendingDeleteVariant: WhisperModelStore.Variant?
 
   private var availableProviders: [AIProvider] {
     #if canImport(FoundationModels)
@@ -340,7 +342,7 @@ struct SettingsView: View {
         Text("Apple Speech is the instant default and handles short notes well, but truncates past ~60 seconds. Long recordings automatically use Whisper when its model is installed. Turn this on to use Whisper for every recording.")
       }
 
-      Section("Whisper model") {
+      Section {
         Picker("Active model", selection: Binding(
           get: { store.whisperModelVariant },
           set: { store.whisperModelVariant = $0 }
@@ -349,14 +351,19 @@ struct SettingsView: View {
             Text(variant.title).tag(variant)
           }
         }
+        Toggle("Download over Wi-Fi only", isOn: $whisperWiFiOnly)
         if !store.whisperModels.isInstalled(store.whisperModelVariant) {
           Label(
-            "This model isn't downloaded yet — download it below before using Whisper.",
+            "Not downloaded yet — download it below to use Whisper.",
             systemImage: "exclamationmark.circle"
           )
           .font(.caption)
           .foregroundStyle(.orange)
         }
+      } header: {
+        Text("Whisper model")
+      } footer: {
+        Text("Leave Wi-Fi only on to avoid downloading large models on cellular.")
       }
 
       Section {
@@ -366,32 +373,24 @@ struct SettingsView: View {
       } header: {
         Text("On-device models")
       } footer: {
-        Text("Models run entirely on your iPhone — audio never leaves the device and there's no per-minute cost. They download once and are stored in Application Support. Whisper transcription is iPhone/iPad only; Apple Watch recordings transcribe on your phone.")
-      }
-
-      Section {
-        Toggle("Download over Wi-Fi only", isOn: $whisperWiFiOnly)
-      } footer: {
-        Text("Models are large. Leave this on to avoid downloading on cellular.")
-      }
-
-      if let error = store.whisperModels.lastErrorMessage {
-        Section {
-          Text(error)
-            .font(.caption)
-            .foregroundStyle(.red)
-        }
+        Text("Models run entirely on your iPhone — audio never leaves the device, with no per-minute cost. iPhone/iPad only; Watch recordings transcribe on your phone. Tap a downloaded model's icon to remove it.")
       }
     }
     .navigationTitle("Transcription")
     .navigationBarTitleDisplayMode(.inline)
-    .confirmationDialog(
+    .onChange(of: store.whisperModelVariant) { _, newVariant in
+      // Prompt to download an active model that isn't installed yet.
+      if !store.whisperModels.isInstalled(newVariant),
+         store.whisperModels.downloadingVariant != newVariant {
+        pendingActivateDownload = newVariant
+      }
+    }
+    .alert(
       "Download \(pendingLargeDownload?.title ?? "") model?",
       isPresented: Binding(
         get: { pendingLargeDownload != nil },
         set: { if !$0 { pendingLargeDownload = nil } }
       ),
-      titleVisibility: .visible,
       presenting: pendingLargeDownload
     ) { variant in
       Button("Download \(variant.sizeDescription)") {
@@ -400,7 +399,50 @@ struct SettingsView: View {
       }
       Button("Cancel", role: .cancel) { pendingLargeDownload = nil }
     } message: { variant in
-      Text("This model is \(variant.sizeDescription) and needs ample free space. Only download it if your device has room to spare.")
+      Text("This model is \(variant.sizeDescription). Only download it if your device has room to spare.")
+    }
+    .alert(
+      "Download \(pendingActivateDownload?.title ?? "") model?",
+      isPresented: Binding(
+        get: { pendingActivateDownload != nil },
+        set: { if !$0 { pendingActivateDownload = nil } }
+      ),
+      presenting: pendingActivateDownload
+    ) { variant in
+      Button("Download \(variant.sizeDescription)") {
+        startWhisperDownload(variant)
+        pendingActivateDownload = nil
+      }
+      Button("Cancel", role: .cancel) { pendingActivateDownload = nil }
+    } message: { variant in
+      Text("The active model must be downloaded before Whisper can transcribe.")
+    }
+    .alert(
+      "Remove \(pendingDeleteVariant?.title ?? "") model?",
+      isPresented: Binding(
+        get: { pendingDeleteVariant != nil },
+        set: { if !$0 { pendingDeleteVariant = nil } }
+      ),
+      presenting: pendingDeleteVariant
+    ) { variant in
+      Button("Remove (\(variant.sizeDescription))", role: .destructive) {
+        store.whisperModels.delete(variant)
+        pendingDeleteVariant = nil
+      }
+      Button("Cancel", role: .cancel) { pendingDeleteVariant = nil }
+    } message: { variant in
+      Text("You can download it again later.")
+    }
+    .alert(
+      "Download unavailable",
+      isPresented: Binding(
+        get: { store.whisperModels.lastErrorMessage != nil },
+        set: { if !$0 { store.whisperModels.clearError() } }
+      )
+    ) {
+      Button("OK", role: .cancel) { store.whisperModels.clearError() }
+    } message: {
+      Text(store.whisperModels.lastErrorMessage ?? "")
     }
   }
 
@@ -408,67 +450,66 @@ struct SettingsView: View {
   private func whisperModelRow(_ variant: WhisperModelStore.Variant) -> some View {
     let isInstalled = store.whisperModels.isInstalled(variant)
     let isDownloading = store.whisperModels.downloadingVariant == variant
-    VStack(alignment: .leading, spacing: 6) {
-      HStack {
-        VStack(alignment: .leading, spacing: 2) {
-          HStack(spacing: 6) {
-            Text(variant.title)
-            if variant == WhisperModelStore.recommendedVariant {
-              Text("Recommended")
-                .font(.caption2)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(.blue.opacity(0.15), in: Capsule())
-                .foregroundStyle(.blue)
-            }
+    HStack {
+      VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: 6) {
+          Text(variant.title)
+          if variant == WhisperModelStore.recommendedVariant {
+            Text("Recommended")
+              .font(.caption2)
+              .padding(.horizontal, 6)
+              .padding(.vertical, 2)
+              .background(.blue.opacity(0.15), in: Capsule())
+              .foregroundStyle(.blue)
           }
-          Text("\(variant.sizeDescription) · \(variant.detail)")
-            .font(.caption)
-            .foregroundStyle(.secondary)
         }
-        Spacer()
-        whisperModelControl(variant, isInstalled: isInstalled, isDownloading: isDownloading)
+        Text("\(variant.sizeDescription) · \(variant.detail)")
+          .font(.caption)
+          .foregroundStyle(.secondary)
       }
-      if isDownloading {
-        let progress = store.whisperModels.downloadProgress[variant] ?? 0
-        // Indeterminate until the first byte registers — large models enumerate
-        // multiple files before fractionCompleted moves off 0.
-        ProgressView(value: progress > 0 ? progress : nil, total: 1)
-      }
+      Spacer()
+      whisperModelControl(variant, isInstalled: isInstalled, isDownloading: isDownloading)
     }
+    .listRowInsets(EdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16))
   }
 
+  /// App Store–style control: outline icon to download, a filling ring while
+  /// downloading, and a filled icon when installed — tap the filled icon to remove.
   @ViewBuilder
   private func whisperModelControl(
     _ variant: WhisperModelStore.Variant,
     isInstalled: Bool,
     isDownloading: Bool
   ) -> some View {
-    if isDownloading {
-      let progress = store.whisperModels.downloadProgress[variant] ?? 0
-      Text(progress > 0 ? "\(Int(progress * 100))%" : "…")
-        .font(.caption.monospacedDigit())
-        .foregroundStyle(.secondary)
-    } else if isInstalled {
-      Button(role: .destructive) {
-        store.whisperModels.delete(variant)
-      } label: {
-        Image(systemName: "trash")
+    let progress = store.whisperModels.downloadProgress[variant] ?? 0
+    Button {
+      if isDownloading {
+        return
+      } else if isInstalled {
+        pendingDeleteVariant = variant
+      } else if variant.isLargeDownload {
+        pendingLargeDownload = variant
+      } else {
+        startWhisperDownload(variant)
       }
-      .buttonStyle(.borderless)
-    } else {
-      Button {
-        if variant.isLargeDownload {
-          pendingLargeDownload = variant
+    } label: {
+      ZStack {
+        if isInstalled {
+          Image(systemName: "arrow.down.circle.fill")
+            .font(.title2)
+            .foregroundStyle(.green)
+        } else if isDownloading {
+          DownloadClockIcon(progress: progress)
         } else {
-          startWhisperDownload(variant)
+          Image(systemName: "arrow.down.circle")
+            .font(.title2)
+            .foregroundStyle(.blue)
         }
-      } label: {
-        Image(systemName: "arrow.down.circle")
       }
-      .buttonStyle(.borderless)
-      .disabled(store.whisperModels.downloadingVariant != nil)
+      .frame(width: 26, height: 26)
     }
+    .buttonStyle(.borderless)
+    .disabled(store.whisperModels.downloadingVariant != nil && !isInstalled)
   }
 
   private var aiActionsSettings: some View {
@@ -701,5 +742,59 @@ struct SettingsView: View {
     let provider = store.defaultAIProvider
     guard provider.requiresAPIKey else { return }
     store.saveAPIKey(providerDrafts[provider] ?? "", for: provider)
+  }
+}
+
+/// A clock-style download indicator: a blue pie that fills with the real download
+/// percentage. Before the first byte arrives (progress 0) the arrow gently pulses so
+/// there's a sign of life \u2014 the pie never sweeps on its own, so the fill always
+/// reflects the true progress rather than a misleading rotation.
+private struct DownloadClockIcon: View {
+  let progress: Double
+  @State private var pulsing = false
+
+  var body: some View {
+    let clamped = max(0, min(1, progress))
+    ZStack {
+      Circle().fill(.blue.opacity(0.15))
+      PieShape(progress: clamped)
+        .fill(.blue)
+        .animation(.easeInOut(duration: 0.3), value: clamped)
+      Image(systemName: "arrow.down")
+        .font(.system(size: 9, weight: .bold))
+        .foregroundStyle(clamped > 0 ? .white : .blue)
+        .opacity(clamped > 0 ? 1 : (pulsing ? 0.3 : 1))
+    }
+    .frame(width: 22, height: 22)
+    .onAppear {
+      withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) {
+        pulsing = true
+      }
+    }
+  }
+}
+
+/// A filled circular sector (pie / clock wedge) from the top, clockwise.
+private struct PieShape: Shape {
+  var progress: Double
+  var animatableData: Double {
+    get { progress }
+    set { progress = newValue }
+  }
+
+  func path(in rect: CGRect) -> Path {
+    var path = Path()
+    let center = CGPoint(x: rect.midX, y: rect.midY)
+    let radius = min(rect.width, rect.height) / 2
+    path.move(to: center)
+    path.addArc(
+      center: center,
+      radius: radius,
+      startAngle: .degrees(-90),
+      endAngle: .degrees(-90 + 360 * max(0, min(1, progress))),
+      clockwise: false
+    )
+    path.closeSubpath()
+    return path
   }
 }

@@ -545,6 +545,41 @@ final class VoxoraStore {
     tagAssignments.filter { $0.tagID == tag.id }.count
   }
 
+  // MARK: - Search tag ordering (most-used first, recomputed at most once a day)
+
+  private var searchTagOrderIDs: [UUID] = []
+  private var searchTagOrderComputedAt: Date?
+
+  /// Recompute the popularity-ranked tag order if it's a new day or the tag set
+  /// changed. Cheap, but gated so it isn't redone on every search keystroke. Call
+  /// from the search view's `onAppear` ("when you hit search" / first open of the day).
+  func refreshSearchTagOrderIfNeeded() {
+    let staleDay = searchTagOrderComputedAt.map { !Calendar.current.isDateInToday($0) } ?? true
+    let countChanged = searchTagOrderIDs.count != tags.count
+    guard staleDay || countChanged else { return }
+    searchTagOrderIDs = tags.sorted {
+      let lc = noteCount(for: $0), rc = noteCount(for: $1)
+      if lc != rc { return lc > rc }
+      if $0.isPinned != $1.isPinned { return $0.isPinned && !$1.isPinned }
+      return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+    }
+    .map(\.id)
+    searchTagOrderComputedAt = Date()
+  }
+
+  /// Tags in popularity order (most-used first), per the cached daily ranking.
+  /// Pure read — falls back to `sortedTags` until the first refresh runs.
+  var searchOrderedTags: [NoteTag] {
+    guard !searchTagOrderIDs.isEmpty else { return sortedTags }
+    let rank = Dictionary(uniqueKeysWithValues: searchTagOrderIDs.enumerated().map { ($1, $0) })
+    return tags.sorted {
+      let l = rank[$0.id] ?? Int.max
+      let r = rank[$1.id] ?? Int.max
+      if l != r { return l < r }
+      return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+    }
+  }
+
   func renameTag(_ tag: NoteTag, to name: String) {
     let cleaned = Self.normalizedTagName(name)
     guard !cleaned.isEmpty else { return }

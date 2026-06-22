@@ -1,5 +1,56 @@
 # Voxora Implementation Log
 
+## 2026-06-22 (late) — Long-press fix, model dialog/error fixes, tag wrap + ranking
+
+- **Long-press preview** was collapsing to the date line — the custom context-menu
+  `preview:` card had no width. Pinned it to `screen width − 40`.
+- **Whisper model dialogs**: the destructive confirms were rendering as a popover
+  pinned to the top of the screen (far from the row). Converted all three
+  (large-download, activate, remove) to `.alert` (centred, never mis-anchored).
+- **No more silent Wi-Fi failure**: a Wi-Fi-only download attempted on cellular (and
+  any download error) now raises a visible `.alert` (`WhisperModelStore.clearError()`
+  added) instead of a label buried at the bottom of the screen.
+- **Transcription screen tidied**: moved the **Download over Wi-Fi only** toggle up
+  into the Whisper-model section (visible without scrolling), compacted the model rows,
+  and dropped the redundant "Very large; needs ample free space" copy.
+- **Download clock icon** no longer pre-spins 1–2 rotations: the pie now tracks the
+  **real** percentage; before the first byte the arrow just pulses (no misleading sweep).
+- **Search tag strip** rewritten from a column-major `LazyHGrid` to a row-major
+  `FlowLayout` (wraps left-to-right, 1/2/3+ rows as needed, list scrolls when many).
+  Tags are now ordered **most-used first**, recomputed at most once a day
+  (`refreshSearchTagOrderIfNeeded`, gated on `isDateInToday`, fired from search onAppear).
+- Lessons recorded in `_shared/tag-system.md` (FlowLayout-not-LazyHGrid, popularity +
+  daily recompute, `.alert` over `.confirmationDialog` for row confirms, never fail silently).
+- Verified a successful iPhone 17 Pro / iOS 26.5 build.
+
+### Schema changes
+
+None.
+
+## 2026-06-22 (eve) — Tag/search polish, recorder buttons, clock download icon
+
+- **Search tag strip → "sea of tags"**: now a 3-row `LazyHGrid` that scrolls
+  horizontally for overflow, and **typing `#tagname`** in the search field filters by
+  that tag (tokens parsed out, unioned with tapped pills, remaining text searched).
+  AND semantics retained. Captured as the new baseline in `_shared/tag-system.md`.
+- **Tag colour popover** no longer clips for top-row tags — dropped the forced
+  `arrowEdge: .bottom` so SwiftUI repositions it. Lesson added to the playbook.
+- **Recorder buttons**: pause/resume now a `.regularMaterial` circle the **same 56pt
+  diameter** as Stop (was a `.glass` button that rendered a larger circle); mic glyph
+  enlarged (18 → 24).
+- **Long-press preview**: note rows now supply a custom context-menu `preview:` on a
+  solid page background, so the glass card no longer renders dim/flat when lifted.
+- **Whisper download icon**: replaced the spinner with a clock-style pie that fills
+  with progress (`DownloadClockIcon` + `PieShape`); sweeps 0→full on a loop while
+  indeterminate (before the first byte).
+- Confirmed already-shipped from the prior session: batch **Tag** action in
+  multi-select + **Tags** in the long-press menu (one reusable `TagAssignmentSheet`).
+- Verified a successful iPhone 17 Pro / iOS 26.5 build.
+
+### Schema changes
+
+None. (The Phase-2 `NoteTag.colorHex`/`isPinned` Dev→Prod redeploy is still pending.)
+
 ## 2026-06-22 — On-device Whisper transcription (WhisperKit)
 
 - **SPM**: added `WhisperKit` (Argmax, Core ML on the Neural Engine), pinned
@@ -37,6 +88,19 @@ None. Whisper model files are per-device caches on disk (Application Support), n
 `whisperModelVariant`, `whisperWiFiOnlyDownloads`) are device-local `UserDefaults`.
 **No CloudKit Dev→Prod redeploy required for this feature.** (The outstanding Phase 2
 schema redeploy is still pending and unrelated.)
+
+### Same-day fixes
+
+- **Installed-detection bug**: was recomputing the model folder path instead of trusting
+  the URL `WhisperKit.download()` returns; downloads completed but never registered.
+  Now persist the returned folder URL (device-local) and validate *that* at call time.
+- **`Application%20Support` percent-encoding bug** (the "Model file not found …
+  MelSpectrogram.mlmodelc" alert): `WhisperTranscriber` passed `modelFolder.path()`,
+  which percent-encodes the space; WhisperKit's file lookups then missed. Fixed to
+  `.path(percentEncoded: false)`.
+- **UX**: App Store–style filling-ring download icon (indeterminate until first byte);
+  tap the filled icon to remove (with confirm); selecting a not-downloaded active model
+  prompts to download; downloading a model auto-selects it as active.
 
 ### Deferred to later batches (roadmap updated)
 

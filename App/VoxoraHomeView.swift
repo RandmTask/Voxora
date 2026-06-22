@@ -306,10 +306,13 @@ struct VoxoraHomeView: View {
                   }
                 } label: {
                   Image(systemName: recorder.state == .paused ? "mic.fill" : "pause.fill")
-                    .font(.system(size: 18, weight: .bold))
-                    .frame(width: 52, height: 52)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.primary)
+                    .frame(width: 56, height: 56)
+                    .background(.regularMaterial, in: Circle())
+                    .overlay(Circle().stroke(.primary.opacity(0.12), lineWidth: 1))
                 }
-                .buttonStyle(.glass)
+                .buttonStyle(.plain)
                 .accessibilityLabel(recorder.state == .paused ? "Resume recording" : "Pause recording")
               }
 
@@ -317,9 +320,9 @@ struct VoxoraHomeView: View {
                 finishPhoneRecording()
               } label: {
                 Image(systemName: "stop.fill")
-                  .font(.system(size: 18, weight: .bold))
+                  .font(.system(size: 22, weight: .bold))
                   .foregroundStyle(.white)
-                  .frame(width: 52, height: 52)
+                  .frame(width: 56, height: 56)
                   .background(.red, in: Circle())
               }
               .buttonStyle(.plain)
@@ -429,8 +432,19 @@ struct VoxoraHomeView: View {
       Button("Delete Note", systemImage: "trash", role: .destructive) {
         requestDelete(note)
       }
+    } preview: {
+      // The card's glass renders flat (dim) in the default lift snapshot. A custom
+      // preview on a solid page background keeps the lifted card looking bright.
+      // It needs an explicit width or the card collapses to its smallest content.
+      AudioNoteCard(
+        note: note,
+        isPlaying: playback.playingNoteID == note.id,
+        tags: store.tags(for: note)
+      )
+      .frame(width: UIScreen.main.bounds.width - 40)
+      .padding(10)
+      .background(VoxoraTheme.page)
     }
-    .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 26, style: .continuous))
   }
 
   private func exportNote(_ note: AudioNote) {

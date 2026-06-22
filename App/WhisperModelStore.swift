@@ -61,8 +61,8 @@ final class WhisperModelStore {
       case .tiny: "Fastest, lowest accuracy."
       case .base: "Recommended — good balance."
       case .small: "More accurate, slower."
-      case .medium: "High accuracy. Large download."
-      case .large: "Best accuracy. Very large; needs ample free space."
+      case .medium: "High accuracy."
+      case .large: "Best accuracy."
       }
     }
 
@@ -143,6 +143,10 @@ final class WhisperModelStore {
   /// Download (or repair) a model variant, reporting progress.
   /// When `wifiOnly` is set, a cellular-only connection is refused with a clear message
   /// rather than silently consuming the user's data on a multi-hundred-MB download.
+  func clearError() {
+    lastErrorMessage = nil
+  }
+
   func download(_ variant: Variant, wifiOnly: Bool) async {
     guard downloadingVariant == nil else { return }
 

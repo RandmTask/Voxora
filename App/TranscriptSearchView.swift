@@ -9,8 +9,37 @@ struct TranscriptSearchView: View {
   @State private var isSearchPresented = false
   @State private var selectedTagIDs = Set<UUID>()
 
-  private var hasQuery: Bool {
-    !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+  /// `#tag` tokens typed into the search field, lowercased without the `#`.
+  private var typedTagTokens: [String] {
+    searchText
+      .split(whereSeparator: { $0 == " " || $0 == "\n" })
+      .filter { $0.hasPrefix("#") && $0.count > 1 }
+      .map { String($0.dropFirst()).lowercased() }
+  }
+
+  /// Tags whose name matches a typed `#tag` token.
+  private var typedTagIDs: Set<UUID> {
+    let tokens = typedTagTokens
+    guard !tokens.isEmpty else { return [] }
+    return Set(
+      store.tags
+        .filter { tag in tokens.contains { tag.name.localizedCaseInsensitiveCompare($0) == .orderedSame } }
+        .map(\.id)
+    )
+  }
+
+  /// Tapped pills ∪ typed `#tags`.
+  private var effectiveTagIDs: Set<UUID> {
+    selectedTagIDs.union(typedTagIDs)
+  }
+
+  /// Search text with the `#tag` tokens stripped out — the free-text query.
+  private var freeQuery: String {
+    searchText
+      .split(whereSeparator: { $0 == " " || $0 == "\n" })
+      .filter { !$0.hasPrefix("#") }
+      .joined(separator: " ")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   var body: some View {
@@ -23,11 +52,11 @@ struct TranscriptSearchView: View {
             .listRowSeparator(.hidden)
         }
 
-        if !hasQuery && selectedTagIDs.isEmpty {
+        if freeQuery.isEmpty && effectiveTagIDs.isEmpty {
           ContentUnavailableView(
             "Search transcripts",
             systemImage: "text.magnifyingglass",
-            description: Text("Search titles, transcripts, generated outputs, and tags — or tap a tag to filter.")
+            description: Text("Search titles, transcripts and outputs, tap a tag, or type #tag to filter.")
           )
           .listRowBackground(Color.clear)
         } else if results.isEmpty {
@@ -59,6 +88,7 @@ struct TranscriptSearchView: View {
         }
       )
       .background(VoxoraTheme.page)
+      .onAppear { store.refreshSearchTagOrderIfNeeded() }
       .navigationTitle("Search")
       .searchable(
         text: $searchText,
@@ -74,35 +104,38 @@ struct TranscriptSearchView: View {
     }
   }
 
-  @ViewBuilder
+  // A "sea of tags": wraps left-to-right into as many rows as it needs (1, 2, 3…),
+  // most-used first. The list itself scrolls when there are a lot of tags.
   private var tagFilterStrip: some View {
-    ScrollView(.horizontal) {
-      HStack(spacing: 8) {
-        ForEach(store.sortedTags) { tag in
-          let isActive = selectedTagIDs.contains(tag.id)
-          Button {
-            if isActive { selectedTagIDs.remove(tag.id) } else { selectedTagIDs.insert(tag.id) }
-            Haptics.fire(.selectionChanged)
-          } label: {
-            TagPill(tag: tag, isActive: isActive)
+    FlowLayout(spacing: 8) {
+      ForEach(store.searchOrderedTags) { tag in
+        let isActive = effectiveTagIDs.contains(tag.id)
+        Button {
+          if selectedTagIDs.contains(tag.id) {
+            selectedTagIDs.remove(tag.id)
+          } else {
+            selectedTagIDs.insert(tag.id)
           }
-          .buttonStyle(.plain)
+          Haptics.fire(.selectionChanged)
+        } label: {
+          TagPill(tag: tag, isActive: isActive)
         }
+        .buttonStyle(.plain)
       }
-      .padding(.horizontal, 20)
     }
-    .scrollIndicators(.hidden)
+    .padding(.horizontal, 20)
   }
 
   private var results: [AudioNote] {
-    let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard hasQuery || !selectedTagIDs.isEmpty else { return [] }
+    let tagIDs = effectiveTagIDs
+    let query = freeQuery
+    guard !query.isEmpty || !tagIDs.isEmpty else { return [] }
     return store.notes.filter { note in
       guard includes(note) else { return false }
-      // Require every selected tag (AND), so "business + expense" narrows.
-      if !selectedTagIDs.isEmpty {
+      // Require every selected/typed tag (AND), so "#business #expense" narrows.
+      if !tagIDs.isEmpty {
         let noteTagIDs = Set(store.tags(for: note).map(\.id))
-        guard selectedTagIDs.isSubset(of: noteTagIDs) else { return false }
+        guard tagIDs.isSubset(of: noteTagIDs) else { return false }
       }
       guard !query.isEmpty else { return true }
       return [

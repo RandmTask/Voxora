@@ -166,6 +166,13 @@ struct TranscriptDetailView: View {
     }
   }
 
+  /// Resting inset of the first/last button from the screen edge. Kept smaller
+  /// than `actionRowFade` so buttons dissolve into the fade instead of leaving
+  /// an empty dead-zone before them.
+  private let actionRowInset: CGFloat = 8
+  /// Width of the soft fade at each edge of the action strip.
+  private let actionRowFade: CGFloat = 22
+
   private var actionBlock: some View {
     VStack(alignment: .leading, spacing: 10) {
       Text("AI Actions")
@@ -200,25 +207,32 @@ struct TranscriptDetailView: View {
           }
           .buttonStyle(.glass)
         }
-        .padding(.horizontal, 30)
         .padding(.vertical, 4)
       }
       .scrollIndicators(.hidden)
+      // Suppress the scroll view's default edge material so the page gradient
+      // shows through cleanly between/behind the glass buttons.
+      .scrollContentBackground(.hidden)
+      .background(Color.clear)
+      // Bleed the scroller out to the true screen edges (undo the parent's 20pt
+      // padding), then re-inset the content so the first button rests aligned
+      // with the "AI Actions" title above it.
+      .padding(.horizontal, -20)
+      .contentMargins(.horizontal, actionRowInset, for: .scrollContent)
+      // Constant-width soft fade on both edges so buttons dissolve off-screen
+      // instead of hard-clipping. Fixed points (not fractions) keep the fade
+      // the same width on every device.
       .mask {
-        LinearGradient(
-          stops: [
-            .init(color: .clear, location: 0),
-            .init(color: .black.opacity(0.18), location: 0.018),
-            .init(color: .black.opacity(0.5), location: 0.04),
-            .init(color: .black, location: 0.075),
-            .init(color: .black, location: 0.925),
-            .init(color: .black.opacity(0.5), location: 0.96),
-            .init(color: .black.opacity(0.18), location: 0.982),
-            .init(color: .clear, location: 1)
-          ],
-          startPoint: .leading,
-          endPoint: .trailing
-        )
+        GeometryReader { geo in
+          HStack(spacing: 0) {
+            LinearGradient(colors: [.clear, .black], startPoint: .leading, endPoint: .trailing)
+              .frame(width: actionRowFade)
+            Color.black
+              .frame(width: max(0, geo.size.width - actionRowFade * 2))
+            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
+              .frame(width: actionRowFade)
+          }
+        }
       }
     }
   }
@@ -231,6 +245,7 @@ struct TranscriptDetailView: View {
         if store.outputs(for: note).isEmpty {
           Text("Run an action above to generate an output.")
             .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           ForEach(store.outputs(for: note)) { output in
             VStack(alignment: .leading, spacing: 6) {
@@ -339,11 +354,34 @@ private struct StructuredOutputView: View {
     default:
       VStack(alignment: .leading, spacing: 8) {
         ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
-          Text(inlineMarkdown(paragraph))
-            .frame(maxWidth: .infinity, alignment: .leading)
+          if let item = bulletItem(paragraph) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+              Text("•")
+                .font(.body.weight(.bold))
+                .foregroundStyle(.secondary)
+                .frame(width: 18, alignment: .trailing)
+              Text(inlineMarkdown(item))
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+          } else {
+            Text(inlineMarkdown(paragraph))
+              .frame(maxWidth: .infinity, alignment: .leading)
+          }
         }
       }
     }
+  }
+
+  /// Returns the content of a markdown bullet line (`* foo`, `- foo`, `• foo`)
+  /// with the marker stripped, or nil if the line is not a bullet. Lets the
+  /// free-form summary renderer show real bullets instead of raw `*`/`-`.
+  private func bulletItem(_ line: String) -> String? {
+    guard let expression = try? NSRegularExpression(pattern: #"^[-*•]\s+"#) else { return nil }
+    let range = NSRange(line.startIndex..<line.endIndex, in: line)
+    guard expression.firstMatch(in: line, range: range) != nil else { return nil }
+    return expression
+      .stringByReplacingMatches(in: line, range: range, withTemplate: "")
+      .trimmingCharacters(in: .whitespaces)
   }
 
   private enum ListStyle {
@@ -450,7 +488,7 @@ private struct StructuredOutputView: View {
     return withBreaks
       .components(separatedBy: .newlines)
       .map { $0.trimmingCharacters(in: .whitespaces) }
-      .filter { !$0.isEmpty }
+      .filter { !$0.isEmpty && $0 != "*" && $0 != "-" && $0 != "—" }
   }
 
   private func inlineMarkdown(_ line: String) -> AttributedString {
