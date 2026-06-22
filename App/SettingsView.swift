@@ -9,6 +9,7 @@ struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @AppStorage(AppPreferences.appearanceKey) private var appearanceRawValue = AppTheme.dark.rawValue
   @AppStorage(AppPreferences.showSourceIconKey) private var showSourceIcon = true
+  @AppStorage(AppPreferences.whisperWiFiOnlyDownloadsKey) private var whisperWiFiOnly = true
   @State private var providerDrafts: [AIProvider: String] = [:]
   @State private var editingAction: PromptTemplate?
   @State private var editingAutomation: AutomationProfile?
@@ -19,6 +20,7 @@ struct SettingsView: View {
   @State private var newTagColor = TagPalette.default
   @State private var renamingTag: NoteTag?
   @State private var renameDraft = ""
+  @State private var pendingLargeDownload: WhisperModelStore.Variant?
 
   private var availableProviders: [AIProvider] {
     #if canImport(FoundationModels)
@@ -81,6 +83,17 @@ struct SettingsView: View {
               systemImage: "apple.intelligence",
               detail: store.defaultAIProvider.title,
               tint: store.defaultAIProvider.tint
+            )
+          }
+
+          NavigationLink {
+            transcriptionSettings
+          } label: {
+            settingsRow(
+              "Transcription",
+              systemImage: "waveform",
+              detail: store.preferWhisperForAll ? "Whisper" : "Apple Speech",
+              tint: .indigo
             )
           }
         }
@@ -314,6 +327,150 @@ struct SettingsView: View {
     .navigationBarTitleDisplayMode(.inline)
   }
 
+  private var transcriptionSettings: some View {
+    Form {
+      Section {
+        Toggle("Prefer Whisper for everything", isOn: Binding(
+          get: { store.preferWhisperForAll },
+          set: { store.preferWhisperForAll = $0 }
+        ))
+      } header: {
+        Text("Engine")
+      } footer: {
+        Text("Apple Speech is the instant default and handles short notes well, but truncates past ~60 seconds. Long recordings automatically use Whisper when its model is installed. Turn this on to use Whisper for every recording.")
+      }
+
+      Section("Whisper model") {
+        Picker("Active model", selection: Binding(
+          get: { store.whisperModelVariant },
+          set: { store.whisperModelVariant = $0 }
+        )) {
+          ForEach(WhisperModelStore.Variant.allCases) { variant in
+            Text(variant.title).tag(variant)
+          }
+        }
+        if !store.whisperModels.isInstalled(store.whisperModelVariant) {
+          Label(
+            "This model isn't downloaded yet — download it below before using Whisper.",
+            systemImage: "exclamationmark.circle"
+          )
+          .font(.caption)
+          .foregroundStyle(.orange)
+        }
+      }
+
+      Section {
+        ForEach(WhisperModelStore.Variant.allCases) { variant in
+          whisperModelRow(variant)
+        }
+      } header: {
+        Text("On-device models")
+      } footer: {
+        Text("Models run entirely on your iPhone — audio never leaves the device and there's no per-minute cost. They download once and are stored in Application Support. Whisper transcription is iPhone/iPad only; Apple Watch recordings transcribe on your phone.")
+      }
+
+      Section {
+        Toggle("Download over Wi-Fi only", isOn: $whisperWiFiOnly)
+      } footer: {
+        Text("Models are large. Leave this on to avoid downloading on cellular.")
+      }
+
+      if let error = store.whisperModels.lastErrorMessage {
+        Section {
+          Text(error)
+            .font(.caption)
+            .foregroundStyle(.red)
+        }
+      }
+    }
+    .navigationTitle("Transcription")
+    .navigationBarTitleDisplayMode(.inline)
+    .confirmationDialog(
+      "Download \(pendingLargeDownload?.title ?? "") model?",
+      isPresented: Binding(
+        get: { pendingLargeDownload != nil },
+        set: { if !$0 { pendingLargeDownload = nil } }
+      ),
+      titleVisibility: .visible,
+      presenting: pendingLargeDownload
+    ) { variant in
+      Button("Download \(variant.sizeDescription)") {
+        startWhisperDownload(variant)
+        pendingLargeDownload = nil
+      }
+      Button("Cancel", role: .cancel) { pendingLargeDownload = nil }
+    } message: { variant in
+      Text("This model is \(variant.sizeDescription) and needs ample free space. Only download it if your device has room to spare.")
+    }
+  }
+
+  @ViewBuilder
+  private func whisperModelRow(_ variant: WhisperModelStore.Variant) -> some View {
+    let isInstalled = store.whisperModels.isInstalled(variant)
+    let isDownloading = store.whisperModels.downloadingVariant == variant
+    VStack(alignment: .leading, spacing: 6) {
+      HStack {
+        VStack(alignment: .leading, spacing: 2) {
+          HStack(spacing: 6) {
+            Text(variant.title)
+            if variant == WhisperModelStore.recommendedVariant {
+              Text("Recommended")
+                .font(.caption2)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.blue.opacity(0.15), in: Capsule())
+                .foregroundStyle(.blue)
+            }
+          }
+          Text("\(variant.sizeDescription) · \(variant.detail)")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        Spacer()
+        whisperModelControl(variant, isInstalled: isInstalled, isDownloading: isDownloading)
+      }
+      if isDownloading {
+        let progress = store.whisperModels.downloadProgress[variant] ?? 0
+        // Indeterminate until the first byte registers — large models enumerate
+        // multiple files before fractionCompleted moves off 0.
+        ProgressView(value: progress > 0 ? progress : nil, total: 1)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func whisperModelControl(
+    _ variant: WhisperModelStore.Variant,
+    isInstalled: Bool,
+    isDownloading: Bool
+  ) -> some View {
+    if isDownloading {
+      let progress = store.whisperModels.downloadProgress[variant] ?? 0
+      Text(progress > 0 ? "\(Int(progress * 100))%" : "…")
+        .font(.caption.monospacedDigit())
+        .foregroundStyle(.secondary)
+    } else if isInstalled {
+      Button(role: .destructive) {
+        store.whisperModels.delete(variant)
+      } label: {
+        Image(systemName: "trash")
+      }
+      .buttonStyle(.borderless)
+    } else {
+      Button {
+        if variant.isLargeDownload {
+          pendingLargeDownload = variant
+        } else {
+          startWhisperDownload(variant)
+        }
+      } label: {
+        Image(systemName: "arrow.down.circle")
+      }
+      .buttonStyle(.borderless)
+      .disabled(store.whisperModels.downloadingVariant != nil)
+    }
+  }
+
   private var aiActionsSettings: some View {
     List {
       ForEach(store.prompts) { prompt in
@@ -454,6 +611,7 @@ struct SettingsView: View {
     }
     .navigationTitle("Tags")
     .navigationBarTitleDisplayMode(.inline)
+    .onAppear { newTagColor = store.nextUnusedTagColor() }
     .alert(
       renamingTag.map { "Rename \"\($0.name)\"" } ?? "Rename Tag",
       isPresented: Binding(
@@ -477,6 +635,7 @@ struct SettingsView: View {
     guard !cleaned.isEmpty else { return }
     store.addTag(named: cleaned, colorHex: newTagColor)
     newTagDraft = ""
+    newTagColor = store.nextUnusedTagColor()
   }
 
   private func beginRenameTag(_ tag: NoteTag) {
@@ -524,6 +683,16 @@ struct SettingsView: View {
           .font(.subheadline)
           .foregroundStyle(.secondary)
           .lineLimit(1)
+      }
+    }
+  }
+
+  /// Download a Whisper model, then make it the active model once it's installed.
+  private func startWhisperDownload(_ variant: WhisperModelStore.Variant) {
+    Task {
+      await store.whisperModels.download(variant, wifiOnly: whisperWiFiOnly)
+      if store.whisperModels.isInstalled(variant) {
+        store.whisperModelVariant = variant
       }
     }
   }

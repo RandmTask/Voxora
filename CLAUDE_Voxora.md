@@ -200,11 +200,21 @@ Surface these in batch-summary "next step" questions; don't build unprompted.
   Map relative dates against the recording's timestamp, not "now."
 
 **Whisper / on-device transcription**
-- **Download and cache Whisper models** — use `WhisperKit` or similar. Key risk: iOS will silently
-  evict files in `Caches/` when storage is low; models must live in `Application Support/` (not
-  Caches) so they survive low-storage purges. Show a "model missing — re-download?" prompt rather
-  than silently failing. This is the same bug that affected Just Press Record. Never assume a model
-  file is present without `FileManager.default.fileExists` check at call time.
+- 🟡 **Download and cache Whisper models** — `WhisperKit` (Argmax, Core ML on the Neural Engine).
+  Key risk: iOS will silently evict files in `Caches/` when storage is low; models must live in
+  `Application Support/` (not Caches) so they survive low-storage purges. Show a "model missing —
+  re-download?" prompt rather than silently failing. This is the same bug that affected Just Press
+  Record. Never assume a model file is present without `FileManager.default.fileExists` check at
+  call time. **Routing decision (approved 2026-06-22):** Apple Speech stays the instant default for
+  short notes; long notes (>~90s) auto-route to Whisper *if a model is installed*, else the existing
+  cloud prompt; a "Prefer Whisper for everything" Settings toggle lets users opt in globally.
+  Whisper is iPhone/iPad-only — Watch recordings transcribe later on the phone. Model tiers
+  tiny→large user-selectable with a recommended default (`base`); warn before medium/large on
+  low-storage devices.
+- **Whisper — deferred to later batches (approved 2026-06-22):** speaker/chapter segmentation
+  (timestamped sections, tap-to-seek), word-level timestamps for transcript↔audio sync, and
+  live/streaming partials while recording. First batch ships download/cache + one working
+  `.whisper` engine path + Settings model manager only.
 
 **Haptics**
 - ✅ **iPhone + Watch haptics** — `Shared/Haptics.swift` (done 2026-06-21). Wired to record
@@ -217,6 +227,11 @@ Surface these in batch-summary "next step" questions; don't build unprompted.
 - **Smart auto-tagging** — AI suggests tags on import; user accepts.
 - **Per-note default action / "favorite action"** — one-tap re-run.
 - **Search inside generated outputs** and across `GeneratedOutput` history.
+- **Multi-language transcription support (approved 2026-06-22)** — let the user pick a transcription
+  language (or auto-detect) and store the detected language per note. Whisper handles ~99 languages
+  natively; Apple Speech exposes its on-device locale subset; cloud engines auto-detect. First
+  Whisper batch defaults to auto-detect; the explicit picker + per-note detected-language label is a
+  follow-up.
 - **Transcription language picker** + per-note detected language.
 
 **Export & backup**

@@ -1,5 +1,76 @@
 # Voxora Implementation Log
 
+## 2026-06-22 — On-device Whisper transcription (WhisperKit)
+
+- **SPM**: added `WhisperKit` (Argmax, Core ML on the Neural Engine), pinned
+  `exactVersion: 1.0.0`, as a top-level `packages` block in `Project.json` and a
+  product dependency on the **iOS `Voxora` target only**. Regenerated the project.
+- **`App/WhisperModelStore.swift`** (iPhone-only — lives in `App/`, *not* `Shared/`,
+  because Watch + Widget targets compile `Shared/` and don't link WhisperKit):
+  download/cache manager. Models download to **Application Support/WhisperModels**
+  (never `Caches/` — survives low-storage purges, the Just Press Record bug).
+  Presence is validated with `FileManager.fileExists` **at call time**; an evicted
+  model returns nil → callers surface a re-download prompt. Per-variant progress,
+  delete, and a real **Wi-Fi-only gate** via `NWPathMonitor` (refuses cellular with a
+  clear message instead of a no-op toggle). Variants tiny→large with sizes.
+- **`App/WhisperTranscriber.swift`**: actor mirroring `SpeechTranscriber`; loads a
+  pre-downloaded model (`download: false`) and transcribes via WhisperKit v1.0.0's
+  array-returning `transcribe(audioPath:)`. Caches the loaded pipeline per variant.
+- **Routing (three-tier, see CLAUDE_Voxora.md)** in `VoxoraStore`:
+  - Apple Speech stays the instant default for short notes.
+  - New recordings/imports longer than `longRecordingThresholdSeconds` (90s) auto-route
+    to Whisper **if the model is installed**, else Apple Speech.
+  - A **"Prefer Whisper for everything"** Settings toggle opts in globally.
+  - `.whisper` added to `TranscriptionEngine`; wired into the existing
+    `retranscribe(_:using:)` switch so the per-note Retranscribe menu can pick it.
+- **Settings → Transcription** (new screen under Preferences): engine toggle, active-model
+  picker with a missing-model warning, per-model rows (Recommended badge on `base`,
+  size + tradeoff, download/progress/delete), large-model (≥1 GB) confirm dialog,
+  Wi-Fi-only toggle, and surfaced download errors.
+- Verified a successful full iPhone 17 Pro / iOS 26.5 simulator build (WhisperKit SPM
+  resolved + compiled; Watch + widget dependents unaffected).
+
+### Schema changes
+
+None. Whisper model files are per-device caches on disk (Application Support), never an
+`@Model` field and never synced to CloudKit. New prefs (`preferWhisperForAll`,
+`whisperModelVariant`, `whisperWiFiOnlyDownloads`) are device-local `UserDefaults`.
+**No CloudKit Dev→Prod redeploy required for this feature.** (The outstanding Phase 2
+schema redeploy is still pending and unrelated.)
+
+### Deferred to later batches (roadmap updated)
+
+Speaker/chapter segmentation, word-level timestamps (transcript↔audio sync), live
+streaming partials, and explicit multi-language picker + per-note detected language.
+This batch defaults Whisper to auto-detect language.
+
+## 2026-06-22 (pm) — Tag editor overhaul, palette to 20, output rendering, recorder
+
+- **Reusable tag system extracted** to [`../_shared/tag-system.md`](../_shared/tag-system.md)
+  (model, palette, components, store API) so it can be one-shotted into other apps.
+- **Tag editor (note detail)**: replaced toggle-switch list + separate add row with a
+  SteadyState-style `TagFlowEditor` — selected tags as removable chips + a `+ Add Tag`
+  popover (inline create field with auto-colour + searchable tag list with checkmarks).
+  New `FlowLayout`.
+- **Palette 12 → 20 colours**; new tags auto-pick the first unused palette colour
+  (`store.nextUnusedTagColor`); swatch popover padding increased.
+- **Tag names** now trimmed + lowercased on create and rename (`normalizedTagName`).
+- **Tag filtering moved** off the home screen onto the **Search tab**, now
+  **multi-select with AND semantics** (e.g. business + expense).
+- **Note context menu** gained **Export** (text + audio share); context-menu preview
+  box now matches the card's 26pt corner (no stray highlight rectangle).
+- **AI Actions**: `+ Add` moved back to the **end** of the strip.
+- **Output rendering**: summarise/custom output no longer renders as one wall of text —
+  split into lines (breaking before inline `**Header:**` runs) and rendered with
+  `inlineOnlyPreservingWhitespace` so newlines survive.
+- **Recorder**: pause/resume button sized to match Stop (52×52); resume icon is now
+  `mic.fill` (was `play.fill`, which read like audio playback).
+
+### Schema changes
+
+None this sub-batch (the `NoteTag.colorHex`/`isPinned` change from the am batch still
+needs the **CloudKit Dev→Prod redeploy before the next TestFlight build**).
+
 ## 2026-06-22 — Tags like SteadyState, combine notes, multi-select & UX polish
 
 - **Tags (SteadyState parity)**: `NoteTag` gains `colorHex` + `isPinned`

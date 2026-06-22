@@ -12,7 +12,7 @@ struct CloudAudioTranscriber {
     }
 
     switch engine {
-    case .appleSpeech:
+    case .appleSpeech, .whisper:
       throw VoxoraAPIError.unavailableProvider(.appleIntelligence)
     case .gemini:
       return try await transcribeWithGemini(audioURL: audioURL, apiKey: apiKey)

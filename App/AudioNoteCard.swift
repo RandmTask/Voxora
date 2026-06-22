@@ -56,7 +56,7 @@ struct AudioNoteCard: View {
       }
       .padding(18)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26))
+      .glassEffect(.regular, in: .rect(cornerRadius: 26))
       .overlay(alignment: .trailing) {
         if !showsStatus {
           Image(systemName: "chevron.right")

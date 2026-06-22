@@ -14,11 +14,12 @@ struct VoxoraHomeView: View {
   @State private var shareItems: [Any]?
   @State private var isShowingExportOptions = false
   @State private var batchEmailDraft: EmailDraft?
-  @State private var activeTagFilter: UUID?
   @Environment(\.colorScheme) private var systemColorScheme
   @State private var actionNote: AudioNote?
   @State private var emailNote: AudioNote?
   @State private var pendingDeleteNote: AudioNote?
+  @State private var tagNote: AudioNote?
+  @State private var isTaggingSelection = false
   @State private var selectedNote: AudioNote?
   @AppStorage(AppPreferences.hideUnusableNotesKey) private var hideUnusable = true
   @AppStorage(AppPreferences.hideFailedNotesKey) private var hideFailed = true
@@ -38,13 +39,6 @@ struct VoxoraHomeView: View {
           if !isSelecting {
             recorderControl
               .listRowInsets(EdgeInsets(top: 16, leading: 20, bottom: 8, trailing: 20))
-              .listRowBackground(Color.clear)
-              .listRowSeparator(.hidden)
-          }
-
-          if !isSelecting && !store.notes.isEmpty && !store.tags.isEmpty {
-            tagFilterStrip
-              .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 6, trailing: 0))
               .listRowBackground(Color.clear)
               .listRowSeparator(.hidden)
           }
@@ -110,7 +104,7 @@ struct VoxoraHomeView: View {
         } else {
           ToolbarItemGroup(placement: .topBarTrailing) {
             Menu {
-              Section {
+              Menu("Filter", systemImage: "line.3.horizontal.decrease.circle") {
                 Toggle("Hide unusable", isOn: $hideUnusable)
                 Toggle("Hide failed", isOn: $hideFailed)
                 Toggle("Show archived", isOn: $showArchived)
@@ -174,6 +168,12 @@ struct VoxoraHomeView: View {
       }
       .sheet(item: $emailNote) { note in
         EmailWorkflowSheet(store: store, note: note)
+      }
+      .sheet(item: $tagNote) { note in
+        TagAssignmentSheet(store: store, notes: [note])
+      }
+      .sheet(isPresented: $isTaggingSelection) {
+        TagAssignmentSheet(store: store, notes: selectedNotes)
       }
       .sheet(item: $batchEmailDraft) { draft in
         MailComposerView(draft: draft) {
@@ -260,33 +260,7 @@ struct VoxoraHomeView: View {
     }
     if hideFailed && status == .failed { return false }
     if !showArchived && note.archivedAt != nil { return false }
-    if let activeTagFilter,
-       !store.tags(for: note).contains(where: { $0.id == activeTagFilter }) {
-      return false
-    }
     return true
-  }
-
-  @ViewBuilder
-  private var tagFilterStrip: some View {
-    if !store.tags.isEmpty {
-      ScrollView(.horizontal) {
-        HStack(spacing: 8) {
-          ForEach(store.sortedTags) { tag in
-            let isActive = activeTagFilter == tag.id
-            Button {
-              activeTagFilter = isActive ? nil : tag.id
-              Haptics.fire(.selectionChanged)
-            } label: {
-              TagPill(tag: tag, isActive: isActive)
-            }
-            .buttonStyle(.plain)
-          }
-        }
-        .padding(.horizontal, 20)
-      }
-      .scrollIndicators(.hidden)
-    }
   }
 
   private var recorderControl: some View {
@@ -331,9 +305,9 @@ struct VoxoraHomeView: View {
                     recorder.pause()
                   }
                 } label: {
-                  Image(systemName: recorder.state == .paused ? "play.fill" : "pause.fill")
-                    .font(.title3.weight(.semibold))
-                    .frame(width: 46, height: 46)
+                  Image(systemName: recorder.state == .paused ? "mic.fill" : "pause.fill")
+                    .font(.system(size: 18, weight: .bold))
+                    .frame(width: 52, height: 52)
                 }
                 .buttonStyle(.glass)
                 .accessibilityLabel(recorder.state == .paused ? "Resume recording" : "Pause recording")
@@ -389,6 +363,7 @@ struct VoxoraHomeView: View {
           tags: store.tags(for: note)
         )
       }
+      .contentShape(.rect(cornerRadius: 26))
     }
     .buttonStyle(.plain)
     .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
@@ -439,8 +414,14 @@ struct VoxoraHomeView: View {
         UIPasteboard.general.string = note.transcriptText
       }
       .disabled(note.transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+      Button("Export", systemImage: "square.and.arrow.up") {
+        exportNote(note)
+      }
       Button("Email Memo", systemImage: "envelope") {
         emailNote = note
+      }
+      Button("Tags", systemImage: "tag") {
+        tagNote = note
       }
       Button(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star.fill") {
         store.toggleFavorite(note)
@@ -449,6 +430,19 @@ struct VoxoraHomeView: View {
         requestDelete(note)
       }
     }
+    .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 26, style: .continuous))
+  }
+
+  private func exportNote(_ note: AudioNote) {
+    var items: [Any] = [combinedText(for: [note])]
+    if !note.audioFileName.isEmpty,
+       let directory = try? AudioFileStore.directoryURL() {
+      let url = directory.appending(path: note.audioFileName)
+      if FileManager.default.fileExists(atPath: url.path()) {
+        items.append(url)
+      }
+    }
+    shareItems = items
   }
 
   private var recorderColor: Color {
@@ -542,6 +536,9 @@ struct VoxoraHomeView: View {
         isEnabled: selectedIDs.count > 1
       ) {
         combineSelection()
+      }
+      selectionAction("Tag", systemImage: "tag") {
+        isTaggingSelection = true
       }
       selectionAction("Export", systemImage: "square.and.arrow.up") {
         isShowingExportOptions = true

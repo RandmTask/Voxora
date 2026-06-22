@@ -16,6 +16,13 @@ enum AppPreferences {
   static let hideFailedNotesKey = "hideFailedNotes"
   static let showArchivedNotesKey = "showArchivedNotes"
   static let showSourceIconKey = "showSourceIcon"
+  static let preferWhisperForAllKey = "preferWhisperForAll"
+  static let whisperModelVariantKey = "whisperModelVariant"
+  static let whisperWiFiOnlyDownloadsKey = "whisperWiFiOnlyDownloads"
+
+  /// Recordings longer than this (seconds) auto-route away from Apple Speech, which
+  /// truncates past its ~60s ceiling. Whisper (if installed) is preferred for these.
+  static let longRecordingThresholdSeconds: TimeInterval = 90
 }
 
 enum PrimaryButtonBehavior: String, CaseIterable, Identifiable {

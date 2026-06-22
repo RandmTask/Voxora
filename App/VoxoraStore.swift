@@ -67,11 +67,32 @@ final class VoxoraStore {
       )
     }
   }
+  /// When on, every new recording transcribes with Whisper if its model is installed,
+  /// regardless of length. Off keeps Apple Speech as the instant default for short notes.
+  var preferWhisperForAll = false {
+    didSet {
+      UserDefaults.standard.set(
+        preferWhisperForAll,
+        forKey: AppPreferences.preferWhisperForAllKey
+      )
+    }
+  }
+  /// Which Whisper model variant to use for on-device transcription.
+  var whisperModelVariant: WhisperModelStore.Variant = WhisperModelStore.recommendedVariant {
+    didSet {
+      UserDefaults.standard.set(
+        whisperModelVariant.rawValue,
+        forKey: AppPreferences.whisperModelVariantKey
+      )
+    }
+  }
 
   private let container: ModelContainer
   private let context: ModelContext
   private let keychainStore = KeychainStore()
   private let transcriber = SpeechTranscriber()
+  private let whisperTranscriber = WhisperTranscriber()
+  let whisperModels = WhisperModelStore.shared
   private let cloudTranscriber = CloudAudioTranscriber()
   private let processor: AIProcessingCoordinator
   private var processingNoteIDs = Set<UUID>()
@@ -104,6 +125,14 @@ final class VoxoraStore {
     includeTimestampInExports = UserDefaults.standard.bool(
       forKey: AppPreferences.includeTimestampInExportsKey
     )
+    preferWhisperForAll = UserDefaults.standard.bool(
+      forKey: AppPreferences.preferWhisperForAllKey
+    )
+    whisperModelVariant = WhisperModelStore.Variant(
+      rawValue: UserDefaults.standard.string(
+        forKey: AppPreferences.whisperModelVariantKey
+      ) ?? ""
+    ) ?? WhisperModelStore.recommendedVariant
   }
 
   func prepare() async {
@@ -333,6 +362,8 @@ final class VoxoraStore {
       switch engine {
       case .appleSpeech:
         transcript = try await transcriber.transcribeAudio(at: audioURL)
+      case .whisper:
+        transcript = try await transcribeWhisper(at: audioURL)
       case .gemini:
         transcript = try await cloudTranscriber.transcribe(
           audioURL: audioURL,
@@ -445,8 +476,40 @@ final class VoxoraStore {
     reload()
   }
 
+  /// Normalised tag name: trimmed and lowercased so tags stay tidy and dedupe
+  /// case-insensitively. Used everywhere a tag name is created or renamed.
+  static func normalizedTagName(_ name: String) -> String {
+    name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+  }
+
+  /// First palette colour not already used by an existing tag, so new tags get a
+  /// fresh colour. Falls back to cycling the palette once every colour is taken.
+  func nextUnusedTagColor() -> String {
+    let used = Set(tags.map { $0.colorHex.uppercased() })
+    if let free = TagPalette.colors.first(where: { !used.contains($0.uppercased()) }) {
+      return free
+    }
+    return TagPalette.colors[tags.count % TagPalette.colors.count]
+  }
+
+  /// Returns the tag with this name, creating it if needed. The returned tag is
+  /// the live store instance so callers can assign it immediately.
+  @discardableResult
+  func upsertTag(named name: String, colorHex: String) -> NoteTag? {
+    let cleaned = Self.normalizedTagName(name)
+    guard !cleaned.isEmpty else { return nil }
+    if let existing = tags.first(where: { $0.name.localizedCaseInsensitiveCompare(cleaned) == .orderedSame }) {
+      return existing
+    }
+    let tag = NoteTag(name: cleaned, colorHex: colorHex)
+    context.insert(tag)
+    saveContext()
+    reload()
+    return tags.first(where: { $0.id == tag.id }) ?? tag
+  }
+
   func addTag(named name: String, colorHex: String = TagPalette.default, to note: AudioNote? = nil) {
-    let cleaned = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    let cleaned = Self.normalizedTagName(name)
     guard !cleaned.isEmpty else { return }
     let tag = tags.first { $0.name.localizedCaseInsensitiveCompare(cleaned) == .orderedSame }
       ?? NoteTag(name: cleaned, colorHex: colorHex)
@@ -483,7 +546,7 @@ final class VoxoraStore {
   }
 
   func renameTag(_ tag: NoteTag, to name: String) {
-    let cleaned = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    let cleaned = Self.normalizedTagName(name)
     guard !cleaned.isEmpty else { return }
     tag.name = cleaned
     tag.updatedAt = Date()
@@ -691,7 +754,7 @@ final class VoxoraStore {
     do {
       let audioURL = try AudioFileStore.directoryURL().appending(path: note.audioFileName)
       try validateAudioFile(at: audioURL)
-      let transcript = try await transcribeAppleAudio(at: audioURL)
+      let transcript = try await transcribeNewRecording(note, at: audioURL)
       let cleanedTranscript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
       note.transcriptText = cleanedTranscript
       note.processingStatus = cleanedTranscript.isEmpty ? .empty : .ready
@@ -733,6 +796,40 @@ final class VoxoraStore {
         userInfo: [NSLocalizedDescriptionKey: "The transferred recording file is empty."]
       )
     }
+  }
+
+  /// Three-tier routing for a new recording (see CLAUDE_Voxora.md):
+  /// Apple Speech is the instant default for short notes; long notes (or the global
+  /// "Prefer Whisper" toggle) route to Whisper when its model is installed; otherwise
+  /// Apple Speech still handles it (and the user can retranscribe to a cloud engine).
+  private func transcribeNewRecording(_ note: AudioNote, at url: URL) async throws -> String {
+    if shouldUseWhisper(for: note),
+       let folder = whisperModels.installedFolderURL(for: whisperModelVariant) {
+      return try await whisperTranscriber.transcribeAudio(
+        at: url,
+        variant: whisperModelVariant,
+        modelFolder: folder
+      )
+    }
+    return try await transcribeAppleAudio(at: url)
+  }
+
+  private func shouldUseWhisper(for note: AudioNote) -> Bool {
+    guard whisperModels.installedFolderURL(for: whisperModelVariant) != nil else { return false }
+    if preferWhisperForAll { return true }
+    return note.duration > AppPreferences.longRecordingThresholdSeconds
+  }
+
+  /// Transcribe with the selected Whisper model, validating presence at call time.
+  private func transcribeWhisper(at url: URL) async throws -> String {
+    guard let folder = whisperModels.installedFolderURL(for: whisperModelVariant) else {
+      throw WhisperTranscriber.WhisperError.modelMissing(whisperModelVariant)
+    }
+    return try await whisperTranscriber.transcribeAudio(
+      at: url,
+      variant: whisperModelVariant,
+      modelFolder: folder
+    )
   }
 
   private func transcribeAppleAudio(at url: URL) async throws -> String {

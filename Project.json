@@ -4,6 +4,12 @@
     "Release": "release"
   },
   "name": "Voxora",
+  "packages": {
+    "WhisperKit": {
+      "url": "https://github.com/argmaxinc/WhisperKit.git",
+      "exactVersion": "1.0.0"
+    }
+  },
   "options": {
     "deploymentTarget": {
       "iOS": "26.0",
@@ -89,6 +95,10 @@
       "dependencies": [
         {
           "sdk": "CloudKit.framework"
+        },
+        {
+          "package": "WhisperKit",
+          "product": "WhisperKit"
         },
         {
           "embed": true,

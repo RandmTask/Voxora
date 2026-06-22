@@ -8,7 +8,6 @@ struct NoteEditorSheet: View {
   @State private var transcript = ""
   @State private var output = ""
   @State private var title = ""
-  @State private var newTag = ""
   @State private var selectedTagIDs = Set<UUID>()
 
   var body: some View {
@@ -19,40 +18,7 @@ struct NoteEditorSheet: View {
         }
 
         Section("Tags") {
-          ForEach(store.sortedTags) { tag in
-            Toggle(isOn: Binding(
-              get: { selectedTagIDs.contains(tag.id) },
-              set: {
-                if $0 {
-                  selectedTagIDs.insert(tag.id)
-                } else {
-                  selectedTagIDs.remove(tag.id)
-                }
-              }
-            )) {
-              HStack(spacing: 8) {
-                Circle()
-                  .fill(Color(hex: tag.colorHex))
-                  .frame(width: 10, height: 10)
-                Text(tag.name)
-              }
-            }
-          }
-
-          HStack {
-            TextField("New tag", text: $newTag)
-            Button("Add") {
-              let cleaned = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-              store.addTag(named: cleaned)
-              if let tag = store.tags.first(where: {
-                $0.name.localizedCaseInsensitiveCompare(cleaned) == .orderedSame
-              }) {
-                selectedTagIDs.insert(tag.id)
-              }
-              newTag = ""
-            }
-            .disabled(newTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-          }
+          TagFlowEditor(store: store, selectedTagIDs: $selectedTagIDs)
         }
 
         Section("Transcript") {

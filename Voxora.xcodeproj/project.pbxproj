@@ -29,6 +29,7 @@
 		22FE4C970FE615F03E5D160F /* NoteTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86018AFBEE8105C741B1CA77 /* NoteTag.swift */; };
 		2340B21AF001C3993D375F51 /* FinalizedRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB7EA57E04B829AF93717FE /* FinalizedRecording.swift */; };
 		26830E87E6C6601298B78AA7 /* RecordingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 755E71E902F23094714F6ECB /* RecordingSource.swift */; };
+		27255031AA94BEB94A17A79F /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6132C30B6B93D8BF2D92AA61 /* WhisperKit */; };
 		28421C3ED4F1A09E6821E9EA /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718E577CC1E54E4C8269FABF /* AIProvider.swift */; };
 		29FB691381CF07E069E09EE2 /* VoxoraSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60A3A473A6F9E73C7D468AA /* VoxoraSchema.swift */; };
 		2F24F5086C3896CEEB52CE31 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE7D63648E25E562C3BDB61 /* RecordingState.swift */; };
@@ -45,6 +46,7 @@
 		49D58445082DF126FC58843C /* DeepLinkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C422FF7C1E4090B459B0F39 /* DeepLinkRoute.swift */; };
 		4B913169513FD2FD8673D9B1 /* NoteTagAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D139E9E8B4A4601E2DEC8 /* NoteTagAssignment.swift */; };
 		4C20F330239897B313834299 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99326E29A4CA5E73E1F2FE32 /* Haptics.swift */; };
+		4D1369E7DDE6DB588FD4CDCB /* WhisperTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FB23E841E601DB6E837A29 /* WhisperTranscriber.swift */; };
 		52312630477DF341CD9ADCC2 /* TranscriptDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76075E09948353F36F6690A1 /* TranscriptDetailView.swift */; };
 		5627DD834A51BD9BD8A95336 /* AudioNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC4FF175648B01ACF98C8AB /* AudioNote.swift */; };
 		56B7312BD15F678949B1C734 /* AudioFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917185081FE83956168B839E /* AudioFileStore.swift */; };
@@ -66,6 +68,7 @@
 		79B1260DEA6BC38332317831 /* TransferMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA0F5B313EB17F81D204D1 /* TransferMetadata.swift */; };
 		79B5C89DC45CBB291E429755 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99326E29A4CA5E73E1F2FE32 /* Haptics.swift */; };
 		7B8FFE99AD7F08877994095A /* WatchRecordingSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A55BCCD6B7333891895F19 /* WatchRecordingSnapshot.swift */; };
+		7F943EB2874E71DF5C4DE792 /* WhisperModelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB17EDBC5B3A1B737F907499 /* WhisperModelStore.swift */; };
 		8140B2CEBADF11493E7D2460 /* DeletedAudioNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE99BC64BA6A66303C23DCA8 /* DeletedAudioNote.swift */; };
 		849C8B42F974830F49790F14 /* AutomationProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7FC1D7875E71A37012F92C /* AutomationProfile.swift */; };
 		87FDAC0BADDC30AA21A24ACC /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D106E54452EACA97203473 /* StatusPill.swift */; };
@@ -232,8 +235,9 @@
 		917185081FE83956168B839E /* AudioFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileStore.swift; sourceTree = "<group>"; };
 		99326E29A4CA5E73E1F2FE32 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		9BB7EA57E04B829AF93717FE /* FinalizedRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizedRecording.swift; sourceTree = "<group>"; };
-		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A24F78BF1D132DD8EE44CDD0 /* Voxora.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Voxora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A316DB39AB52C4B7344B20D2 /* CloudAudioTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudAudioTranscriber.swift; sourceTree = "<group>"; };
+		A3FB23E841E601DB6E837A29 /* WhisperTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperTranscriber.swift; sourceTree = "<group>"; };
 		A7640A3618B168281EDE9396 /* EmailWorkflowSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailWorkflowSheet.swift; sourceTree = "<group>"; };
 		A7E5077AFEDFCD9284F91751 /* TagViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViews.swift; sourceTree = "<group>"; };
 		A8F1DAE292B8F8CF7D4FE473 /* VoxoraAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxoraAPIError.swift; sourceTree = "<group>"; };
@@ -242,6 +246,7 @@
 		B3D106E54452EACA97203473 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
 		B9A55BCCD6B7333891895F19 /* WatchRecordingSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRecordingSnapshot.swift; sourceTree = "<group>"; };
 		BAD6D6DD64591ED786178036 /* SpeechTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscriber.swift; sourceTree = "<group>"; };
+		BB17EDBC5B3A1B737F907499 /* WhisperModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModelStore.swift; sourceTree = "<group>"; };
 		BBDAA376E6E72ED37778713F /* Watch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Watch.entitlements; sourceTree = "<group>"; };
 		BEC4FF175648B01ACF98C8AB /* AudioNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioNote.swift; sourceTree = "<group>"; };
 		CB60F41D372780AD22C5EDBB /* GeneratedOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedOutput.swift; sourceTree = "<group>"; };
@@ -268,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A05D4E3105DDDC7E0382EA99 /* CloudKit.framework in Frameworks */,
+				27255031AA94BEB94A17A79F /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +346,8 @@
 				7B0105F6701A707FBCF9DE01 /* VoxoraHomeView.swift */,
 				AFAFA03DD65BC6C33A41EAAE /* VoxoraPersistence.swift */,
 				6962B4CCD3A2537B88F9435D /* VoxoraStore.swift */,
+				BB17EDBC5B3A1B737F907499 /* WhisperModelStore.swift */,
+				A3FB23E841E601DB6E837A29 /* WhisperTranscriber.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -497,6 +505,7 @@
 			);
 			name = Voxora;
 			packageProductDependencies = (
+				6132C30B6B93D8BF2D92AA61 /* WhisperKit */,
 			);
 			productName = Voxora;
 			productReference = A24F78BF1D132DD8EE44CDD0 /* Voxora.app */;
@@ -538,6 +547,9 @@
 			);
 			mainGroup = F6EA8FFEA719223181410E65;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3609A5495984C4DB3365E2F0 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 397D8F7EE362FA90024B70A9 /* Products */;
 			projectDirPath = "";
@@ -668,6 +680,8 @@
 				49316904B5041EBF4428A24B /* VoxoraSchema.swift in Sources */,
 				5B651267306CDAED5F986470 /* VoxoraStore.swift in Sources */,
 				EA30BE56D9045252F75CAD70 /* WatchRecordingSnapshot.swift in Sources */,
+				7F943EB2874E71DF5C4DE792 /* WhisperModelStore.swift in Sources */,
+				4D1369E7DDE6DB588FD4CDCB /* WhisperTranscriber.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,10 +831,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftstudio.Voxora;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -987,10 +999,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftstudio.Voxora;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1079,6 +1089,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3609A5495984C4DB3365E2F0 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6132C30B6B93D8BF2D92AA61 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3609A5495984C4DB3365E2F0 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F2859CCF54604C4B36E8C32F /* Project object */;
 }

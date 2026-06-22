@@ -174,17 +174,6 @@ struct TranscriptDetailView: View {
 
       ScrollView(.horizontal) {
         HStack(spacing: 12) {
-          Button {
-            editingAction = store.addAction()
-          } label: {
-            Label("Add", systemImage: "plus")
-              .font(.subheadline.weight(.semibold))
-              .padding(.horizontal, 14)
-              .padding(.vertical, 11)
-              .fixedSize()
-          }
-          .buttonStyle(.glass)
-
           ForEach(orderedActions) { action in
             Button {
               Task {
@@ -199,6 +188,17 @@ struct TranscriptDetailView: View {
             }
             .buttonStyle(.glassProminent)
           }
+
+          Button {
+            editingAction = store.addAction()
+          } label: {
+            Label("Add", systemImage: "plus")
+              .font(.subheadline.weight(.semibold))
+              .padding(.horizontal, 14)
+              .padding(.vertical, 11)
+              .fixedSize()
+          }
+          .buttonStyle(.glass)
         }
         .padding(.horizontal, 30)
         .padding(.vertical, 4)
@@ -337,7 +337,12 @@ private struct StructuredOutputView: View {
     case .numbered:
       list(items: parsedItems, style: .numbered)
     default:
-      Text(renderedMarkdown)
+      VStack(alignment: .leading, spacing: 8) {
+        ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+          Text(inlineMarkdown(paragraph))
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+      }
     }
   }
 
@@ -432,10 +437,26 @@ private struct StructuredOutputView: View {
     return item.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
-  private var renderedMarkdown: AttributedString {
+  /// Splits the output into display lines. The model often separates sections
+  /// with single newlines (which markdown would otherwise collapse into one
+  /// wall of text), and sometimes runs bold "**Header:**" sections together —
+  /// we break before an inline bold header so each lands on its own line.
+  private var paragraphs: [String] {
+    let withBreaks = content.replacingOccurrences(
+      of: #"(?<=\S)\s*(\*\*[^*\n]+:\*\*)"#,
+      with: "\n$1",
+      options: .regularExpression
+    )
+    return withBreaks
+      .components(separatedBy: .newlines)
+      .map { $0.trimmingCharacters(in: .whitespaces) }
+      .filter { !$0.isEmpty }
+  }
+
+  private func inlineMarkdown(_ line: String) -> AttributedString {
     (try? AttributedString(
-      markdown: content,
-      options: .init(interpretedSyntax: .full)
-    )) ?? AttributedString(content)
+      markdown: line,
+      options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+    )) ?? AttributedString(line)
   }
 }

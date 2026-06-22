@@ -143,7 +143,7 @@ final class WatchAudioEngineManager {
       throw NSError(domain: "Voxora", code: 4, userInfo: [NSLocalizedDescriptionKey: "Microphone permission was denied."])
     }
 
-    try session.setCategory(.playAndRecord, mode: .default, options: [])
+    try session.setCategory(.record, mode: .default, options: [])
     try session.setActive(true)
   }
 
