@@ -57,6 +57,7 @@ final class WatchAudioEngineManager {
     Haptics.fire(.start)
     startTimer()
     persistSnapshot()
+    reloadWidgets()
   }
 
   func pauseRecording() {
@@ -75,6 +76,7 @@ final class WatchAudioEngineManager {
     Haptics.fire(.light)
     stopTimer()
     persistSnapshot()
+    reloadWidgets()
   }
 
   func finishRecording() async throws -> FinalizedRecording {
@@ -88,6 +90,7 @@ final class WatchAudioEngineManager {
 
     recordingState = .finalizing
     persistSnapshot()
+    reloadWidgets()
 
     let outputURL = try AudioFileStore.destinationURL(noteID: noteID, fileExtension: "caf")
     var totalDuration: TimeInterval = 0
@@ -117,6 +120,7 @@ final class WatchAudioEngineManager {
     sessionStartDate = nil
     Haptics.fire(.stop)
     persistSnapshot()
+    reloadWidgets()
 
     return FinalizedRecording(
       noteID: noteID,
@@ -145,7 +149,7 @@ final class WatchAudioEngineManager {
 
   private func startTimer() {
     timer?.invalidate()
-    timer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
       Task { @MainActor in
         self?.updateElapsedTime()
       }
@@ -187,6 +191,13 @@ final class WatchAudioEngineManager {
       recordingState == .idle ? nil : noteID.uuidString,
       forKey: AppPreferences.recordingNoteIDKey
     )
+  }
+
+  /// Refresh widget/complication timelines. Call only on state transitions
+  /// (start/pause/finalize/finish) — never on the per-second elapsed tick, or
+  /// the widget extension is woken several times a second for the whole
+  /// recording, which is a major Watch battery drain.
+  private func reloadWidgets() {
     WidgetCenter.shared.reloadAllTimelines()
   }
 
@@ -228,10 +239,12 @@ final class WatchAudioEngineManager {
       recordingState = chunks.isEmpty ? .idle : .paused
       pausedAt = recordingState == .paused ? Date() : nil
       persistSnapshot()
+      reloadWidgets()
     } catch {
       errorMessage = "The previous recording session could not be restored."
       recordingState = .idle
       persistSnapshot()
+      reloadWidgets()
     }
   }
 
